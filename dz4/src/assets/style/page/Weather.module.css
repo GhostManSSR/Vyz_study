@@ -1,0 +1,12 @@
+.search_input{
+    display: flex;
+    width: 600px;
+    height: 40px;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+.card_wather{
+    display: flex;
+    flex-direction: column;
+}

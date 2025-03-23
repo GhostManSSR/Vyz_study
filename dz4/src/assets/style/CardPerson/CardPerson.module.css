@@ -1,0 +1,14 @@
+.cardperson__block{
+    display: flex;
+    flex-direction: column;
+    height: 250px;
+    padding: 25px 25px;
+    background: aqua;
+    border-radius: 20px;
+    width: 320px;
+}
+
+.cardperson__item{
+    font-size: 14px;
+    font-weight: 600;
+}
