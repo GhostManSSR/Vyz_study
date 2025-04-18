@@ -1,0 +1,22 @@
+.box_loader{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 35px;
+    margin-top: 50px;
+}
+
+.comment_add__btn{
+    background: rgb(3, 218, 125); 
+    color: #fff;
+    font-size: 16px;   
+    padding: 1em 2em;
+}
+
+.cooment_delete__btn{
+    background: #c2210c;
+    color: #fff;
+    padding: 1em 2em;
+    font-size: 16px;
+}

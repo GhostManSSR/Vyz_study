@@ -1,0 +1,33 @@
+
+.weather_list{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.card_weather__block{
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background-color: aqua;
+    width: 80px;
+    justify-content: center;
+    align-items: center;
+    height: 140px;
+}
+
+.card_weather__img{
+    width: 35px;
+    height: 35px;
+}
+
+.card_weather__text{
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.card_weather__description{
+    font-size: 14px;
+    font-weight: 600;
+}

@@ -1,0 +1,21 @@
+.list_items__block{
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: aqua;
+    padding: 1em 2em;
+}
+
+.list_item{
+    display: flex;
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+.temp__block{
+    display: flex;
+    flex-direction: row;
+}
+
+

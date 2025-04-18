@@ -2,11 +2,27 @@
     display: flex;
     width: 600px;
     height: 40px;
+    font-size: 18px;
     border-radius: 20px;
-    padding: 5px;
+    padding-left: 15px;
+}
+
+.search_btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1em 2em;
+    background: #0c90ce;
+    cursor: pointer;
+    border-radius: 20px;
 }
 
 .card_wather{
     display: flex;
     flex-direction: column;
+}
+
+.weather_content{
+    display: flex;
+    justify-content: center;
 }

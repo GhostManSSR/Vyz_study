@@ -45,3 +45,17 @@ export const data = [
         "email": "dave@example.com"
     }
 ]
+
+export const person = [
+    {
+        "name": "dsa",
+        "age": 12,
+        "email": "asdasd@example.com",
+        "pets": [
+            {
+                "name":"das",
+                "age": 12
+            }
+        ]
+    }
+]

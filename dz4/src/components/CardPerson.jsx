@@ -1,4 +1,4 @@
-import styled from "../assets/style/CardPerson/CardPerson.module.css"
+import styled from "../assets/style/layout/CardPerson/CardPerson.module.css"
 
 const CardPerson = ({...props}) => {
 

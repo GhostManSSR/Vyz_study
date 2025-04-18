@@ -1,0 +1,20 @@
+.placement__block{
+    display: flex;
+    font-size: 26px;
+    font-weight: 600;
+    justify-content: space-between;
+    margin-left: 150px;
+    width: 350px;
+}
+
+.placement__city{
+    display: flex;
+    flex-direction: column;
+}
+
+.placement__icons{
+    display: flex;
+    scale: 1.5;
+    width: 50px;
+    height: 50px;
+}

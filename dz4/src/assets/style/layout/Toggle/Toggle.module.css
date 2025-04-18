@@ -1,0 +1,12 @@
+
+.toogle_box{
+    display: flex;
+    height: 42px;
+    box-shadow: 15px 15px #000;
+}
+
+.toogle__items{
+    display: flex;
+    padding: 1em 3em;
+
+}
