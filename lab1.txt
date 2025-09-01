@@ -1,0 +1,82 @@
+
+Theory
+
+` - stop calculations
+cdr - first list
+car - last list
+cons - create list as two elements
+list - wraps into a list
+last - get last element list
+append - add atoms for in end list
+reverse - reverse list
+lambda - f(x1,x2,..) s1,s2,s3
+
+question one) Напишите сложную функцию, используя композиции функций CAR и CDR, которая
+              возвращает атом * при применении к следующему списку:
+
+1) ;(((1 (2 *)) 3) 4)
+(print (car(cdr(car(cdr(car(car `(((1 (2 *)) 3) 4))))))))
+(print (cadr(cadaar `(((1 (2 *)) 3) 4))))
+
+2) ;(1 (((2 3) (4 5) *) (6)))
+(print (cadr(cdaadr`(1 (((2 3) (4 5) *) (6))))))
+
+3) ;((1 ((*) 2 3)))
+(print (car(caadar `((1 ((*) 2 3))))))
+
+4) ;(1 (2 (* 3) 4) 5)
+(print (car(cadadr `(1 (2 (* 3) 4) 5))))
+
+5) ;(1 (2 (3 4) *) 5)
+(print (cadr(cdadar `((1 (2 (3 4) *) 5)))))
+
+6) ;((1 2) (3 (4 *) 5))
+(print (cadr(cadadr `((1 2) (3 (4 *) 5)))))
+
+7) ;((1) ((2 *)) (3 (4)))
+(print (car(cdaadr `((1) ((2 *)) (3 (4))))))
+
+8) ;((1 2 3 (4 5 (*))))
+(print (car(caddar(cdddar `((1 2 3 (4 5 (*))))))))
+
+9) ;((1 (2 (3 4 *))))
+(print (caddar(cdadar `((1 (2 (3 4 *)))))))
+
+10) ;((1 (2 (3 *))))
+(print (cadar(cdadar `((1 (2 (3 *)))))))
+
+
+question two) Из атомов 1, 2, 3, nil создайте указанные списки двумя способами:
+а) с помощью композиций функций CONS;
+б) с помощью композиций функций LIST.
+
+1) ;(1 (2 3))
+(print (cons 1 (cons (cons 2 (cons 3 nil)) nil)))
+(print (list 1 (list 2 3)))
+
+2) ;(1 (2) 3)
+(print (cons 1 (cons (cons 2 nil) (cons 3 nil))))
+(print (list 1 (list 2) 3))
+
+3) ;(((1 2 3)))
+(print (cons (cons (cons 1 (cons 2 (cons 3 nil))) nil) nil))
+(print (list (list (list 1 2 3))))
+
+4) ;((1)(2 (3)))
+(print (cons (cons 1 nil) (cons (cons 2 (cons (cons 3 nil) nil)) nil)))
+(print (list (list 1) (list 2 (list 3))))
+
+5) ;((1)(2 3))
+(print (cons (cons 1 nil) (cons (cons 2 (cons 3 nil)) nil)))
+(print (list (list 1) (list 2 3)))
+
+6) ;((1 2 ((3))))
+(print (cons (cons 1 (cons 2 (cons (cons (cons 3 nil) nil) nil))) nil))
+(print (list (list 1 2 (list (list 3)))))
+
+1)
+#example for cons
+ (print (cons 1 (cons (cons (cons (cons 2 nil) nil) (cons 3 nil))nil)))
+
+#example for list
+ (print (list 1 (list (list (list 2)) 3)))
