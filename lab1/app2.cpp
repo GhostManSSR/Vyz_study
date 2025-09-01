@@ -50,28 +50,28 @@ bool isLinearlyDependent(double** matrix, int n) {
 
 void backSubstitution(double** matrix, double* b, double* solution, int n) {
     for (int i = n - 1; i >= 0; i--) {
-        solution[i] = b[i];
+        solution[i] = b[i]; // проходимся по всем решением с конца с уже известного b[i]
         for (int j = i + 1; j < n; j++) {
-            solution[i] -= matrix[i][j] * solution[j];
+            solution[i] -= matrix[i][j] * solution[j]; // Вычитаем уже найденные переменные
         }
-        solution[i] /= matrix[i][i];
+        solution[i] /= matrix[i][i]; // Делим на коэффициент перед x_i
     }
 }
 
 bool gaussianElimination(double** matrix, double* b, double* solution, int n) {
     for (int i = 0; i < n; i++) {
         if (matrix[i][i] == 0) {
-            cout << "Нулевой элемент на диагонали, невозможно продолжить вычисления" << endl;
+            cout << "Нулевой элемент на диагонали, невозможно продолжить вычисления, решений бесконечно много" << endl;
             return false;
         }
         double pivot = matrix[i][i];
         for (int j = i; j < n; j++)
-            matrix[i][j] /= pivot;
+            matrix[i][j] /= pivot; 
         b[i] /= pivot;
         for (int j = i + 1; j < n; j++) {
-            double factor = matrix[j][i];
+            double factor = matrix[j][i]; 
             for (int k = i; k < n; k++)
-                matrix[j][k] -= factor * matrix[i][k];
+                matrix[j][k] -= factor * matrix[i][k]; 
             b[j] -= factor * b[i];
         }
     }
@@ -91,7 +91,7 @@ bool advancedGaussianElimination(double** matrix, double* b, double* solution, i
         swap(b[i], b[maxRow]);
 
         if (matrix[i][i] == 0) {
-            cout << "Нулевой элемент на диагонали, невозможно продолжить вычисления" << endl;
+            cout << "Нулевой элемент на диагонали, невозможно продолжить вычисления решений бесконечно много" << endl;
             return false;
         }
         
@@ -179,6 +179,8 @@ int main() {
                 continue;
             }
             
+            fill(solution, solution + n, 0); 
+
             cout << "Применение продвинутого метода Гаусса" << endl;
             if(advancedGaussianElimination(matrix, b, solution, n)){
                 for (i = 0; i < n; i++)
