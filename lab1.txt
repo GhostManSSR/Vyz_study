@@ -90,6 +90,154 @@ question two) Из атомов 1, 2, 3, nil создайте указанные
     (print (cons 1 (cons (cons (cons 2 nil) nil) (cons (cons 3 nil) nil))))
     (print (list 1 (list (list 2)) (list 3)))
 
+question three)
+С помощью DEFUN определите функцию, которая возвращает измененный список по
+заданию (в теле функции разрешается использовать только следующие встроенные
+функции: CAR, CDR, CONS, APPEND, LIST, LAST, BUTLAST с одним аргументом).
+Проверьте её работу, организуя обращение к функции со списками разной длины.
+
+1) Функция меняет местами первый и последний элементы списка
+(defun swap-first-last (lst)
+  (append
+    (list (car (last lst)))
+    (butlast (cdr lst))
+    (list (car lst))))
+
+2) Функция меняет местами первый и второй элементы списка
+(defun swap-first-second (lst)
+  (append
+    (list (car (cdr lst)))
+    (list (car lst))
+    (cdr (cdr lst))))
+
+
+3) Функция меняет местами первый и предпоследний элементы списка
+(defun swap-first-penultimate (lst)
+  ;; список длины 0 или 1 — возвращаем как есть
+  (cond
+    ((null lst) lst)
+    ((null (cdr lst)) lst)
+    ;; если длина 2 — поменять местами
+    ((null (cdr (cdr lst)))
+      (cons (car (cdr lst)) (list (car lst))))
+    (t
+      ;; длина >= 3
+      (append
+        (list (car (last (butlast lst))))           ; предпоследний вместо первого
+        (append
+          (butlast (butlast (cdr lst)))             ; середина без предпоследнего
+          (list (car lst) (car (last (cdr lst)))))))))  ; первый и последний в хвосте
+
+(print(swap-first-penultimate '()))           ; => NIL
+(print(swap-first-penultimate '(a)))          ; => (a)
+(print(swap-first-penultimate '(a b)))        ; => (b a)
+(print(swap-first-penultimate '(a b c)))      ; => (b a c)
+(print(swap-first-penultimate '(a b c d)))    ; => (c b a d)
+(print(swap-first-penultimate '(a b c d e)))  ; => (d b c a e)
+
+4)Функция меняет местами второй и третий элементы списка
+(defun swap-second-third (lst)
+  (cons (car lst)
+    (cons (car (cdr (cdr lst)))
+      (cons (car (cdr lst))
+        (cdr (cdr (cdr lst))))))
+) (только для списков длины >=3)
+
+(swap-second-third '(a b c d e)) ; (a c b d e)
+(swap-second-third '(1 2 3))     ; (1 3 2)
+(swap-second-third '(x y z w))   ; (x z y w)
+
+5) Функция меняет местами третий и последний элементы списка
+(defun swap-third-last (lst)
+  (append
+    (list (car lst) (car (cdr lst)) (car (last lst)))
+    (append
+      (cdr (cdr (cdr (butlast lst))))
+      (list (car (cdr (cdr lst))))))
+)
+
+(print(swap-third-last '(a b c d e))) ; (a b e d c)
+(print(swap-third-last '(1 2 3 4 5))) ; (1 2 5 4 3)
+
+6) Функция меняет местами первый и третий элементы списка
+(defun swap-first-third (lst)
+  (append
+    (list (car (cdr (cdr lst))))         ; третий элемент на место первого
+    (list (car (cdr lst)))                ; второй элемент
+    (list (car lst))                     ; первый элемент на место третьего
+    (cdr (cdr (cdr lst)))))               ; остаток списка начиная с 4-го элемента
+(print(swap-first-third '(a b c d e)))  ; => (c b a d e)
+(swap-first-third '(1 2 3))      ; => (3 2 1)
+(print(swap-first-third '(x y)))        ; => (NIL y x)  ; нет 3-го элемента, получаем NIL вместо него
+(swap-first-third '(p))          ; => (NIL NIL p)
+(swap-first-third '())           ; => (NIL NIL NIL)
+
+7) Функция меняет местами второй и последний элементы списка
+(defun swap-second-last (lst)
+  (cond
+    ((or (null lst) (null (cdr lst))) lst) ; длина 0 или 1, ничего не меняем
+    ((null (cdr (cdr lst)))                 ; длина 2 - поменять местами первый и второй
+      (cons (car (cdr lst)) (list (car lst))))
+    (t                                     ; длина >= 3
+      (append
+        (list (car lst) (car (last lst)))
+        (append
+          (cdr (cdr (butlast lst)))
+          (list (car (cdr lst))))))))
+
+
+(print(swap-second-last '(a b c d e)))  ; (a e c d b)
+(print(swap-second-last '(1 2 3)))      ; (1 3 2)
+(print(swap-second-last '(x y)))        ; (y x)
+(print(swap-second-last '(p)))          ; (p)
+(print(swap-second-last '()))           ; NIL
+
+8) Функция меняет местами предпоследний и последний элементы списка
+(defun swap-penultimate-last (lst)
+  (append
+    (butlast (butlast lst))
+    (list (car (last lst))
+          (car (last (butlast lst)))))
+)
+
+(print(swap-penultimate-last '(a b c d e)))  ; (a b c e d)
+(print(swap-penultimate-last '(1 2)))        ; (2 1)
+(print(swap-penultimate-last '(x y z)))      ; (x z y)
+(print(swap-penultimate-last '(p)))          ; Ошибка или (p) - зависит от реализации butlast
+
+9) Функция меняет местами второй и предпоследний элементы списка
+(defun swap-second-penultimate (lst)
+  (append
+    (list (car lst) (car (last (butlast lst))))                    ; первый и предпоследний (на месте второго)
+    (append
+      (butlast (cdr (cdr (butlast lst))))                         ; средняя часть без второго и предпоследнего
+      (list (car (cdr lst)) (car (last lst))))))
+
+(print(swap-second-penultimate '(a b c d e)))   ; => (a d c b e)
+(print(swap-second-penultimate '(1 2 3 4)))     ; => (1 3 2 4)
+(print(swap-second-penultimate '(x y z)))       ; => (x y z)     ; длина менее 4, перестановка не влияет
+(print(swap-second-penultimate '(p q)))         ; => (p q)       ; короткий список — возвращается как есть
+
+10) Функция меняет местами третий и предпоследний элементы списка
+(defun swap-third-and-penultimate (lst)
+  (append
+    (list (car lst) (car (cdr lst)))                    ; первые два
+    (list (car (last (butlast lst))))                   ; предпоследний вместо третьего
+    (butlast (cdr (cdr (cdr lst))))                      ; все кроме первых трех и последних двух
+    (list (car (cdr (cdr lst))))                         ; третий вместо предпоследнего
+    (list (car (last lst)))                              ; последний
+  )
+)
+
+(print(swap-third-and-penultimate '(a b c d e f)))
+;; => (a b e d c f)
+
+(print(swap-third-and-penultimate '(1 2 3 4 5 6 7)))
+;; => (1 2 6 4 5 3 7)
+
+(print(swap-third-and-penultimate '(x y z t)))
+;; => (x y t z)
+
 1)
 #example for cons
  (print (cons 1 (cons (cons (cons (cons 2 nil) nil) (cons 3 nil))nil)))
