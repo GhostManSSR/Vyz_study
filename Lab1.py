@@ -1,8 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib
-from sklearn.preprocessing import LabelEncoder
+
 
 file_path = "/content/fitness_and_workout_dataset.csv"
 
@@ -68,19 +67,24 @@ stats = desc[['mean', 'median', 'std', 'skew']]
 print(stats)
 
 # задание 4
-matplotlib.rcParams['font.family'] = 'DejaVu Sans'
-matplotlib.rcParams['text.usetex'] = False
 
-cat_cols = df.select_dtypes(include=['object', 'category']).columns
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def shorten_labels(labels, max_len=5):
+    return [label[:max_len] + '...' if len(label) > max_len else label for label in labels]
 
 top_n = 20
+cat_cols = df.select_dtypes(include=['object', 'category']).columns
 
 for col in cat_cols:
     top_vals = df[col].value_counts().index[:top_n]
-    plt.figure(figsize=(10, 5))
-    sns.countplot(data=df, x=col, order=top_vals)
+    plt.figure(figsize=(12, 6))
+    ax = sns.countplot(data=df, x=col, order=top_vals)
     plt.title(f"Распределение топ-{top_n} категорий '{col}'")
-    plt.xticks(rotation=45)
+    # Ограничиваем длину подписей
+    ax.set_xticklabels(shorten_labels(top_vals))
+    plt.xticks(rotation=45, ha='right')  # Поворачиваем подписи для читаемости
     plt.tight_layout()
     plt.show()
 
@@ -88,7 +92,12 @@ unique_counts = df[cat_cols].nunique()
 print("Количество уникальных категорий по признакам:")
 print(unique_counts)
 
+
 # задание 5
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 # Выделим числовые столбцы
 num_cols = df.select_dtypes(include=['number']).columns
 
@@ -115,6 +124,10 @@ plt.xticks(rotation=45)
 plt.show()
 
 # задание 6
+
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
 # 1. Нормализация названий столбцов
 df.columns = df.columns.str.lower().str.strip().str.replace(' ', '_')
 
@@ -146,7 +159,6 @@ print("Пропуски после обработки:\n", df.isnull().sum())
 
 
 # задание 7
-#Выбросы — это значения в данных, которые значительно отличаются от остальных наблюдений. Проще говоря, это экстремальные точки, которые находятся далеко за пределами общего распределения данных.
 import seaborn as sns
 import matplotlib.pyplot as plt
 
