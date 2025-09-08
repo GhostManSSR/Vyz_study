@@ -1,0 +1,12 @@
+
+
+задание 1)
+(defun double_list(lst)
+  (if (null lst)
+      `()
+      (cons (car lst)
+            (cons (car lst)
+                  (double_list (cdr lst))))))
+(print (double_list `(1 a b 3)))
+
+задание 2)
