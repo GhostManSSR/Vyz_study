@@ -1,12 +1,55 @@
+Лабораторная работа №2 (язык Clisp)
+        Рекурсия
+Каждая бригада должна выполнить 3 задачи: по одной из каждого раздела (номер
+задачи из каждого раздела совпадает с номером бригады). В бригаде может быть не
+более 2 человек.
+В теле функции использование операторов цикла, set, let, функционалов не
+допускается! Все функции должны быть рекурсивными.
 
+(  Определите функцию  )
 
 задание 1)
-(defun double_list(lst)
+(defun double-list (lst)
   (if (null lst)
-      `()
+      nil
       (cons (car lst)
             (cons (car lst)
-                  (double_list (cdr lst))))))
-(print (double_list `(1 a b 3)))
+                  (double-list (cdr lst))))))
+
+
+(print (double-list '(1 a b 3)))
+;; Результат: (1 1 a a b b 3 3)
+
 
 задание 2)
+(defun pairs-recursive (lst)
+  (cond
+    ((null lst) nil)
+    ((null (cdr lst)) (list (list (car lst))))
+    (t (cons
+         (list (car lst) (car (last lst))) ; берем первый элемент из last
+         (pairs-recursive (butlast (cdr lst)))
+       )
+    )
+  )
+)
+
+
+
+(print (pairs-recursive '(1 a b c 2 3 f)))
+;; => ((1 f) (a 3) (b 2) (c))
+
+задание 3)
+(defun remove-by-indices (lst indices &optional (pos 1))
+  (cond
+    ((null lst) nil) ; если первый список пуст, возвращаем nil
+    ((and (not (null indices)) (equal pos (car indices)))
+     ;; если текущая позиция равна первому элементу списка индексов — пропускаем элемент
+     (remove-by-indices (cdr lst) (cdr indices) (+ pos 1)))
+    (t
+      ;; иначе включаем текущий элемент и идем дальше
+      (cons (car lst) (remove-by-indices (cdr lst) indices (+ pos 1)))))
+)
+
+(print (remove-by-indices '(a s d f g h j k l) '(1 4 5 8)))
+;; => (s d h j l)
