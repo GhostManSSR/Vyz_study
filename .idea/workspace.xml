@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19e86409-fbb4-4849-8113-49d270c8c7cf" name="Changes" comment="фикс">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ExampleTypeScript/example.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ExampleTypeScript/example.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +58,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;D:\\Development Application\\myProjects\\Vyz_study\\TypeScript\\Lab1\\testing\\node_modules\\typescript\\lib&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\Development Application\\myProjects\\Vyz_study\\TypeScript\\test-typescript\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -82,6 +83,10 @@
       <workItem from="1756861866390" duration="3474000" />
       <workItem from="1756868130985" duration="286000" />
       <workItem from="1756869784858" duration="3293000" />
+      <workItem from="1757344099172" duration="628000" />
+      <workItem from="1757346861139" duration="5000" />
+      <workItem from="1757466196593" duration="1783000" />
+      <workItem from="1757526226685" duration="27000" />
     </task>
     <task id="LOCAL-00001" summary="До делал 2 задание">
       <option name="closed" value="true" />
@@ -99,7 +104,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757343866662</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="фикс">
+      <option name="closed" value="true" />
+      <created>1757344117400</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1757344117400</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
