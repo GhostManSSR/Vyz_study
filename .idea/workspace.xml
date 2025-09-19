@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="19e86409-fbb4-4849-8113-49d270c8c7cf" name="Changes" comment="фикс">
+      <change afterPath="$PROJECT_DIR$/TypeScript/test-typescript/src/HttpProvider.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TypeScript/test-typescript/src/action/layout.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TypeScript/test-typescript/src/components/layout/Button.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TypeScript/test-typescript/src/components/layout/Select.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TypeScript/test-typescript/src/pages/main/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ExampleTypeScript/example.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ExampleTypeScript/example.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TypeScript/test-typescript/src/App.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/TypeScript/test-typescript/src/App.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TypeScript/test-typescript/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/TypeScript/test-typescript/src/App.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +22,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="TypeScript JSX File" />
         <option value="TypeScript File" />
       </list>
     </option>
@@ -23,7 +30,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="visual-programming" />
+        <entry key="$PROJECT_DIR$" value="function-and-logic-programmig" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -48,20 +55,62 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;visual-programming&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;D:\\Development Application\\myProjects\\Vyz_study\\TypeScript\\test-typescript\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Jest.renders learn react link.executor": "Run",
+    "Jest.test config.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "visual-programming",
+    "jsx.switch.disabled": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "D:/Development Application/myProjects/Vyz_study/TypeScript/test-typescript/node_modules/react-scripts",
+    "nodejs_package_manager_path": "npm",
+    "ts.external.directory.path": "D:\\Development Application\\myProjects\\Vyz_study\\TypeScript\\test-typescript\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Development Application\myProjects\Vyz_study\TypeScript\test-typescript\src\pages" />
+      <recent name="D:\Development Application\myProjects\Vyz_study\TypeScript\test-typescript\src\components\layout" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Jest.test config">
+    <configuration name="renders learn react link" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/TypeScript/test-typescript/node_modules/react-scripts" />
+      <working-dir value="$PROJECT_DIR$/TypeScript/test-typescript" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/TypeScript/test-typescript/src/App.test.tsx" />
+      <test-names>
+        <test-name value="renders learn react link" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="test config" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <jest-package value="$PROJECT_DIR$/TypeScript/test-typescript/node_modules/react-scripts" />
+      <working-dir value="$PROJECT_DIR$/TypeScript/test-typescript" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/TypeScript/test-typescript/src/App.test.tsx" />
+      <test-names>
+        <test-name value="test config" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Jest.test config" />
+        <item itemvalue="Jest.renders learn react link" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -87,6 +136,9 @@
       <workItem from="1757346861139" duration="5000" />
       <workItem from="1757466196593" duration="1783000" />
       <workItem from="1757526226685" duration="27000" />
+      <workItem from="1757592300945" duration="1428000" />
+      <workItem from="1757682466492" duration="3182000" />
+      <workItem from="1757770627231" duration="2693000" />
     </task>
     <task id="LOCAL-00001" summary="До делал 2 задание">
       <option name="closed" value="true" />
