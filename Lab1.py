@@ -98,30 +98,39 @@ print(unique_counts)
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# Выделим числовые столбцы
-num_cols = df.select_dtypes(include=['number']).columns
+# Клонируем исходный датафрейм
+df_encoded = df.copy()
 
-# Посчитаем корреляционную матрицу (по умолчанию корреляция Пирсона)
-corr_matrix = df[num_cols].corr()
+# Преобразуем все строковые и категориальные столбцы в числовые коды
+for col in df_encoded.select_dtypes(include=['object', 'category']).columns:
+    df_encoded[col] = df_encoded[col].astype('category').cat.codes
 
-# Построим тепловую карту корреляций
+# Выделяем все числовые столбцы
+num_cols = df_encoded.select_dtypes(include=['number']).columns
+
+# Считаем корреляционную матрицу
+corr_matrix = df_encoded[num_cols].corr()
+
+# Строим тепловую карту корреляций
 plt.figure(figsize=(12, 8))
 sns.heatmap(corr_matrix, annot=True, fmt='.2f', cmap='coolwarm', center=0, square=True)
-plt.title('Корреляционная матрица числовых признаков')
+plt.title('Корреляционная матрица по числовым и закодированным категориальным признакам')
 plt.show()
 
+# Построим диаграмму рассеяния для первых двух числовых признаков
 x_col, y_col = num_cols[0], num_cols[1]
-
-# Например, для пары признаков 'feature1' и 'feature2'
-sns.scatterplot(data=df, x=x_col, y=y_col)
+sns.scatterplot(data=df_encoded, x=x_col, y=y_col)
 plt.title(f'Диаграмма рассеяния {x_col} vs {y_col}')
 plt.show()
 
-# Пример для категориального признака 'category_col' и числового 'numeric_col'
-sns.boxplot(data=df, x=x_col, y=y_col)
-plt.title('Boxplot числового признака по категориям')
-plt.xticks(rotation=45)
-plt.show()
+# Построение boxplot числового признака по категориям из исходных данных (если есть)
+cat_cols = df.select_dtypes(include=['object', 'category']).columns
+if len(cat_cols) > 0:
+    sns.boxplot(data=df, x=cat_cols[0], y=num_cols[0])
+    plt.title(f'Boxplot признака {num_cols[0]} по категориям {cat_cols[0]}')
+    plt.xticks(rotation=45)
+    plt.show()
+
 
 # задание 6
 
@@ -201,5 +210,3 @@ plt.figure(figsize=(8, 4))
 sns.boxplot(x=df[f'{target_col}_clipped'])
 plt.title(f'Boxplot после обрезки выбросов: {target_col}')
 plt.show()
-
-
