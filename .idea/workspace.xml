@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="19e86409-fbb4-4849-8113-49d270c8c7cf" name="Changes" comment="фикс">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ExampleTypeScript/lab3.ts" afterDir="false" />
+    <list default="true" id="ed466dc4-987d-44fe-a8e9-5fc10724b86c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -14,20 +10,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="TypeScript JSX File" />
-        <option value="TypeScript File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="function-and-logic-programmig" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -39,140 +22,57 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/GhostManSSR/Vyz_study.git&quot;,
-    &quot;accountId&quot;: &quot;805c6179-a200-44e8-899d-0c483d6215f5&quot;
+    &quot;accountId&quot;: &quot;bbd899f5-0af8-408b-b857-d1158d00a76f&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 4
+  &quot;associatedIndex&quot;: 7
 }</component>
-  <component name="ProjectId" id="325lvpF3ZIsghiNQesjVRgjC72q" />
+  <component name="ProjectId" id="32yEHnImpLTPZiY2JNX0xFVanUf" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
-    &quot;Jest.renders learn react link.executor&quot;: &quot;Run&quot;,
-    &quot;Jest.test config.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;visual-programming&quot;,
-    &quot;jsx.switch.disabled&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;D:/Development Application/myProjects/Vyz_study/TypeScript/test-typescript/node_modules/react-scripts&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;D:\\Development Application\\myProjects\\Vyz_study\\TypeScript\\test-typescript\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Development Application\myProjects\Vyz_study\TypeScript\test-typescript\src\pages" />
-      <recent name="D:\Development Application\myProjects\Vyz_study\TypeScript\test-typescript\src\components\layout" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Jest.test config">
-    <configuration name="renders learn react link" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/TypeScript/test-typescript/node_modules/react-scripts" />
-      <working-dir value="$PROJECT_DIR$/TypeScript/test-typescript" />
-      <envs />
-      <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/TypeScript/test-typescript/src/App.test.tsx" />
-      <test-names>
-        <test-name value="renders learn react link" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="test config" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
-      <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/TypeScript/test-typescript/node_modules/react-scripts" />
-      <working-dir value="$PROJECT_DIR$/TypeScript/test-typescript" />
-      <envs />
-      <scope-kind value="TEST" />
-      <test-file value="$PROJECT_DIR$/TypeScript/test-typescript/src/App.test.tsx" />
-      <test-names>
-        <test-name value="test config" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Jest.test config" />
-        <item itemvalue="Jest.renders learn react link" />
-      </list>
-    </recent_temporary>
-  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.26053.12" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-WS-241.18034.50" />
       </set>
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="19e86409-fbb4-4849-8113-49d270c8c7cf" name="Changes" comment="" />
-      <created>1756718547567</created>
+      <changelist id="ed466dc4-987d-44fe-a8e9-5fc10724b86c" name="Changes" comment="" />
+      <created>1758384326589</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1756718547567</updated>
-      <workItem from="1756718548770" duration="6356000" />
-      <workItem from="1756773069014" duration="1306000" />
-      <workItem from="1756861303127" duration="549000" />
-      <workItem from="1756861866390" duration="3474000" />
-      <workItem from="1756868130985" duration="286000" />
-      <workItem from="1756869784858" duration="3293000" />
-      <workItem from="1757344099172" duration="628000" />
-      <workItem from="1757346861139" duration="5000" />
-      <workItem from="1757466196593" duration="1783000" />
-      <workItem from="1757526226685" duration="27000" />
-      <workItem from="1757592300945" duration="1428000" />
-      <workItem from="1757682466492" duration="3182000" />
-      <workItem from="1757770627231" duration="2693000" />
+      <updated>1758384326589</updated>
+      <workItem from="1758384327703" duration="38000" />
+      <workItem from="1759060523567" duration="37000" />
     </task>
-    <task id="LOCAL-00001" summary="До делал 2 задание">
-      <option name="closed" value="true" />
-      <created>1756774304608</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1756774304608</updated>
-    </task>
-    <task id="LOCAL-00002" summary="фикс">
-      <option name="closed" value="true" />
-      <created>1757343866662</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1757343866662</updated>
-    </task>
-    <task id="LOCAL-00003" summary="фикс">
-      <option name="closed" value="true" />
-      <created>1757344117400</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1757344117400</updated>
-    </task>
-    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-    <option name="exactExcludedFiles">
-      <list>
-        <option value="$PROJECT_DIR$/ExampleTypeScript/example.js" />
-      </list>
-    </option>
   </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="До делал 2 задание" />
-    <MESSAGE value="фикс" />
-    <option name="LAST_COMMIT_MESSAGE" value="фикс" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
