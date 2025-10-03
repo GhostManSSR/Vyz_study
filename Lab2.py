@@ -101,7 +101,20 @@ for run_id in range(num_splits):
           f"Размер обучения: {len(X_tr)}, Размер теста: {len(X_te)}")
 
 results_df = pd.DataFrame(results)
-print("\nСредняя точность по 10 итерациям:", results_df['Тест_точность'].mean())
+# === Итоговая таблица ===
+print("\nТАБЛИЦА РЕЗУЛЬТАТОВ ПО ИТЕРАЦИЯМ:")
+print(results_df.to_string(index=False))
+
+# === Статистика ===
+mean_acc = results_df['Тест_точность'].mean()
+min_acc = results_df['Тест_точность'].min()
+max_acc = results_df['Тест_точность'].max()
+
+print("\nОБЩАЯ СТАТИСТИКА:")
+print(f"Средняя точность: {mean_acc:.3f}")
+print(f"Минимальная точность: {min_acc:.3f}")
+print(f"Максимальная точность: {max_acc:.3f}")
+
 
 
 # Анализ параметров
