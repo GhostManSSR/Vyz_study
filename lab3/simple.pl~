@@ -1,0 +1,4 @@
+remove_duplicates([], []).  % если список пуст, результат тоже пуст
+remove_duplicates([H|T], [H|Result]) :-
+    delete(T, H, T1),       % из хвоста списка удалить все вхождения H
+    remove_duplicates(T1, Result). % рекурсивно обработать оставшийся список

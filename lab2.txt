@@ -16,9 +16,18 @@
             (cons (car lst)
                   (double-list (cdr lst))))))
 
+; (defun double-list-reverse (lst)
+;   (if (null lst)
+;       nil
+;       (append (double-list-reverse (cdr lst))
+;               (list (car lst) (car lst)))))
+
+; (print (double-list-reverse '(1 a b 3)))
+; ;; Результат: (3 3 b b a a 1 1)
 
 (print (double-list '(1 a b 3)))
 ;; Результат: (1 1 a a b b 3 3)
+
 
 
 задание 2)
@@ -29,17 +38,36 @@
     (t (cons
          (list (car lst) (car (last lst))) ; берем первый элемент из last
          (pairs-recursive (butlast (cdr lst)))
-       )
+      )
     )
   )
 )
 
+; (defun pairs-recursive (lst)
+;   (cond
+;     ((null lst) nil)
+;     ((null (cdr lst))
+;      (if (equal (car lst) 1)
+;          (list (list 1 1))
+;          (list (list (car lst)))))
+;     (t (cons
+;          (list (car lst) (car (last lst)))
+;          (pairs-recursive (butlast (cdr lst))))))
+; )
+
+
+
+; (print (pairs-recursive '(1 a b c 2 3 f)))  ; -> ((1 f) (a 3) (b 2) (c))
+; (print (pairs-recursive '(1)))               ; -> ((1 1))
+
 
 
 (print (pairs-recursive '(1 a b c 2 3 f)))
-;; => ((1 f) (a 3) (b 2) (c))
+; => ((1 f) (a 3) (b 2) (c))
 
 задание 3)
+
+
 (defun remove-by-indices (lst indices &optional (pos 1))
   (cond
     ((null lst) nil) ; если первый список пуст, возвращаем nil
@@ -50,6 +78,12 @@
       ;; иначе включаем текущий элемент и идем дальше
       (cons (car lst) (remove-by-indices (cdr lst) indices (+ pos 1)))))
 )
+
+; (defun remove-by-indices (lst indices &optional (pos 1))
+;   (cond
+;     ((null lst) nil)
+;     (t (cons (car lst) (remove-by-indices (cdr lst) indices (+ pos 1))))))
+
 
 (print (remove-by-indices '(a s d f g h j k l) '(1 4 5 8)))
 ;; => (s d h j l)
