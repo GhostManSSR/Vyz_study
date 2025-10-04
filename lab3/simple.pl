@@ -1,4 +1,9 @@
-remove_duplicates([], []).
+remove_duplicates([], []). 
+
+remove_duplicates([H|T], Result) :-
+    member(H, T),         
+    remove_duplicates(T, Result).
+
 remove_duplicates([H|T], [H|Result]) :-
-    delete(T, H, T1),
-remove_duplicates(T1, Result).
+    \+ member(H, T),      
+    remove_duplicates(T, Result).  
