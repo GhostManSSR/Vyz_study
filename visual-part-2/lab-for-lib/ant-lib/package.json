@@ -1,0 +1,40 @@
+{
+  "name": "ant-lib",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@ant-design/charts": "^2.6.5",
+    "@chakra-ui/icons": "^2.2.4",
+    "@chakra-ui/react": "^3.27.1",
+    "@chakra-ui/styled-system": "^2.12.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.4",
+    "@mui/x-data-grid": "^8.14.0",
+    "antd": "^5.27.4",
+    "framer-motion": "^12.23.24",
+    "moment": "^2.30.1",
+    "next": "15.5.4",
+    "next-themes": "^0.4.6",
+    "pnpm": "^10.18.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.65.0",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.4",
+    "typescript": "^5"
+  }
+}
