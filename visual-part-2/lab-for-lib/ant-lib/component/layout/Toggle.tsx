@@ -1,4 +1,4 @@
-import "../../assets/less/layout/Toggle.less";
+import styles from '../../assets/less/layout/Toggle.module.less';
 
 interface ToggleItem {
     name: string;
@@ -11,17 +11,17 @@ interface Props {
 
 const Toggle: React.FC<Props> = ({ toggleList = [] }) => {
     return (
-        <>
+        <div style={{marginTop: "15px", marginLeft:"15px", display:"flex", gap:"10px"}}>
             {toggleList.map((item, index) => (
                 <button
                     key={index}
                     onClick={item.onClick}
-                    className="toggle__item"
+                    className={styles.toggle__item}
                 >
                     {item.name}
                 </button>
             ))}
-        </>
+        </div>
     );
 };
 

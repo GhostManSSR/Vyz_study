@@ -1,13 +1,21 @@
-import type { AppProps } from "next/app";
-// import '@mui/x-data-grid/index.css';
-import { ChakraProvider } from '@chakra-ui/react';
-import { forwardRef } from 'react';
-import {system} from "../theme"
+import { ChakraProvider } from "@chakra-ui/react";
+import { ThemeProvider } from 'next-themes';
+import { ColorModeProvider, useColorMode } from '@/components/ui/color-mode';
+import {system} from '../theme';
+import "../styles/globals.css"
+import {Layout} from "@/component/layout/index";
+import type { AppProps } from 'next/app';
 
-export default function App({ Component, pageProps }: AppProps) {
-  return (
-      <ChakraProvider value={system}>
-        <Component {...pageProps} />
-      </ChakraProvider>
-  );
+function MyApp({ Component, pageProps }: AppProps) {
+    return (
+        <ChakraProvider value={system}>
+            <ColorModeProvider options={{ initialColorMode: "light", useSystemColorMode: false }}>
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
+            </ColorModeProvider>
+        </ChakraProvider>
+    );
 }
+
+export default MyApp;

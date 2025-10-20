@@ -1,45 +1,28 @@
-import { Box, Flex } from '@chakra-ui/react';
-import React, { ReactNode } from 'react';
-import {
-    ColorModeButton,
-    DarkMode,
-    LightMode,
-    useColorMode,
-    useColorModeValue,
-} from "@/components/ui/color-mode"
-import { ColorModeSwitcher } from '../../component/modals/ColorModeSwitcher';
-import {UserForm} from "@/component/modals/UserForm";
+import React from "react";
+import { Modal } from "@/component/modals/Modal";
+import { UserForm } from "@/component/modals/UserForm";
+import { useModal } from "../../hooks/useModal";
+import { UserFormData } from "../../types/UserFormData";
+import {Button} from "@chakra-ui/react";
+import {Layout} from "@/component/layout";
 
-interface LayoutProps {
-    children: ReactNode;
-}
+function App() {
+    const { isOpen, open, close } = useModal();
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-    const bgColor = useColorModeValue('gray.50', 'gray.900');
-
-    const onSubmit = () => {
-        console.log('onSubmit');
-    }
+    const handleSubmit = (data: UserFormData) => {
+        console.log("User data:", data);
+        close();
+    };
 
     return (
-        <Flex direction="column" minHeight="100vh" bg={bgColor}>
-            <Box as="header" p={4} boxShadow="md">
-                <ColorModeSwitcher />
-            </Box>
-
-            {/*<Box>*/}
-            {/*    <UserForm onSubmit={onSubmit}></UserForm>*/}
-            {/*</Box>*/}
-
-            {/*<Box as="main" flex="1" p={4}>*/}
-            {/*    {children}*/}
-            {/*</Box>*/}
-
-            <Box as="footer" p={4} textAlign="center" fontSize="sm" color="gray.500">
-                © 2025 Company Name
-            </Box>
-        </Flex>
+        <>
+            <Button onClick={open} style={{margin:"15px 15px"}}>Add User</Button>
+            <Modal isOpen={isOpen} onClose={close}>
+                <h2>Add User</h2>
+                <UserForm onSubmit={handleSubmit} />
+            </Modal>
+        </>
     );
-};
+}
 
-export default Layout;
+export default App;

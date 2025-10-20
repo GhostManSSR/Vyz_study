@@ -5,24 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ed466dc4-987d-44fe-a8e9-5fc10724b86c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/assets/less/layout/Button.less" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/assets/less/layout/Toggle.less" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/form/DefaultForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/Button.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/Select.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/Toggle.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ColorModeSwitcher.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ModalWrapper.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/UserForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/thems/MyThemeButton.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/thems/UserTable.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/mui-theme.d.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/form/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/modals/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/thems/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/theme.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/types/UserFormData.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/assets/less/layout/Toggle.module.less" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/dialog/TabsComponent.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/dialog/UserDropdown.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/Modal.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/hooks/useModal.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/dialog/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/postcss.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/tailwind.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/types/next-with-less.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/assets/less/layout/Toggle.less" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/dialog/ModalDialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/Toggle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/Toggle.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ColorModeSwitcher.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ThemeToggle.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ModalWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ModalWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/UserForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/UserForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/next.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/_app.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/modals/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/modals/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pnpm-lock.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/styles/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/theme.ts" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/theme.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,21 +67,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "visual-programming",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "D:\\My self\\Vyz\\Vyz_study\\visual-part-2\\lab-for-lib\\ant-lib\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;visual-programming&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;D:\\My self\\Vyz\\Vyz_study\\visual-part-2\\lab-for-lib\\ant-lib\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\My self\Vyz\Vyz_study\visual-part-2\lab-for-lib\ant-lib" />
@@ -107,6 +114,8 @@
       <workItem from="1760460625432" duration="883000" />
       <workItem from="1760487486929" duration="569000" />
       <workItem from="1760491811558" duration="3873000" />
+      <workItem from="1760925529026" duration="4590000" />
+      <workItem from="1760930222782" duration="7503000" />
     </task>
     <servers />
   </component>
