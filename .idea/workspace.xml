@@ -5,31 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ed466dc4-987d-44fe-a8e9-5fc10724b86c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/assets/less/layout/Toggle.module.less" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/dialog/TabsComponent.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/dialog/UserDropdown.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/Modal.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/hooks/useModal.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/dialog/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/postcss.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/tailwind.config.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/types/next-with-less.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/assets/less/layout/Toggle.less" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/dialog/ModalDialog.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/Toggle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/layout/Toggle.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ColorModeSwitcher.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ThemeToggle.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ModalWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ModalWrapper.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/UserForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/UserForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/next.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/_app.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ThemeToggle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ThemeToggle.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/modals/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/modals/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/styles/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/theme.ts" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/theme.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +93,10 @@
       <workItem from="1760487486929" duration="569000" />
       <workItem from="1760491811558" duration="3873000" />
       <workItem from="1760925529026" duration="4590000" />
-      <workItem from="1760930222782" duration="7503000" />
+      <workItem from="1760930222782" duration="7743000" />
+      <workItem from="1760950921156" duration="104000" />
+      <workItem from="1760951055980" duration="15000" />
+      <workItem from="1760951084165" duration="378000" />
     </task>
     <servers />
   </component>
