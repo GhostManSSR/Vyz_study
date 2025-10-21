@@ -4,10 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ed466dc4-987d-44fe-a8e9-5fc10724b86c" name="Changes" comment="">
+    <list default="true" id="ed466dc4-987d-44fe-a8e9-5fc10724b86c" name="Changes" comment="Add config Toggle-main">
+      <change afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/UserTable.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ThemeToggle.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/ThemeToggle.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/Modal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/modals/Modal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/thems/UserTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/component/thems/UserTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/hooks/useModal.ts" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/hooks/useModal.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/modals/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/pages/modals/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/types/UserFormData.ts" beforeDir="false" afterPath="$PROJECT_DIR$/visual-part-2/lab-for-lib/ant-lib/types/UserFormData.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,8 +102,19 @@
       <workItem from="1760930222782" duration="7743000" />
       <workItem from="1760950921156" duration="104000" />
       <workItem from="1760951055980" duration="15000" />
-      <workItem from="1760951084165" duration="378000" />
+      <workItem from="1760951084165" duration="504000" />
+      <workItem from="1761034948629" duration="217000" />
+      <workItem from="1761046981901" duration="3431000" />
     </task>
+    <task id="LOCAL-00001" summary="Add config Toggle-main">
+      <option name="closed" value="true" />
+      <created>1760951572508</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1760951572508</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -113,5 +130,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add config Toggle-main" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add config Toggle-main" />
   </component>
 </project>

@@ -1,3 +1,4 @@
+// В hooks/useModal.tsx
 import { useState, useCallback } from "react";
 
 export function useModal() {

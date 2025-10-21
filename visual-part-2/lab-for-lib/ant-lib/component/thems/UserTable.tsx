@@ -1,23 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     DataGrid,
     GridColDef,
+    GridRowSelectionModel,
     GridRowParams,
 } from '@mui/x-data-grid';
-import {GridRowSelectionModel } from '@mui/x-data-grid';
 import {
     Chip,
     Switch,
     Stack,
     TextField,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     Select,
     MenuItem,
     Box,
+    Modal,
+    IconButton,
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import ThemedButton from './MyThemeButton';
 
 interface User {
@@ -27,18 +26,45 @@ interface User {
     isActive: boolean;
 }
 
-const UserTable: React.FC<{ initialUsers: User[] }> = ({ initialUsers }) => {
-    const [users, setUsers] = useState<User[]>(initialUsers);
+const modalStyle = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    borderRadius: 1,
+    boxShadow: 24,
+    p: 4,
+};
+
+const UserTable: React.FC<{
+    users: User[];
+    setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+}> = ({ users, setUsers }) => {
     const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({
         type: 'include',
         ids: new Set<number>(),
     });
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [newUserName, setNewUserName] = useState('');
-    const [newUserRole, setNewUserRole] = useState('User');
-    const [newUserActive, setNewUserActive] = useState(true);
 
-    console.log(selectionModel)
+    const [modalOpen, setModalOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
+
+    const [userName, setUserName] = useState('');
+    const [userRole, setUserRole] = useState('User');
+    const [userActive, setUserActive] = useState(true);
+
+    useEffect(() => {
+        if (editingUser) {
+            setUserName(editingUser.name);
+            setUserRole(editingUser.role);
+            setUserActive(editingUser.isActive);
+        } else {
+            setUserName('');
+            setUserRole('User');
+            setUserActive(true);
+        }
+    }, [editingUser]);
 
     const columns: GridColDef<User>[] = [
         { field: 'name', headerName: 'Name', flex: 1 },
@@ -46,9 +72,7 @@ const UserTable: React.FC<{ initialUsers: User[] }> = ({ initialUsers }) => {
             field: 'role',
             headerName: 'Role',
             flex: 1,
-            renderCell: (params) => (
-                <Chip label={params.value} color="primary" size="small" />
-            ),
+            renderCell: (params) => <Chip label={params.value} color="primary" size="small" />,
         },
         {
             field: 'isActive',
@@ -72,41 +96,59 @@ const UserTable: React.FC<{ initialUsers: User[] }> = ({ initialUsers }) => {
                 );
             },
         },
+        {
+            field: 'edit',
+            headerName: 'Edit',
+            sortable: false,
+            filterable: false,
+            width: 70,
+            renderCell: (params: GridRowParams<User>) => (
+                <IconButton
+                    onClick={() => {
+                        setEditingUser(params.row);
+                        setModalOpen(true);
+                    }}
+                    size="small"
+                    aria-label="Edit user"
+                    title="Edit user"
+                >
+                    <EditIcon />
+                </IconButton>
+            ),
+        },
     ];
 
-    const handleSelectionChange = (newSelectionModel: GridRowSelectionModel) => {
+    const handleSelectionChange = (newModel: GridRowSelectionModel) => {
         setSelectionModel({
             type: 'include',
-            ids: new Set<number>(newSelectionModel.ids), // newSelectionModel.ids is an iterable array
+            ids: new Set(newModel.ids),
         });
     };
 
-    const openAddDialog = () => {
-        setNewUserName('');
-        setNewUserRole('User');
-        setNewUserActive(true);
-        setDialogOpen(true);
+    const closeModal = () => {
+        setModalOpen(false);
+        setEditingUser(null);
     };
 
-    const closeAddDialog = () => setDialogOpen(false);
-
-    const addUser = () => {
-        if (!newUserName.trim()) return;
-        const maxId = users.reduce((max, u) => (u.id > max ? u.id : max), 0);
-        const newUser: User = {
-            id: maxId + 1,
-            name: newUserName.trim(),
-            role: newUserRole,
-            isActive: newUserActive,
-        };
-        setUsers([...users, newUser]);
-        setDialogOpen(false);
+    const handleSubmit = () => {
+        if (!userName.trim()) return;
+        if (editingUser) {
+            const updatedUser: User = {
+                ...editingUser,
+                name: userName.trim(),
+                role: userRole,
+                isActive: userActive,
+            };
+            setUsers((prev) =>
+                prev.map((user) => (user.id === updatedUser.id ? updatedUser : user)),
+            );
+        }
+        closeModal();
     };
 
     const deleteSelectedUsers = () => {
-        if (!selectionModel.ids) return;
         setUsers((prevUsers) =>
-            prevUsers.filter((user) => !selectionModel.ids.has(user.id))
+            prevUsers.filter((user) => !selectionModel.ids.has(user.id)),
         );
         setSelectionModel({ type: 'include', ids: new Set() });
     };
@@ -114,13 +156,19 @@ const UserTable: React.FC<{ initialUsers: User[] }> = ({ initialUsers }) => {
     return (
         <>
             <Stack direction="row" spacing={2} mb={1}>
-                <ThemedButton variant="primary" onClick={openAddDialog}>
+                <ThemedButton
+                    variant="primary"
+                    onClick={() => {
+                        setEditingUser(null);
+                        setModalOpen(true);
+                    }}
+                >
                     Add User
                 </ThemedButton>
                 <ThemedButton
                     variant="danger"
                     onClick={deleteSelectedUsers}
-                    // disabled={selectionModel.length === 0}
+                    disabled={selectionModel.ids.size === 0}
                 >
                     Delete Selected
                 </ThemedButton>
@@ -130,29 +178,34 @@ const UserTable: React.FC<{ initialUsers: User[] }> = ({ initialUsers }) => {
                 <DataGrid
                     rows={users}
                     columns={columns}
+                    checkboxSelection
                     rowSelectionModel={selectionModel}
                     onRowSelectionModelChange={handleSelectionChange}
                     disableRowSelectionExcludeModel
-                    checkboxSelectionv
                     getRowId={(row) => row.id}
                 />
             </Box>
 
-            <Dialog open={dialogOpen} onClose={closeAddDialog}>
-                <DialogTitle>Add New User</DialogTitle>
-                <DialogContent>
-                    <Stack spacing={2} mt={1} minWidth={300}>
+            <Modal
+                open={modalOpen}
+                onClose={closeModal}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+            >
+                <Box sx={modalStyle}>
+                    <h2 id="modal-title">{editingUser ? 'Edit User' : 'Add New User'}</h2>
+                    <Stack spacing={2} mt={1}>
                         <TextField
                             label="Name"
-                            value={newUserName}
-                            onChange={(e) => setNewUserName(e.target.value)}
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
                             autoFocus
                             fullWidth
                         />
                         <Select
                             label="Role"
-                            value={newUserRole}
-                            onChange={(e) => setNewUserRole(e.target.value)}
+                            value={userRole}
+                            onChange={(e) => setUserRole(e.target.value)}
                             fullWidth
                         >
                             <MenuItem value="User">User</MenuItem>
@@ -161,26 +214,26 @@ const UserTable: React.FC<{ initialUsers: User[] }> = ({ initialUsers }) => {
                         </Select>
                         <Stack direction="row" alignItems="center" spacing={1}>
                             <Switch
-                                checked={newUserActive}
-                                onChange={(e) => setNewUserActive(e.target.checked)}
+                                checked={userActive}
+                                onChange={(e) => setUserActive(e.target.checked)}
                             />
                             Active
                         </Stack>
+                        <Stack direction="row" spacing={1} justifyContent="flex-end" mt={2}>
+                            <ThemedButton variant="secondary" onClick={closeModal}>
+                                Cancel
+                            </ThemedButton>
+                            <ThemedButton
+                                variant="primary"
+                                onClick={handleSubmit}
+                                disabled={!userName.trim()}
+                            >
+                                Save Changes
+                            </ThemedButton>
+                        </Stack>
                     </Stack>
-                </DialogContent>
-                <DialogActions>
-                    <ThemedButton variant="secondary" onClick={closeAddDialog}>
-                        Cancel
-                    </ThemedButton>
-                    <ThemedButton
-                        variant="primary"
-                        onClick={addUser}
-                        disabled={!newUserName.trim()}
-                    >
-                        Add
-                    </ThemedButton>
-                </DialogActions>
-            </Dialog>
+                </Box>
+            </Modal>
         </>
     );
 };
