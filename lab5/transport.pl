@@ -1,4 +1,3 @@
-% Declare dynamic predicates
 :- dynamic transport/3.
 :- dynamic start/0.
 
@@ -120,20 +119,47 @@ delete_loop :-
 route_query :-
     write('Enter start stop: '), flush_output,
     read_line_to_string(user_input, StartStr),
-    atom_string(Start, StartStr),
+    string_trim(StartStr, TrimmedStart),
+    atom_string(Start, TrimmedStart),
     write('Enter end stop: '), flush_output,
     read_line_to_string(user_input, EndStr),
-    atom_string(End, EndStr),
-    (   reachable(Start, End, Name, Route)
-    ->  format('Direct route found: ~w, route number ~w~n', [Name, Route])
-    ;   write('No direct route without transfers found.'), nl
+    string_trim(EndStr, TrimmedEnd),
+    atom_string(End, TrimmedEnd),
+    find_routes(Start, End).
+
+find_routes(Start, End) :-
+    findall([Name, Route], reachable(Start, End, Name, Route), Routes),
+    (   Routes == []
+    ->  format('No direct route found from ~w to ~w~n', [Start, End])
+    ;   format('Direct routes from ~w to ~w:~n', [Start, End]),
+        print_routes(Routes)
     ).
+
+print_routes([]).
+print_routes([[Name, Route]|Rest]) :-
+    format('  - ~w, route number ~w~n', [Name, Route]),
+    print_routes(Rest).
 
 reachable(Start, End, Name, Route) :-
     transport(Name, Route, Stops),
     member(Start, Stops),
-    member(End, Stops).
+    member(End, Stops),
+    Start \== End.
 
 start :-
     load_db('transport_db.pl'),
     menu('transport_db.pl').
+
+% Helper function to trim strings
+string_trim(String, Trimmed) :-
+    string_chars(String, Chars),
+    trim_chars(Chars, TrimmedChars),
+    string_chars(Trimmed, TrimmedChars).
+
+trim_chars([], []).
+trim_chars([H|T], Result) :-
+    (   H = ' ' ; H = '\t' ; H = '\n' ; H = '\r' ),
+    trim_chars(T, Result).
+trim_chars([H|T], [H|Rest]) :-
+    \+ (H = ' ' ; H = '\t' ; H = '\n' ; H = '\r' ),
+    trim_chars(T, Rest).
