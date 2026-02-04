@@ -24,7 +24,7 @@ int main() {
     sockaddr_in servaddr{};
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(50000); // 0 => ядро само выберет свободный порт
+    servaddr.sin_port = htons(0); // 0 => ядро само выберет свободный порт
 
     // 3. Привязываем сокет к адресу (bind)
     if (bind(sockfd, reinterpret_cast<sockaddr*>(&servaddr), sizeof(servaddr)) < 0) {
