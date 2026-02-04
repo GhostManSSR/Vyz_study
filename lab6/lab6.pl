@@ -1,15 +1,7 @@
-% Лабораторная работа №6
-% Задача I.2: Минимальный элемент двоичного дерева
-% Задача II.2: Достижимые вершины в ориентированном графе
+min_tree(nil, _) :- fail.
+min_tree(tree(nil, nil, nil), _) :- !, fail.
 
-% === ЧАСТЬ I: РАБОТА С ДВОИЧНЫМИ ДЕРЕВЬЯМИ ===
-
-% Предикат для представления бинарного дерева
-% tree(Value, Left, Right) или nil для пустого дерева
-
-% Минимальный элемент в бинарном дереве
-min_tree(nil, _) :- fail. % Пустое дерево не имеет минимального элемента
-min_tree(tree(Value, nil, nil), Value) :- !. % Лист
+min_tree(tree(Value, nil, nil), Value) :- !.
 min_tree(tree(Value, Left, nil), Min) :-
     min_tree(Left, LeftMin),
     Min is min(Value, LeftMin), !.
@@ -22,26 +14,25 @@ min_tree(tree(Value, Left, Right), Min) :-
     Min1 is min(Value, LeftMin),
     Min is min(Min1, RightMin).
 
-% Примеры деревьев для тестирования
-tree1(tree(5, 
-          tree(3, 
-               tree(1, nil, nil), 
-               tree(4, nil, nil)), 
-          tree(8, 
-               tree(6, nil, nil), 
-               tree(9, nil, nil)))).
 
-tree2(tree(10,
-          tree(5,
-               tree(2, nil, nil),
-               tree(7, nil, nil)),
-          tree(15,
-               nil,
-               tree(20, nil, nil)))).
+tree1(tree(1, 
+          tree(2, 
+               tree(3, nil, nil), 
+               tree(-4, nil, nil)), 
+          tree(5, 
+               tree(4, tree(2, nil, nil), nil), 
+               tree(3, nil, tree(7,nil,nil))))).
 
-tree3(tree(1, nil, nil)). % Одно элементное дерево
+tree2(tree(nil, nil, nil)).
 
-% Предикат для красивого вывода дерева
+tree3(tree(5, 
+          tree(7, 
+               tree(3, nil, nil), 
+               tree(1, nil, tree(8,nil,nil))), 
+          tree(2, 
+               tree(-1, nil, nil), 
+               tree(5, nil, tree(4,nil,nil))))).
+
 print_tree(nil, _).
 print_tree(tree(Value, Left, Right), Level) :-
     NewLevel is Level + 4,
@@ -54,7 +45,6 @@ display_tree(Tree) :-
     write('Binary Tree:'), nl,
     print_tree(Tree, 0).
 
-% Тест для минимального элемента
 test_tree_min :-
     nl, write('=== TREE MINIMUM ELEMENT TEST ==='), nl, nl,
     tree1(Tree1),
@@ -83,86 +73,117 @@ test_tree_min :-
     ;   write('Tree is empty~n')
     ).
 
-% === ЧАСТЬ II: РАБОТА С ОРИЕНТИРОВАННЫМИ ГРАФАМИ ===
+% Пример первого графа
+edge1(2, 3).
+edge1(2, 7).
+edge1(2, 4).
+edge1(7, 1).
+edge1(4, 5).
+edge1(5, 1).
+edge1(5, 6).
+edge1(6, 1).
+edge1(1, 2).
 
-% Представление ориентированного графа
-% edge(From, To) - ориентированное ребро
+% Пример второго графа
+edge2(1, 2).
+edge2(1, 5).
+edge2(2, 3).
+edge2(3, 5).
+edge2(6, 5).
+edge2(6, 4).
+edge2(4, 3).
+edge2(7, 4).
+edge2(7, 1).
 
-% Пример ориентированного графа
-edge(a, b).
-edge(a, c).
-edge(b, d).
-edge(b, e).
-edge(c, f).
-edge(d, e).
-edge(e, f).
-edge(f, a). % Цикл для тестирования
+reachable_vertices1(Start, Reachable) :-
+    reachable1(Start, [], ReachableList),
+    delete(ReachableList, Start, ReachableUnsorted),
+    remove_duplicates(ReachableList, Reachable).
 
-% Предикат для нахождения всех достижимых вершин из заданной
-reachable_vertices(Start, Reachable) :-
-    reachable(Start, [], ReachableList),
-    sort(ReachableList, Reachable). % Убираем дубликаты
-
-% Базовый случай: вершина уже посещена
-reachable(Vertex, Visited, []) :-
+reachable1(Vertex, Visited, []) :-
     member(Vertex, Visited), !.
 
-% Рекурсивный случай: находим все достижимые вершины
-reachable(Vertex, Visited, [Vertex|Reachable]) :-
-    findall(Next, edge(Vertex, Next), Neighbors),
-    reachable_list(Neighbors, [Vertex|Visited], Reachable).
+reachable1(Vertex, Visited, [Vertex|Reachable]) :-
+    findall(Next, edge1(Vertex, Next), Neighbors),
+    reachable_list1(Neighbors, [Vertex|Visited], Reachable).
 
-% Обработка списка соседей
-reachable_list([], _, []).
-reachable_list([Neighbor|Rest], Visited, AllReachable) :-
-    reachable(Neighbor, Visited, ReachableFromNeighbor),
-    reachable_list(Rest, Visited, ReachableFromRest),
+reachable_list1([], _, []).
+reachable_list1([Neighbor|Rest], Visited, AllReachable) :-
+    reachable1(Neighbor, Visited, ReachableFromNeighbor),
+    reachable_list1(Rest, Visited, ReachableFromRest),
     append(ReachableFromNeighbor, ReachableFromRest, AllReachable).
 
-% Вывод всех рёбер графа
-display_graph :-
-    write('Directed Graph:'), nl,
-    findall(_, (edge(X, Y), format('  ~w -> ~w~n', [X, Y])), _).
+reachable_vertices2(Start, Reachable) :-
+    reachable2(Start, [], ReachableList),
+    delete(ReachableList, Start, ReachableUnsorted),
+    remove_duplicates(ReachableList, Reachable).
 
-% Получить все вершины графа
-all_vertices(Vertices) :-
-    findall(Vertex, (edge(Vertex, _); edge(_, Vertex)), AllVertices),
-    sort(AllVertices, Vertices).
+reachable2(Vertex, Visited, []) :-
+    member(Vertex, Visited), !.
 
-% Тест для достижимых вершин
-test_graph_reachable :-
-    nl, write('=== REACHABLE VERTICES TEST ==='), nl, nl,
-    display_graph,
+reachable2(Vertex, Visited, [Vertex|Reachable]) :-
+    findall(Next, edge2(Vertex, Next), Neighbors),
+    reachable_list2(Neighbors, [Vertex|Visited], Reachable).
+
+reachable_list2([], _, []).
+reachable_list2([Neighbor|Rest], Visited, AllReachable) :-
+    reachable2(Neighbor, Visited, ReachableFromNeighbor),
+    reachable_list2(Rest, Visited, ReachableFromRest),
+    append(ReachableFromNeighbor, ReachableFromRest, AllReachable).
+
+remove_duplicates(List, Result) :-
+    remove_duplicates_helper(List, [], Result).
+
+remove_duplicates_helper([], _, []).
+remove_duplicates_helper([H|T], Seen, Result) :-
+    member(H, Seen),
+    !,
+    remove_duplicates_helper(T, Seen, Result).
+remove_duplicates_helper([H|T], Seen, [H|Result]) :-
+    remove_duplicates_helper(T, [H|Seen], Result).
+
+test_graphs :-
+    write('Graph 1:'), nl,
+    forall(
+        reachable_vertices1(Start, Reachable),
+        format('From ~w reachable: ~w~n', [Start, Reachable])
+    ),
     nl,
-    write('Reachable vertices from each vertex:'), nl,
-    all_vertices(Vertices),
-    member(Start, Vertices),
-    reachable_vertices(Start, Reachable),
-    format('From vertex ~w reachable: ~w~n', [Start, Reachable]),
-    fail.
-test_graph_reachable.
+    write('Graph 2:'), nl,
+    forall(
+        reachable_vertices2(Start, Reachable2),
+        ormat('From ~w reachable: ~w~n', [Start, Reachable2])
+    ).
 
-% Главный меню для тестирования
-main :-
-    nl,
-    write('Laboratory Work №6'), nl,
-    write('======================'), nl,
-    write('1 - Test tree minimum element'), nl,
-    write('2 - Test graph reachable vertices'), nl,
-    write('3 - All tests'), nl,
-    write('Choose option: '),
-    read(Choice),
-    handle_choice(Choice).
 
-handle_choice(1) :- test_tree_min.
-handle_choice(2) :- test_graph_reachable.
-handle_choice(3) :- test_tree_min, test_graph_reachable.
-handle_choice(_) :- write('Invalid choice').
+all_vertices1(Vertices) :-
+    findall(V, (edge1(V, _); edge1(_, V)), All),
+    sort(All, Vertices).
 
-% Запуск всех тестов
-run_all_tests :-
-    test_tree_min,
-    test_graph_reachable.
+all_vertices2(Vertices) :-
+    findall(V, (edge2(V, _); edge2(_, V)), All),
+    sort(All, Vertices).
+
+test_reachable_for_graph1 :-
+    all_vertices1(Vertices),
+    forall(
+        member(Start, Vertices),
+        (
+            reachable_vertices1(Start, Reachable),
+            format('From ~w reachable vertices: ~w~n', [Start, Reachable])
+        )
+    ).
+
+test_reachable_for_graph2 :-
+    all_vertices2(Vertices),
+    forall(
+        member(Start, Vertices),
+        (
+            reachable_vertices2(Start, Reachable),
+            format('From ~w reachable vertices: ~w~n', [Start, Reachable])
+        )
+    ).
+
 
 
 

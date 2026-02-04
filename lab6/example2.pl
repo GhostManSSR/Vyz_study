@@ -1,6 +1,5 @@
 # :- use_module(library(pce)).
 
-# % --- Граф: ориентированные рёбра ---
 # edge(a, b).
 # edge(a, c).
 # edge(b, d).
@@ -8,7 +7,6 @@
 # edge(d, e).
 # edge(e, f).
 
-# % --- Обход достижимых вершин ---
 # reachable(Start, ReachableSorted) :-
 #     reachable(Start, [], ReachableUnsorted),
 #     sort(ReachableUnsorted, ReachableSorted).
@@ -24,7 +22,6 @@
 #     reachable(H, Visited, NewVisited),
 #     reachable_list(T, NewVisited, Result).
 
-# % --- Рисование графа XPCE ---
 # draw_graph(Vertices) :-
 #     new(Window, picture('Граф')),
 #     send(Window, size, size(400,400)),
@@ -32,7 +29,6 @@
 #     layout_vertices(Vertices, Vertices, Window, 200, 200, 120),
 #     draw_edges(Window, Vertices).
 
-# % Разметить вершины по кругу
 # layout_vertices([], _, _, _, _, _).
 # layout_vertices([V|Vs], AllVs, Window, CX, CY, Radius) :-
 #     length(AllVs, N),
@@ -48,7 +44,6 @@
 #     send(B, name, V),                                  % имя для get
 #     layout_vertices(Vs, AllVs, Window, CX, CY, Radius).
 
-# % Нарисовать линии-стрелки для рёбер (только между достижимыми вершинами)
 # draw_edges(Window, Vertices) :-
 #     forall((edge(From, To), member(From, Vertices), member(To, Vertices)),
 #         ( get(Window, member, From, FObj),
@@ -60,16 +55,14 @@
 #         )
 #     ).
 
-# % --- Запуск всего ---
-# run_graph(Start) :-
 #     reachable(Start, Vertices),
 #     writeln('Достижимые вершины из начальной:'),
 #     writeln(Vertices),
 #     draw_graph(Vertices).
 
-#?- run_graph(a).
+# ?- run_graph(a).
 
-% Пример графа (ориентированный невзвешенный)
+# % Пример графа (ориентированный невзвешенный)
 edge(a, b).
 edge(a, c).
 edge(b, d).

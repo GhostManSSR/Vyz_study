@@ -10,14 +10,12 @@ load_db(File) :-
         fail
     ).
 
-% Save database to file
 save_db(File) :-
     tell(File),
     listing(transport/3),
     told,
     writeln('Database saved successfully').
 
-% Main menu
 menu(File) :-
     repeat,
     nl, write('--------------------------------'), nl,
@@ -68,28 +66,38 @@ add_entries :-
     write('Adding entries. Type "stop" for transport name to finish.'), nl,
     add_loop.
 
+valid_route_number(Route) :-
+    integer(Route),
+    Route > 0.
+
 add_loop :-
     write('Transport name (or stop): '), flush_output,
     read_line_to_string(user_input, NameStr),
-    atom_string(Name, NameStr),
+    string_trim(NameStr, TrimmedNameStr),
+    atom_string(Name, TrimmedNameStr),
     (   Name == stop
     ->  writeln('Finished adding entries.')
     ;   write('Route number: '), flush_output,
         read_line_to_string(user_input, RouteStr),
-        (   atom_number(RouteStr, Route)
+        (   atom_number(RouteStr, Route),
+            valid_route_number(Route)
         ->  true
-        ;   writeln('Invalid route number. Please enter a number.'),
+        ;   writeln('Invalid route number. Please enter a natural number.'),
             add_loop
         ),
-        write('List of stops (format: [stop1, stop2, ...]): '), flush_output,
+        write('List of stops (format: [stop1, stop2, ...] or "stop" to finish): '), flush_output,
         read_line_to_string(user_input, StopsStr),
-        (   catch(term_string(Stops, StopsStr), _, fail),
-            is_list(Stops)
-        ->  assertz(transport(Name, Route, Stops)),
-            format('Added: ~w, route ~w, stops: ~w~n', [Name, Route, Stops]),
-            add_loop
-        ;   writeln('Invalid stops format. Please use format: [stop1, stop2, ...]'),
-            add_loop
+        string_trim(StopsStr, TrimmedStopsStr),
+        (   TrimmedStopsStr == "stop"
+        ->  writeln('Finished adding entries.')  % Завершаем цикл, не вызывая add_loop повторно
+        ;   (   catch(term_string(Stops, TrimmedStopsStr), _, fail),
+                is_list(Stops)
+            ->  assertz(transport(Name, Route, Stops)),
+                format('Added: ~w, route ~w, stops: ~w~n', [Name, Route, Stops]),
+                add_loop
+            ;   writeln('Invalid stops format. Please use format: [stop1, stop2, ...]'),
+                add_loop
+            )
         )
     ).
 
@@ -100,7 +108,8 @@ delete_entries :-
 delete_loop :-
     write('Transport name (or stop): '), flush_output,
     read_line_to_string(user_input, NameStr),
-    atom_string(Name, NameStr),
+    string_trim(NameStr, TrimmedNameStr),
+    atom_string(Name, TrimmedNameStr),
     (   Name == stop
     ->  writeln('Finished deleting entries.')
     ;   write('Route number: '), flush_output,
@@ -131,7 +140,7 @@ find_routes(Start, End) :-
     findall([Name, Route], reachable(Start, End, Name, Route), Routes),
     (   Routes == []
     ->  format('No direct route found from ~w to ~w~n', [Start, End])
-    ;   format('Direct routes from ~w to ~w:~n', [Start, End]),
+    ;   format('Direct routes from ~w to ~w with max 3 stops between:~n', [Start, End]),
         print_routes(Routes)
     ).
 
@@ -142,24 +151,26 @@ print_routes([[Name, Route]|Rest]) :-
 
 reachable(Start, End, Name, Route) :-
     transport(Name, Route, Stops),
-    member(Start, Stops),
-    member(End, Stops),
-    Start \== End.
+    nth0(StartIndex, Stops, Start),
+    nth0(EndIndex, Stops, End),
+    Start \== End,
+    Diff is abs(StartIndex - EndIndex),
+    Diff =< 3.
+
+string_trim(In, Out) :-
+    string_chars(In, Chars),
+    trim_leading(Chars, TrimmedFront),
+    reverse(TrimmedFront, RevChars),
+    trim_leading(RevChars, RevTrimmedBack),
+    reverse(RevTrimmedBack, Trimmed),
+    string_chars(Out, Trimmed).
+
+trim_leading([], []).
+trim_leading([H|T], Rest) :-
+    char_type(H, space), !,
+    trim_leading(T, Rest).
+trim_leading(L, L).
 
 start :-
     load_db('transport_db.pl'),
     menu('transport_db.pl').
-
-% Helper function to trim strings
-string_trim(String, Trimmed) :-
-    string_chars(String, Chars),
-    trim_chars(Chars, TrimmedChars),
-    string_chars(Trimmed, TrimmedChars).
-
-trim_chars([], []).
-trim_chars([H|T], Result) :-
-    (   H = ' ' ; H = '\t' ; H = '\n' ; H = '\r' ),
-    trim_chars(T, Result).
-trim_chars([H|T], [H|Rest]) :-
-    \+ (H = ' ' ; H = '\t' ; H = '\n' ; H = '\r' ),
-    trim_chars(T, Rest).
