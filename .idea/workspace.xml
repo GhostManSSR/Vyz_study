@@ -7,13 +7,11 @@
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fded3199-7f4a-4f3f-88cf-c0b956aadd98" name="Changes" comment="update">
-      <change afterPath="$PROJECT_DIR$/lab_2/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_2/client.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_2/tester.cpp" afterDir="false" />
+    <list default="true" id="fded3199-7f4a-4f3f-88cf-c0b956aadd98" name="Changes" comment="реализация 2 лабы">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_1/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/lab_1/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_1/udp_server.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lab_1/udp_server.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/lab_2/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_2/server" beforeDir="false" afterPath="$PROJECT_DIR$/lab_2/server" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_2/tester" beforeDir="false" afterPath="$PROJECT_DIR$/lab_2/tester" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,18 +24,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "GhostManSSR"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;GhostManSSR&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/GhostManSSR/Vyz_study.git",
-    "accountId": "bbd899f5-0af8-408b-b857-d1158d00a76f"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/GhostManSSR/Vyz_study.git&quot;,
+    &quot;accountId&quot;: &quot;bbd899f5-0af8-408b-b857-d1158d00a76f&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/lab_1/udp_client.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/lab_1/udp_server.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -53,25 +51,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Makefile Target.server.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "seti-programming",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Makefile Target.server.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;seti-programming&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\My self\Vyz\Vyz_study\lab_1" />
@@ -99,7 +97,8 @@
       <updated>1770225786676</updated>
       <workItem from="1770225788516" duration="865000" />
       <workItem from="1770226991798" duration="71000" />
-      <workItem from="1770260385559" duration="3688000" />
+      <workItem from="1770260385559" duration="4004000" />
+      <workItem from="1770264430776" duration="652000" />
     </task>
     <task id="LOCAL-00001" summary="номер свободного порта для lab_1">
       <option name="closed" value="true" />
@@ -117,7 +116,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770261898234</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="реализация 2 лабы">
+      <option name="closed" value="true" />
+      <created>1770264402943</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1770264402943</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -126,6 +133,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="номер свободного порта для lab_1" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="реализация 2 лабы" />
+    <option name="LAST_COMMIT_MESSAGE" value="реализация 2 лабы" />
   </component>
 </project>

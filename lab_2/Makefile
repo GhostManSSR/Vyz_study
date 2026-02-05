@@ -18,8 +18,3 @@ clean:
 
 .PHONY: all clean
 
-# Тестирование:
-# make
-# ./server &
-# ./tester 127.0.0.1 <порт> 3 &
-# ./tester 127.0.0.1 <порт> 2 &
