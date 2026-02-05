@@ -18,22 +18,15 @@ run_server: $(SERVER)
 	./$(SERVER)
 
 run_client: $(CLIENT)
-	./$(CLIENT) 127.0.0.1 50000 2 5
+	./$(CLIENT) 127.0.0.1 58331 2 5
 
 test:
 	./$(SERVER) &
 	@echo "Server started. Starting clients..."
 	sleep 1
-	./$(CLIENT) 127.0.0.1 50000 2 3 &
-	./$(CLIENT) 127.0.0.1 50000 3 2 &
+	./$(CLIENT) 127.0.0.1 58331 2 3 &
+	./$(CLIENT) 127.0.0.1 58331 3 2 &
 	wait
 
 clean:
 	rm -f $(SERVER) $(CLIENT) *.o
-
-help:
-	@echo "make          - собрать"
-	@echo "make run_server - запустить сервер"
-	@echo "make run_client - запустить клиент (127.0.0.1 50000 2 5)"
-	@echo "make test     - тест с несколькими клиентами"
-	@echo "make clean    - очистить"
