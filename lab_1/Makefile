@@ -18,14 +18,14 @@ run_server: $(SERVER)
 	./$(SERVER)
 
 run_client: $(CLIENT)
-	./$(CLIENT) 127.0.0.1 58331 2 5
+	./$(CLIENT) 127.0.0.1 50139 2 5
 
 test:
 	./$(SERVER) &
 	@echo "Server started. Starting clients..."
 	sleep 1
-	./$(CLIENT) 127.0.0.1 58331 2 3 &
-	./$(CLIENT) 127.0.0.1 58331 3 2 &
+	./$(CLIENT) 127.0.0.1 50139 2 3 &
+	./$(CLIENT) 127.0.0.1 50139 3 2 &
 	wait
 
 clean:
