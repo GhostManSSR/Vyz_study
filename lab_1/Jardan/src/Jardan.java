@@ -1,23 +1,24 @@
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Jardan {
+
     private Fraction[][] matrix;
     private int m, n;
-    private ArrayList<Integer> activeRows;
-    private static final double EPS = 1e-10;
 
     public Jardan(String filename) throws IOException {
-        readMatrix(filename);
-        activeRows = new ArrayList<>();
-        for (int i = 0; i < m; i++) activeRows.add(i);
-        System.out.println("Загружена система: " + m + " уравнений, " + n + " неизвестных");
-    }
 
-    private void readMatrix(String filename) throws IOException {
-        Scanner sc = new Scanner(new File(filename));
+        File file = new File(filename);
+        if (!file.exists())
+            throw new IOException("Файл не найден");
+
+        Scanner sc = new Scanner(file);
+
         m = sc.nextInt();
         n = sc.nextInt();
+
         matrix = new Fraction[m][n + 1];
 
         for (int i = 0; i < m; i++) {
@@ -26,251 +27,200 @@ public class Jardan {
                 matrix[i][j] = new Fraction(val);
             }
         }
+
         sc.close();
+
+        System.out.println("Загружено: " + m + " уравнений, " + n + " неизвестных");
+    }
+
+    private void printOperation(String op) {
+        System.out.println(">>> " + op);
     }
 
     public void solve() {
+
         printMatrix("Исходная матрица");
 
-        // Прямой ход Гаусса с вычеркиванием нулевых строк
-        for (int col = 0; col < Math.min(m, n); col++) {
-            if (pivotAndCheckZeroRow(col)) continue;
-            eliminateForward(col);
-            printMatrix("После исключения столбца " + col);
-            checkAndRemoveZeroRows();
+        int pivotRow = 0;
+        int[] pivotColumnForRow = new int[m];
+        Arrays.fill(pivotColumnForRow, -1);
+
+        // ===== ПРЯМОЙ ХОД =====
+        for (int col = 0; col < n && pivotRow < m; col++) {
+
+            int bestRow = -1;
+            Fraction maxAbs = null;
+
+            for (int r = pivotRow; r < m; r++) {
+
+                if (!matrix[r][col].isZero()) {
+
+                    Fraction currentAbs = matrix[r][col].abs();
+
+                    if (maxAbs == null || currentAbs.compareTo(maxAbs) > 0) {
+                        maxAbs = currentAbs;
+                        bestRow = r;
+                    }
+                }
+            }
+
+            if (bestRow == -1) {
+                System.out.println("Столбец x" + (col + 1) + " — нулевой");
+                continue;
+            }
+
+            if (bestRow != pivotRow) {
+                swapRows(bestRow, pivotRow);
+                printMatrix("Перестановка строк " + (bestRow + 1) + "<->" + (pivotRow + 1));
+            }
+
+            Fraction diag = matrix[pivotRow][col];
+
+            printOperation("R" + (pivotRow + 1) +
+                    " = R" + (pivotRow + 1) +
+                    " / (" + diag + ")");
+
+            for (int j = col; j <= n; j++) {
+                matrix[pivotRow][j] = matrix[pivotRow][j].divide(diag);
+            }
+
+            printMatrix("После нормализации строки " + (pivotRow + 1));
+
+//            printMatrix("Нормализация строки " + (pivotRow + 1));
+
+            for (int r = pivotRow + 1; r < m; r++) {
+                if (!matrix[r][col].isZero()) {
+
+                    Fraction factor = matrix[r][col];
+
+                    printOperation("R" + (r + 1) +
+                            " = R" + (r + 1) +
+                            " - (" + factor + ") * R" + (pivotRow + 1));
+
+                    for (int j = col; j <= n; j++) {
+                        matrix[r][j] =
+                                matrix[r][j].subtract(
+                                        factor.multiply(matrix[pivotRow][j]));
+                    }
+                }
+            }
+
+            printMatrix("После исключения в столбце x " + (col + 1));
+
+//            printMatrix("Исключение в столбце x" + (col + 1));
+
+            pivotColumnForRow[pivotRow] = col;
+            pivotRow++;
         }
 
-        // Обратный ход Жордана
-        for (int col = Math.min(m, n) - 1; col >= 0; col--) {
-            if (!hasNonZeroPivot(col)) continue;
-            normalizeRow(col);
-            eliminateBackward(col);
-            printMatrix("После Жордана столбец " + col);
+        int rank = pivotRow;
+
+        // ===== ОБРАТНЫЙ ХОД =====
+        for (int i = rank - 1; i >= 0; i--) {
+
+            int col = pivotColumnForRow[i];
+
+            for (int r = 0; r < i; r++) {
+                if (!matrix[r][col].isZero()) {
+
+                    Fraction factor = matrix[r][col];
+
+                    printOperation("R" + (r + 1) +
+                            " = R" + (r + 1) +
+                            " - (" + factor + ") * R" + (i + 1));
+
+                    for (int j = col; j <= n; j++) {
+                        matrix[r][j] =
+                                matrix[r][j].subtract(
+                                        factor.multiply(matrix[i][j]));
+                    }
+                }
+            }
+
+            printMatrix("После обратного исключения для x " + (col + 1));
+
+//            printMatrix("Обратный ход для x" + (col + 1));
         }
 
         printMatrix("ИТОГОВАЯ МАТРИЦА");
-        analyzeSolution();
+
+        analyzeSolution(rank, pivotColumnForRow);
     }
 
-    private boolean pivotAndCheckZeroRow(int col) {
-        int pivotRow = findPivotRow(col);
-        if (pivotRow == -1) {
-            System.out.println("❌ Нулевой столбец " + col + " — переходим к следующему");
-            return true;
-        }
-
-        moveRowToPosition(pivotRow, col);
-        printMatrix("После перестановки столбца " + col);
-
-        if (matrix[col][col].isNearZero(EPS)) {
-            System.out.println("❌ Вычеркнута нулевая строка " + col);
-            activeRows.remove(Integer.valueOf(col));
-            return true;
-        }
-        return false;
-    }
-
-    private int findPivotRow(int col) {
-        int maxRow = -1;
-        Fraction maxVal = new Fraction(0);
-
-        for (int idx : activeRows) {
-            if (idx < col) continue;
-            Fraction absVal = matrix[idx][col].abs();
-            if (absVal.compareTo(maxVal) > 0) {
-                maxVal = absVal;
-                maxRow = idx;
-            }
-        }
-        return maxRow;
-    }
-
-    private void moveRowToPosition(int fromRow, int toRow) {
-        if (fromRow != toRow) {
-            System.out.println("🔄 Перестановка строк: " + toRow + " <-> " + fromRow);
-            Fraction[] temp = matrix[toRow];
-            matrix[toRow] = matrix[fromRow];
-            matrix[fromRow] = temp;
-        }
-    }
-
-    private void checkAndRemoveZeroRows() {
-        ArrayList<Integer> newActiveRows = new ArrayList<>();
-        for (int idx : activeRows) {
-            boolean isZeroRow = true;
-            for (int j = 0; j < n; j++) {
-                if (!matrix[idx][j].isNearZero(EPS)) {
-                    isZeroRow = false;
-                    break;
-                }
-            }
-            if (!isZeroRow || !matrix[idx][n].isNearZero(EPS)) {
-                newActiveRows.add(idx);
-            } else {
-                System.out.println("✂️ ВЫЧЕРКНУТА нулевая строка " + (idx + 1));
-            }
-        }
-        activeRows = newActiveRows;
-        System.out.println("Осталось активных строк: " + activeRows.size());
-    }
-
-    private boolean hasNonZeroPivot(int col) {
-        return activeRows.contains(col) && !matrix[col][col].isNearZero(EPS);
-    }
-
-    private void eliminateForward(int col) {
-        for (int rowIdx : activeRows) {
-            if (rowIdx <= col) continue;
-            Fraction factor = matrix[rowIdx][col].divide(matrix[col][col]);
-            for (int j = col; j <= n; j++) {
-                matrix[rowIdx][j] = matrix[rowIdx][j].subtract(
-                        factor.multiply(matrix[col][j]));
-            }
-        }
-    }
-
-    private void normalizeRow(int col) {
-        Fraction diag = matrix[col][col];
-        for (int j = col; j <= n; j++) {
-            matrix[col][j] = matrix[col][j].divide(diag);
-        }
-    }
-
-    private void eliminateBackward(int col) {
-        for (int rowIdx : activeRows) {
-            if (rowIdx >= col) continue;
-            Fraction factor = matrix[rowIdx][col];
-            for (int j = col; j <= n; j++) {
-                matrix[rowIdx][j] = matrix[rowIdx][j].subtract(
-                        factor.multiply(matrix[col][j]));
-            }
-        }
-    }
-
-    private boolean isNearZero(Fraction f) {
-        return Math.abs(f.toDouble()) < EPS;
+    private void swapRows(int r1, int r2) {
+        Fraction[] temp = matrix[r1];
+        matrix[r1] = matrix[r2];
+        matrix[r2] = temp;
     }
 
     private void printMatrix(String label) {
-        System.out.println("\n=== " + label + " (активных строк: " + activeRows.size() + ") ===");
-        System.out.printf("%-4s", "№");
-        for (int j = 0; j < n; j++) {
-            System.out.printf("| x%-2d", j + 1);
-        }
-        System.out.printf("|  b%n");
-        System.out.println("----+------------------------------------------------");
 
-        int rowNum = 1;
-        for (int idx : activeRows) {
-            System.out.printf("%-4d", rowNum++);
+        System.out.println("\n=== " + label + " ===");
+
+        for (int i = 0; i < m; i++) {
             for (int j = 0; j <= n; j++) {
-                System.out.printf("| %12s", matrix[idx][j].toMixedString());
+                System.out.printf("%12s ", matrix[i][j]);
             }
-            System.out.println("|");
+            System.out.println();
         }
-        System.out.println();
     }
 
-
-    private void analyzeSolution() {
-        int rank = activeRows.size();
-        boolean consistent = true;
-
-        // Проверка совместности
-        for (int idx : activeRows) {
-            boolean zeroRow = true;
-            for (int j = 0; j < n; j++) {
-                if (!isNearZero(matrix[idx][j])) {
-                    zeroRow = false;
-                    break;
-                }
-            }
-            if (zeroRow && !isNearZero(matrix[idx][n])) {
-                consistent = false;
-            }
-        }
+    private void analyzeSolution(int rank, int[] pivotColumnForRow) {
 
         System.out.println("\n=== АНАЛИЗ РЕШЕНИЯ ===");
-        System.out.println("Ранг матрицы: " + rank + ", Неизвестных: " + n);
+        System.out.println("Ранг: " + rank);
 
-        if (!consistent) {
-            System.out.println("❌ СИСТЕМА НЕ ИМЕЕТ РЕШЕНИЙ");
-            return;
+        for (int i = rank; i < m; i++) {
+
+            boolean zero = true;
+
+            for (int j = 0; j < n; j++)
+                if (!matrix[i][j].isZero())
+                    zero = false;
+
+            if (zero && !matrix[i][n].isZero()) {
+                System.out.println("Система несовместна.");
+                return;
+            }
         }
 
         if (rank == n) {
-            System.out.println("✅ ЕДИНСТВЕННОЕ РЕШЕНИЕ:");
-            for (int col = 0; col < n; col++) {
-                if (activeRows.contains(col)) {
-                    System.out.printf("x%d = %15s%n", col + 1, matrix[col][n].toMixedString());
-                }
+
+            System.out.println("Единственное решение:");
+
+            for (int i = 0; i < n; i++) {
+                System.out.println("x" + (i + 1) + " = " + matrix[i][n]);
             }
+
         } else {
-            System.out.println("♾️ БЕСКОНЕЧНО МНОГО РЕШЕНИЙ");
-            System.out.println("Общее решение (свободные переменные x" + (rank+1) + ", ..., x" + n + "):");
 
-            for (int i = 0; i < rank && i < activeRows.size(); i++) {
-                int pivotRow = activeRows.get(i);
-                if (pivotRow != i) continue;
+            System.out.println("Бесконечно много решений.");
 
-                System.out.printf("x%d = ", i + 1);
-                boolean firstTerm = true;
+            boolean[] isPivot = new boolean[n];
 
-                // ✅ ИСПРАВЛЕННАЯ ЛОГИКА ЗНАКОВ
-                for (int freeVar = rank; freeVar < n; freeVar++) {
-                    if (!isNearZero(matrix[pivotRow][freeVar])) {
-                        // 1. Берем ОРИГИНАЛЬНЫЙ коэффициент из матрицы
-                        Fraction origCoef = matrix[pivotRow][freeVar];
-                        // 2. Для x_i = b - Σ a_ij*x_j нужен -a_ij
-                        Fraction displayCoef = origCoef.negate();
+            for (int i = 0; i < rank; i++)
+                isPivot[pivotColumnForRow[i]] = true;
 
-                        // 3. Определяем знак для вывода
-                        boolean coefPositive = displayCoef.getNumerator() > 0;
-                        String coefStr = displayCoef.abs().toMixedString();
+            for (int i = 0; i < rank; i++) {
 
-                        if (firstTerm) {
-                            // Первый член: если отрицательный — ставим минус
-                            if (!coefPositive) {
-                                System.out.print("-");
-                            }
-                        } else {
-                            // Последующие члены
-                            if (coefPositive) {
-                                System.out.print(" - ");
-                            } else {
-                                System.out.print(" + ");
-                            }
-                        }
+                int col = pivotColumnForRow[i];
 
-                        // Коэффициент (1 и -1 не печатаем)
-                        if (!coefStr.equals("1")) {
-                            System.out.print(coefStr + "·");
-                        }
-                        System.out.print("x" + (freeVar + 1));
-                        firstTerm = false;
+                System.out.print("x" + (col + 1) + " = " + matrix[i][n]);
+
+                for (int j = 0; j < n; j++) {
+                    if (!isPivot[j] && !matrix[i][j].isZero()) {
+                        System.out.print(" - (" + matrix[i][j] + ")x" + (j + 1));
                     }
                 }
 
-                // ✅ Свободный член (ПОЛОЖИТЕЛЬНЫЙ!)
-                if (!isNearZero(matrix[pivotRow][n])) {
-                    if (!firstTerm) {
-                        System.out.print(" + ");
-                    }
-                    System.out.print(matrix[pivotRow][n].toMixedString());
-                }
-
-                if (firstTerm) {
-                    System.out.print("0");
-                }
                 System.out.println();
             }
 
-            System.out.print("где ");
-            for (int i = rank; i < n; i++) {
-                if (i > rank) System.out.print(", ");
-                System.out.print("x" + (i + 1));
-            }
-            System.out.println(" — произвольные параметры.");
+            System.out.print("Свободные переменные: ");
+            for (int i = 0; i < n; i++)
+                if (!isPivot[i])
+                    System.out.print("x" + (i + 1) + " ");
+            System.out.println();
         }
     }
 
