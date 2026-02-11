@@ -113,8 +113,9 @@ public class Jardan {
             }
 
             if (bestRow != pivotRow) {
+                printOperation("R" + (pivotRow + 1) + " <-> R" + (bestRow + 1));
                 swapRows(bestRow, pivotRow);
-                printMatrix("Перестановка строк " + (bestRow + 1) + "<->" + (pivotRow + 1));
+                printMatrix("После перестановки строк");
             }
 
             Fraction diag = matrix[pivotRow][col];
