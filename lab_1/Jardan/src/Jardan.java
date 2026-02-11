@@ -11,24 +11,67 @@ public class Jardan {
     public Jardan(String filename) throws IOException {
 
         File file = new File(filename);
+
         if (!file.exists())
-            throw new IOException("Файл не найден");
+            throw new IOException("ОШИБКА: Файл не найден");
+
+        if (!file.canRead())
+            throw new IOException("ОШИБКА: Нет прав на чтение файла");
 
         Scanner sc = new Scanner(file);
 
-        m = sc.nextInt();
-        n = sc.nextInt();
+        try {
 
-        matrix = new Fraction[m][n + 1];
+            // ===== Проверка размеров =====
+            if (!sc.hasNextInt())
+                throw new IOException("ОШИБКА: В первой строке должно быть число m");
 
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j <= n; j++) {
-                double val = sc.nextDouble();
-                matrix[i][j] = new Fraction(val);
+            m = sc.nextInt();
+
+            if (!sc.hasNextInt())
+                throw new IOException("ОШИБКА: В первой строке должно быть число n");
+
+            n = sc.nextInt();
+
+            if (m <= 0 || n <= 0)
+                throw new IOException("ОШИБКА: m и n должны быть положительными");
+
+            matrix = new Fraction[m][n + 1];
+
+            // ===== Чтение матрицы =====
+            for (int i = 0; i < m; i++) {
+
+                for (int j = 0; j <= n; j++) {
+
+                    if (!sc.hasNext())
+                        throw new IOException(
+                                "ОШИБКА: Недостаточно данных. " +
+                                        "Строка " + (i + 1) +
+                                        ", столбец " + (j + 1));
+
+                    if (!sc.hasNextDouble())
+                        throw new IOException(
+                                "ОШИБКА: Некорректное число в строке " +
+                                        (i + 1) + ", столбец " + (j + 1));
+
+                    double val = sc.nextDouble();
+
+                    if (Double.isNaN(val) || Double.isInfinite(val))
+                        throw new IOException(
+                                "ОШИБКА: Некорректное значение (NaN или Infinity) " +
+                                        "в строке " + (i + 1));
+
+                    matrix[i][j] = new Fraction(val);
+                }
             }
-        }
 
-        sc.close();
+            // ===== Проверка лишних данных =====
+            if (sc.hasNext())
+                throw new IOException("ОШИБКА: В файле есть лишние данные после матрицы");
+
+        } finally {
+            sc.close();
+        }
 
         System.out.println("Загружено: " + m + " уравнений, " + n + " неизвестных");
     }
