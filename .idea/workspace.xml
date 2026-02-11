@@ -7,9 +7,7 @@
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea285dd0-6449-4bea-bb5b-1fdd1b11fe46" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lab_2/vectorAdd.cu" afterDir="false" />
-    </list>
+    <list default="true" id="ea285dd0-6449-4bea-bb5b-1fdd1b11fe46" name="Changes" comment="реализация 2 лабораторной" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -99,11 +97,24 @@
       <workItem from="1770779838317" duration="162000" />
       <workItem from="1770781816073" duration="121000" />
       <workItem from="1770782391851" duration="115000" />
-      <workItem from="1770782549121" duration="210000" />
+      <workItem from="1770782549121" duration="521000" />
     </task>
+    <task id="LOCAL-00001" summary="реализация 2 лабораторной">
+      <option name="closed" value="true" />
+      <created>1770783044640</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1770783044640</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="реализация 2 лабораторной" />
+    <option name="LAST_COMMIT_MESSAGE" value="реализация 2 лабораторной" />
   </component>
 </project>
