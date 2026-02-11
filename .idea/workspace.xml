@@ -8,10 +8,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fded3199-7f4a-4f3f-88cf-c0b956aadd98" name="Changes" comment="реализация 2 лабы">
+      <change afterPath="$PROJECT_DIR$/lab_3/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lab_3/client.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lab_3/server.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_2/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/lab_2/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_2/server" beforeDir="false" afterPath="$PROJECT_DIR$/lab_2/server" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_2/tester" beforeDir="false" afterPath="$PROJECT_DIR$/lab_2/tester" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,6 +99,7 @@
       <workItem from="1770226991798" duration="71000" />
       <workItem from="1770260385559" duration="4004000" />
       <workItem from="1770264430776" duration="652000" />
+      <workItem from="1770776461921" duration="346000" />
     </task>
     <task id="LOCAL-00001" summary="номер свободного порта для lab_1">
       <option name="closed" value="true" />
