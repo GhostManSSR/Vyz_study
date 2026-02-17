@@ -52,7 +52,7 @@ public class Jardan {
             for (int r = pivotRow; r < m; r++) {
                 if (!matrix[r][col].isZero()) {
                     Fraction currentAbs = matrix[r][col].abs();
-                    if (maxAbs == null || currentAbs.compareTo(maxAbs) >= 0) {
+                    if (maxAbs == null || currentAbs.compareTo(maxAbs) > 0) {
                         maxAbs = currentAbs;
                         bestRow = r;
                     }
@@ -113,6 +113,94 @@ public class Jardan {
         }
     }
 
+    private void findBasicSolutions(int rank, int[] pivotColumnForRow) {
+
+        System.out.println("\n==============================");
+        System.out.println("ПОИСК БАЗИСНЫХ РЕШЕНИЙ ПО ШАГАМ");
+        System.out.println("==============================");
+
+        boolean[] isPivot = new boolean[n];
+
+        System.out.println("\nШАГ 1: Определяем базисные переменные");
+        for (int i = 0; i < rank; i++) {
+            if (pivotColumnForRow[i] >= 0) {
+                isPivot[pivotColumnForRow[i]] = true;
+                System.out.println("Строка " + (i + 1) +
+                        " → ведущий элемент в столбце x" +
+                        (pivotColumnForRow[i] + 1));
+            }
+        }
+
+        System.out.print("Базисные переменные: ");
+        for (int i = 0; i < n; i++)
+            if (isPivot[i]) System.out.print("x" + (i + 1) + " ");
+        System.out.println();
+
+        System.out.print("Свободные переменные: ");
+        for (int i = 0; i < n; i++)
+            if (!isPivot[i]) System.out.print("x" + (i + 1) + " ");
+        System.out.println();
+
+
+        for (int freeIndex = 0; freeIndex < n; freeIndex++) {
+
+            if (isPivot[freeIndex]) continue;
+
+            System.out.println("\n----------------------------------");
+            System.out.println("Рассматриваем свободную переменную x" +
+                    (freeIndex + 1));
+            System.out.println("----------------------------------");
+
+            Fraction[] solution = new Fraction[n];
+
+            for (int i = 0; i < n; i++)
+                solution[i] = new Fraction(0);
+
+            System.out.println("ШАГ 2: Присваиваем свободной переменной x" +
+                    (freeIndex + 1) + " = 1");
+            solution[freeIndex] = new Fraction(1);
+
+            System.out.println("Остальные свободные = 0");
+
+            System.out.println("\nШАГ 3: Вычисляем базисные переменные");
+
+            for (int i = 0; i < rank; i++) {
+
+                int pivotCol = pivotColumnForRow[i];
+                Fraction value = matrix[i][n];
+
+                System.out.println("\nИз строки " + (i + 1) + ":");
+                System.out.print("x" + (pivotCol + 1) + " = "
+                        + matrix[i][n]);
+
+                for (int j = 0; j < n; j++) {
+                    if (!isPivot[j] && !matrix[i][j].isZero()) {
+
+                        System.out.print(" - (" +
+                                matrix[i][j] + " * " +
+                                solution[j] + ")");
+
+                        value = value.subtract(
+                                matrix[i][j].multiply(solution[j])
+                        );
+                    }
+                }
+
+                solution[pivotCol] = value;
+
+                System.out.println();
+                System.out.println("x" + (pivotCol + 1) +
+                        " = " + value);
+            }
+
+            System.out.println("\nБАЗИСНОЕ РЕШЕНИЕ:");
+            for (int i = 0; i < n; i++) {
+                System.out.println("x" + (i + 1) +
+                        " = " + solution[i]);
+            }
+        }
+    }
+
     private void analyzeSolution(int rank, int[] pivotColumnForRow) {
         System.out.println("\n=== АНАЛИЗ РЕШЕНИЯ (МЕТОД ПРЯМОУГОЛЬНИКА) ===");
         System.out.println("Ранг матрицы: " + rank);
@@ -126,7 +214,7 @@ public class Jardan {
                 }
             }
             if (zeroRow && !matrix[i][n].isZero()) {
-                System.out.println("СИСТЕМА НЕСОВМЕСТИМА (0 = " + matrix[i][n] + ")");
+                System.out.println("СИСТЕМА НЕСОВМЕСТНА коэффициенты при всех неизвестных равны нулю, а свободный член не равен нулю (0 = " + matrix[i][n] + ")");
                 return;
             }
         }
@@ -137,34 +225,35 @@ public class Jardan {
                 System.out.println("x" + (i + 1) + " = " + matrix[i][n]);
             }
         } else {
-            System.out.println("БЕСКОНЕЧНО МНОГО РЕШЕНИЙ");
-            boolean[] isPivot = new boolean[n];
-            for (int i = 0; i < rank; i++) {
-                isPivot[pivotColumnForRow[i]] = true;
-            }
-
-            System.out.print("БАЗИСНЫЕ ПЕРЕМЕННЫЕ: ");
-            for (int i = 0; i < n; i++) {
-                if (isPivot[i]) System.out.print("x" + (i + 1) + " ");
-            }
-            System.out.println();
-
-            System.out.print("СВОБОДНЫЕ ПЕРЕМЕННЫЕ: ");
-            for (int i = 0; i < n; i++) {
-                if (!isPivot[i]) System.out.print("x" + (i + 1) + " ");
-            }
-            System.out.println();
-
-            for (int i = 0; i < rank; i++) {
-                int col = pivotColumnForRow[i];
-                System.out.print("x" + (col + 1) + " = " + matrix[i][n]);
-                for (int j = 0; j < n; j++) {
-                    if (!isPivot[j] && !matrix[i][j].isZero()) {
-                        System.out.print(" - " + matrix[i][j] + "*x" + (j + 1));
-                    }
-                }
-                System.out.println();
-            }
+            findBasicSolutions(rank, pivotColumnForRow);
+//            System.out.println("БЕСКОНЕЧНО МНОГО РЕШЕНИЙ");
+//            boolean[] isPivot = new boolean[n];
+//            for (int i = 0; i < rank; i++) {
+//                isPivot[pivotColumnForRow[i]] = true;
+//            }
+//
+//            System.out.print("БАЗИСНЫЕ ПЕРЕМЕННЫЕ: ");
+//            for (int i = 0; i < n; i++) {
+//                if (isPivot[i]) System.out.print("x" + (i + 1) + " ");
+//            }
+//            System.out.println();
+//
+//            System.out.print("СВОБОДНЫЕ ПЕРЕМЕННЫЕ: ");
+//            for (int i = 0; i < n; i++) {
+//                if (!isPivot[i]) System.out.print("x" + (i + 1) + " ");
+//            }
+//            System.out.println();
+//
+//            for (int i = 0; i < rank; i++) {
+//                int col = pivotColumnForRow[i];
+//                System.out.print("x" + (col + 1) + " = " + matrix[i][n]);
+//                for (int j = 0; j < n; j++) {
+//                    if (!isPivot[j] && !matrix[i][j].isZero()) {
+//                        System.out.print(" - " + matrix[i][j] + "*x" + (j + 1));
+//                    }
+//                }
+//                System.out.println();
+//            }
         }
     }
 }
