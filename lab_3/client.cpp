@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <cstring>  // Добавлен для memset()
+#include <cstring>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -20,20 +20,17 @@ int main(int argc, char* argv[]) {
     int sockfd;
     struct sockaddr_in server_addr;
 
-    // Создание сокета
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         perror("Ошибка создания сокета");
         return 1;
     }
 
-    // Настройка адреса сервера
-    memset(&server_addr, 0, sizeof(server_addr));  // Теперь memset доступен
+    memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
     inet_pton(AF_INET, server_ip.c_str(), &server_addr.sin_addr);
 
-    // Подключение к серверу
     if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
         perror("Ошибка подключения");
         return 1;
@@ -52,7 +49,7 @@ int main(int argc, char* argv[]) {
         }
 
         std::cout << "Отправлено: " << buffer;
-        sleep(i);  // Задержка i секунд
+        sleep(i);
     }
 
     close(sockfd);
