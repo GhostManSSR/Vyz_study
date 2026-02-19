@@ -1,32 +1,25 @@
 CXX = g++
-
 CXXFLAGS = -Wall -Wextra -std=c++11 -g
+LDFLAGS = -lsctp
 
-SERVER = server
-CLIENT = client
-
-SERVER_OBJ = server.o
-CLIENT_OBJ = client.o
-
-.PHONY: all
-all: $(SERVER) $(CLIENT)
-
-$(SERVER): $(SERVER_OBJ)
-	$(CXX) $(CXXFLAGS) -o $(SERVER) $(SERVER_OBJ)
-
-$(CLIENT): $(CLIENT_OBJ)
-	$(CXX) $(CXXFLAGS) -o $(CLIENT) $(CLIENT_OBJ)
+# Сервер
+server: server.o
+	$(CXX) $(CXXFLAGS) server.o -o server $(LDFLAGS)
 
 server.o: server.cpp
 	$(CXX) $(CXXFLAGS) -c server.cpp
 
+# Клиент
+client: client.o
+	$(CXX) $(CXXFLAGS) client.o -o client $(LDFLAGS)
+
 client.o: client.cpp
 	$(CXX) $(CXXFLAGS) -c client.cpp
 
-.PHONY: server_start
-server_start: $(SERVER)
-	./$(SERVER)
+# Оба сразу
+all: server client
 
-.PHONY: clean
 clean:
-	rm -f $(SERVER) $(CLIENT) *.o
+	rm -f *.o server client
+
+.PHONY: clean all
