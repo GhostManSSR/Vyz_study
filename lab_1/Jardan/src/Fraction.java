@@ -60,6 +60,14 @@ public class Fraction implements Comparable<Fraction> {
         return numerator == 0;
     }
 
+    public long getNumerator(){
+        return numerator;
+    }
+
+    public long getDenominator(){
+        return denominator;
+    }
+
     public Fraction add(Fraction o) {
         return new Fraction(
                 numerator * o.denominator + o.numerator * denominator,

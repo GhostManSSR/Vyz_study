@@ -1,12 +1,12 @@
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Jardan {
 
     private Fraction[][] matrix;
     private int m, n;
+    private int foundBasisCount = 0;
 
     public Jardan(String filename) throws IOException {
         File file = new File(filename);
@@ -93,7 +93,6 @@ public class Jardan {
         }
 
         printMatrix("ИТОГОВАЯ МАТРИЦА МЕТОДА ПРЯМОУГОЛЬНИКА");
-
         analyzeSolution(pivotRow, pivotColumnForRow);
     }
 
@@ -113,98 +112,24 @@ public class Jardan {
         }
     }
 
-    private void findBasicSolutions(int rank, int[] pivotColumnForRow) {
-
-        System.out.println("\n==============================");
-        System.out.println("ПОИСК БАЗИСНЫХ РЕШЕНИЙ ПО ШАГАМ");
-        System.out.println("==============================");
-
-        boolean[] isPivot = new boolean[n];
-
-        System.out.println("\nШАГ 1: Определяем базисные переменные");
-        for (int i = 0; i < rank; i++) {
-            if (pivotColumnForRow[i] >= 0) {
-                isPivot[pivotColumnForRow[i]] = true;
-                System.out.println("Строка " + (i + 1) +
-                        " → ведущий элемент в столбце x" +
-                        (pivotColumnForRow[i] + 1));
+    private Fraction[][] copyMatrix(Fraction[][] original) {
+        int rows = original.length;
+        int cols = original[0].length;
+        Fraction[][] copy = new Fraction[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            copy[i] = new Fraction[cols];
+            for (int j = 0; j < cols; j++) {
+                copy[i][j] = new Fraction(original[i][j].getNumerator(), original[i][j].getDenominator());
             }
         }
-
-        System.out.print("Базисные переменные: ");
-        for (int i = 0; i < n; i++)
-            if (isPivot[i]) System.out.print("x" + (i + 1) + " ");
-        System.out.println();
-
-        System.out.print("Свободные переменные: ");
-        for (int i = 0; i < n; i++)
-            if (!isPivot[i]) System.out.print("x" + (i + 1) + " ");
-        System.out.println();
-
-
-        for (int freeIndex = 0; freeIndex < n; freeIndex++) {
-
-            if (isPivot[freeIndex]) continue;
-
-            System.out.println("\n----------------------------------");
-            System.out.println("Рассматриваем свободную переменную x" +
-                    (freeIndex + 1));
-            System.out.println("----------------------------------");
-
-            Fraction[] solution = new Fraction[n];
-
-            for (int i = 0; i < n; i++)
-                solution[i] = new Fraction(0);
-
-            System.out.println("ШАГ 2: Присваиваем свободной переменной x" +
-                    (freeIndex + 1) + " = 1");
-            solution[freeIndex] = new Fraction(1);
-
-            System.out.println("Остальные свободные = 0");
-
-            System.out.println("\nШАГ 3: Вычисляем базисные переменные");
-
-            for (int i = 0; i < rank; i++) {
-
-                int pivotCol = pivotColumnForRow[i];
-                Fraction value = matrix[i][n];
-
-                System.out.println("\nИз строки " + (i + 1) + ":");
-                System.out.print("x" + (pivotCol + 1) + " = "
-                        + matrix[i][n]);
-
-                for (int j = 0; j < n; j++) {
-                    if (!isPivot[j] && !matrix[i][j].isZero()) {
-
-                        System.out.print(" - (" +
-                                matrix[i][j] + " * " +
-                                solution[j] + ")");
-
-                        value = value.subtract(
-                                matrix[i][j].multiply(solution[j])
-                        );
-                    }
-                }
-
-                solution[pivotCol] = value;
-
-                System.out.println();
-                System.out.println("x" + (pivotCol + 1) +
-                        " = " + value);
-            }
-
-            System.out.println("\nБАЗИСНОЕ РЕШЕНИЕ:");
-            for (int i = 0; i < n; i++) {
-                System.out.println("x" + (i + 1) +
-                        " = " + solution[i]);
-            }
-        }
+        return copy;
     }
 
     private void analyzeSolution(int rank, int[] pivotColumnForRow) {
         System.out.println("\n=== АНАЛИЗ РЕШЕНИЯ (МЕТОД ПРЯМОУГОЛЬНИКА) ===");
         System.out.println("Ранг матрицы: " + rank);
 
+        // Проверка совместности
         for (int i = 0; i < m; i++) {
             boolean zeroRow = true;
             for (int j = 0; j < n; j++) {
@@ -214,46 +139,267 @@ public class Jardan {
                 }
             }
             if (zeroRow && !matrix[i][n].isZero()) {
-                System.out.println("СИСТЕМА НЕСОВМЕСТНА коэффициенты при всех неизвестных равны нулю, а свободный член не равен нулю (0 = " + matrix[i][n] + ")");
+                System.out.println("СИСТЕМА НЕСОВМЕСТНА: 0 = " + matrix[i][n]);
                 return;
             }
         }
 
+        printCurrentBasis(pivotColumnForRow, rank);
+
         if (rank == n) {
-            System.out.println("ЕДИНСТВЕННОЕ РЕШЕНИЕ:");
+            System.out.println("\nЕДИНСТВЕННОЕ РЕШЕНИЕ:");
             for (int i = 0; i < n; i++) {
                 System.out.println("x" + (i + 1) + " = " + matrix[i][n]);
             }
+        } else if (rank < n) {
+            System.out.println("\nБесконечно много решений. Ищем все базисные решения...");
+            findAllPossibleBases(rank, pivotColumnForRow);
         } else {
-            findBasicSolutions(rank, pivotColumnForRow);
-//            System.out.println("БЕСКОНЕЧНО МНОГО РЕШЕНИЙ");
-//            boolean[] isPivot = new boolean[n];
-//            for (int i = 0; i < rank; i++) {
-//                isPivot[pivotColumnForRow[i]] = true;
-//            }
-//
-//            System.out.print("БАЗИСНЫЕ ПЕРЕМЕННЫЕ: ");
-//            for (int i = 0; i < n; i++) {
-//                if (isPivot[i]) System.out.print("x" + (i + 1) + " ");
-//            }
-//            System.out.println();
-//
-//            System.out.print("СВОБОДНЫЕ ПЕРЕМЕННЫЕ: ");
-//            for (int i = 0; i < n; i++) {
-//                if (!isPivot[i]) System.out.print("x" + (i + 1) + " ");
-//            }
-//            System.out.println();
-//
-//            for (int i = 0; i < rank; i++) {
-//                int col = pivotColumnForRow[i];
-//                System.out.print("x" + (col + 1) + " = " + matrix[i][n]);
-//                for (int j = 0; j < n; j++) {
-//                    if (!isPivot[j] && !matrix[i][j].isZero()) {
-//                        System.out.print(" - " + matrix[i][j] + "*x" + (j + 1));
-//                    }
-//                }
-//                System.out.println();
-//            }
+            System.out.println("Полный ранг = число строк");
         }
     }
+
+
+
+    private void printCurrentBasis(int[] pivotColumns, int rank) {
+        System.out.print("Текущий базис: ");
+        for (int i = 0; i < rank; i++) {
+            if (pivotColumns[i] >= 0) {
+                System.out.print("x" + (pivotColumns[i] + 1) + " ");
+            }
+        }
+        System.out.println();
+    }
+
+    private void findAllPossibleBases(int currentRank, int[] currentPivots) {
+        System.out.println("\n==============================");
+        System.out.println("ВСЕ БАЗИСНЫЕ РЕШЕНИЯ СИСТЕМЫ");
+        System.out.println("==============================");
+
+        foundBasisCount = 0;
+
+        List<List<Integer>> allPossibleBases = new ArrayList<>();
+        generateCombinations(0, new ArrayList<>(), allPossibleBases, currentRank);
+
+        for (List<Integer> basisColumns : allPossibleBases) {
+            if (checkBasisValid(basisColumns)) {
+                foundBasisCount++;
+                Fraction[] basicSolution = computeBasicSolution(basisColumns);
+                boolean isCurrent = isCurrentBasis(basisColumns, currentPivots);
+                printBasicSolution(basisColumns, basicSolution, isCurrent);
+            }
+        }
+
+        System.out.println("\n==============================");
+        System.out.println("Всего базисных решений: " + foundBasisCount);
+        System.out.println("==============================");
+    }
+
+    private void generateCombinations(int start, List<Integer> current,
+                                      List<List<Integer>> result, int targetSize) {
+        if (current.size() == targetSize) {
+            result.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = start; i < n; i++) {
+            current.add(i);
+            generateCombinations(i + 1, current, result, targetSize);
+            current.remove(current.size() - 1);
+        }
+    }
+
+    private Fraction[] computeBasicSolution(List<Integer> basisColumns) {
+        int rank = basisColumns.size();
+        Fraction[] solution = new Fraction[n];
+
+        for (int i = 0; i < n; i++) {
+            solution[i] = new Fraction(0);
+        }
+
+        Fraction[][] basisMatrix = new Fraction[rank][rank + 1];
+        for (int i = 0; i < rank; i++) {
+            for (int j = 0; j < rank; j++) {
+                int basisCol = basisColumns.get(j);
+                Fraction original = matrix[i][basisCol];
+                basisMatrix[i][j] = new Fraction(
+                        original.getNumerator(),
+                        original.getDenominator()
+                );
+            }
+            Fraction freeTerm = matrix[i][n];
+            basisMatrix[i][rank] = new Fraction(
+                    freeTerm.getNumerator(),
+                    freeTerm.getDenominator()
+            );
+        }
+
+        gaussSolve(basisMatrix);
+
+        for (int i = 0; i < rank; i++) {
+            solution[basisColumns.get(i)] = basisMatrix[i][rank];
+        }
+
+        return solution;
+    }
+
+
+    private void gaussSolve(Fraction[][] mat) {
+        int size = mat.length;
+        int rank = 0;
+
+        for (int col = 0; col < size && rank < size; col++) {
+            int pivotRow = -1;
+            for (int row = rank; row < size; row++) {
+                if (!mat[row][col].isZero()) {
+                    pivotRow = row;
+                    break;
+                }
+            }
+
+            if (pivotRow == -1) continue;
+
+            if (pivotRow != rank) {
+                Fraction[] temp = mat[rank];
+                mat[rank] = mat[pivotRow];
+                mat[pivotRow] = temp;
+            }
+
+            Fraction pivot = mat[rank][col];
+            for (int j = col; j <= size; j++) {
+                mat[rank][j] = mat[rank][j].divide(pivot);
+            }
+
+            for (int row = 0; row < size; row++) {
+                if (row != rank && !mat[row][col].isZero()) {
+                    Fraction factor = mat[row][col];
+                    for (int j = col; j <= size; j++) {
+                        mat[row][j] = mat[row][j].subtract(factor.multiply(mat[rank][j]));
+                    }
+                }
+            }
+            rank++;
+        }
+    }
+
+    private void printBasicSolution(List<Integer> basisColumns, Fraction[] solution, boolean isCurrent) {
+        String marker = isCurrent ? " ОПОРНОЕ" : "     ";
+
+        System.out.println("\n" + marker + " БАЗИСНОЕ РЕШЕНИЕ #" + foundBasisCount + ":");
+        System.out.print("Базис: {");
+        for (int i = 0; i < basisColumns.size(); i++) {
+            System.out.print("x" + (basisColumns.get(i) + 1));
+            if (i < basisColumns.size() - 1) System.out.print(", ");
+        }
+        System.out.println("}");
+
+        System.out.print("Решение: (");
+        for (int i = 0; i < n; i++) {
+            System.out.print("x" + (i + 1) + "=" + solution[i]);
+            if (i < n - 1) System.out.print(", ");
+        }
+        System.out.println(")");
+
+        System.out.print("Свободные: ");
+        for (int i = 0; i < n; i++) {
+            if (solution[i].isZero()) {
+                System.out.print("x" + (i + 1) + " ");
+            }
+        }
+        System.out.println();
+    }
+
+    private List<List<Integer>> findAllBases() {
+        List<List<Integer>> bases = new ArrayList<>();
+
+        for (int i1 = 0; i1 < n - 2; i1++) {
+            for (int i2 = i1 + 1; i2 < n - 1; i2++) {
+                for (int i3 = i2 + 1; i3 < n; i3++) {
+                    List<Integer> basis = Arrays.asList(i1, i2, i3);
+                    if (checkBasisValid(basis)) {
+                        bases.add(basis);
+                    }
+                }
+            }
+        }
+        return bases;
+    }
+
+    private boolean checkBasisValid(List<Integer> basisColumns) {
+        int numCols = basisColumns.size();
+        Fraction[][] subMatrix = new Fraction[m][numCols];
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < numCols; j++) {
+                int colIndex = basisColumns.get(j);
+                subMatrix[i][j] = new Fraction(
+                        matrix[i][colIndex].getNumerator(),
+                        matrix[i][colIndex].getDenominator()
+                );
+            }
+        }
+
+        int subRank = computeRank(subMatrix);
+        return subRank == basisColumns.size();
+    }
+
+    private int computeRank(Fraction[][] subMatrix) {
+        int rows = subMatrix.length;
+        int cols = subMatrix[0].length;
+        Fraction[][] working = copyMatrix(subMatrix);
+        int rank = 0;
+
+        for (int col = 0; col < cols && rank < rows; col++) {
+            int pivotRow = -1;
+            for (int row = rank; row < rows; row++) {
+                if (!working[row][col].isZero()) {
+                    pivotRow = row;
+                    break;
+                }
+            }
+
+            if (pivotRow == -1) continue;
+
+            if (pivotRow != rank) {
+                Fraction[] temp = working[rank];
+                working[rank] = working[pivotRow];
+                working[pivotRow] = temp;
+            }
+
+            Fraction pivot = working[rank][col];
+            for (int j = col; j < cols; j++) {
+                working[rank][j] = working[rank][j].divide(pivot);
+            }
+
+            for (int row = 0; row < rows; row++) {
+                if (row != rank && !working[row][col].isZero()) {
+                    Fraction factor = working[row][col];
+                    for (int j = col; j < cols; j++) {
+                        working[row][j] = working[row][j].subtract(factor.multiply(working[rank][j]));
+                    }
+                }
+            }
+            rank++;
+        }
+        return rank;
+    }
+
+    private boolean isCurrentBasis(List<Integer> basis, int[] currentPivots) {
+        Set<Integer> basisSet = new HashSet<>(basis);
+        for (int pivot : currentPivots) {
+            if (pivot >= 0 && !basisSet.contains(pivot)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void printBasis(List<Integer> basisColumns, int number) {
+        System.out.print("БАЗИС #" + number + ": ");
+        for (int col : basisColumns) {
+            System.out.print("x" + (col + 1) + " ");
+        }
+        System.out.println();
+    }
+
 }
