@@ -7,7 +7,11 @@
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea285dd0-6449-4bea-bb5b-1fdd1b11fe46" name="Changes" comment="реализация 2 лабы" />
+    <list default="true" id="ea285dd0-6449-4bea-bb5b-1fdd1b11fe46" name="Changes" comment="реализация 2 лабы">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_3/vector_add" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_3/vector_add.cu" beforeDir="false" afterPath="$PROJECT_DIR$/lab_3/vector_add.cu" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -100,6 +104,7 @@
       <workItem from="1770782549121" duration="521000" />
       <workItem from="1770880095531" duration="2960000" />
       <workItem from="1771397085583" duration="89000" />
+      <workItem from="1771482759300" duration="2513000" />
     </task>
     <task id="LOCAL-00001" summary="реализация 2 лабораторной">
       <option name="closed" value="true" />

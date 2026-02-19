@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <cmath>
 
 #define N (1 << 20)
 #define CHECK_CUDA(call) { \
@@ -20,30 +21,21 @@ __global__ void vectorAdd(float *A, float *B, float *C, int n) {
     }
 }
 
-double measureKernelTime(cudaEvent_t start, cudaEvent_t stop, dim3 blockSize) {
+double measureKernelTime(cudaEvent_t start, cudaEvent_t stop, dim3 blockSize, int gridSize) {
     float *d_A, *d_B, *d_C;
     CHECK_CUDA(cudaMalloc(&d_A, N * sizeof(float)));
     CHECK_CUDA(cudaMalloc(&d_B, N * sizeof(float)));
     CHECK_CUDA(cudaMalloc(&d_C, N * sizeof(float)));
 
-    // Инициализация на хосте
     std::vector<float> h_A(N, 1.0f), h_B(N, 2.0f);
     CHECK_CUDA(cudaMemcpy(d_A, h_A.data(), N * sizeof(float), cudaMemcpyHostToDevice));
     CHECK_CUDA(cudaMemcpy(d_B, h_B.data(), N * sizeof(float), cudaMemcpyHostToDevice));
 
-    int gridSize = (N + blockSize.x - 1) / blockSize.x;
-
-    // Сброс событий
-    CHECK_CUDA(cudaEventRecord(start, 0));
-    CHECK_CUDA(cudaEventRecord(stop, 0));
-
-    // Несколько прогонов для стабильности
     for (int i = 0; i < 10; i++) {
         vectorAdd<<<gridSize, blockSize>>>(d_A, d_B, d_C, N);
     }
     CHECK_CUDA(cudaDeviceSynchronize());
 
-    // Замер времени самого ядра (исключая memcpy)
     CHECK_CUDA(cudaEventRecord(start, 0));
     vectorAdd<<<gridSize, blockSize>>>(d_A, d_B, d_C, N);
     CHECK_CUDA(cudaEventRecord(stop, 0));
@@ -60,9 +52,16 @@ double measureKernelTime(cudaEvent_t start, cudaEvent_t stop, dim3 blockSize) {
 }
 
 int main() {
-    printf("Vector addition benchmark (N=%d)\n", N);
-    printf("Threads/block | Kernel time (ms) | Grid size\n");
-    printf("------------------------------------------\n");
+    cudaDeviceProp prop;
+    CHECK_CUDA(cudaGetDeviceProperties(&prop, 0));
+
+    printf("=== CUDA Vector Addition Benchmark ===\n");
+    printf("GPU: %s (Compute Capability: %d.%d)\n", prop.name, prop.major, prop.minor);
+    printf("N = %d elements | RTX 3050 (sm_86)\n", N);
+    printf("\n");
+
+    printf("Threads/block | Time (ms) | Grid size | Occupancy | GFLOPS\n");
+    printf("-----------------------------------------------------------\n");
 
     cudaEvent_t start, stop;
     CHECK_CUDA(cudaEventCreate(&start));
@@ -70,16 +69,38 @@ int main() {
 
     std::vector<int> blockSizes = {1, 16, 32, 64, 128, 256, 512, 1024};
 
-    for (int threadsPerBlock : blockSizes) {
-        double time_ms = measureKernelTime(start, stop, threadsPerBlock);
-        int gridSize = (N + threadsPerBlock - 1) / threadsPerBlock;
+    int max_warps_sm = prop.maxThreadsPerMultiProcessor / 32;
 
-        printf("%4d           | %10.4f     | %8d\n",
-               threadsPerBlock, time_ms, gridSize);
+    double min_time = 1e9;
+    int optimal_block = 0;
+
+    for (int threadsPerBlock : blockSizes) {
+        int gridSize = (N + threadsPerBlock - 1) / threadsPerBlock;
+        double time_ms = measureKernelTime(start, stop, threadsPerBlock, gridSize);
+
+        int max_active_blocks;
+        CHECK_CUDA(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&max_active_blocks,
+                                                                 vectorAdd, threadsPerBlock, 0));
+
+        float num_warps_block = threadsPerBlock / 32.0f;
+        float occupancy = (max_active_blocks * num_warps_block / max_warps_sm) * 100.0f;
+
+        double gflops = (2.0 * N / 1e9) / (time_ms / 1000.0);
+
+        printf("%12d | %8.4f | %8d | %7.1f%% | %7.1f\n",
+               threadsPerBlock, time_ms, gridSize, occupancy, gflops);
+
+        if (time_ms < min_time) {
+            min_time = time_ms;
+            optimal_block = threadsPerBlock;
+        }
     }
+
+    printf("-----------------------------------------------------------\n");
+    printf("ОПТИМУМ: %d нитей/блок | %.4f мс | %.1f GFLOPS\n",
+           optimal_block, min_time, (2.0 * N / 1e9) / (min_time / 1000.0));
 
     CHECK_CUDA(cudaEventDestroy(start));
     CHECK_CUDA(cudaEventDestroy(stop));
-
     return 0;
 }
