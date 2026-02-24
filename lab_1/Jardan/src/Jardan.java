@@ -163,23 +163,54 @@ public class Jardan {
 
     private void printCurrentBasis(int[] pivotColumns, int rank) {
         System.out.print("Текущий базис: ");
+        List<Integer> currentBasisColumns = new ArrayList<>();
         for (int i = 0; i < rank; i++) {
             if (pivotColumns[i] >= 0) {
                 System.out.print("x" + (pivotColumns[i] + 1) + " ");
+                currentBasisColumns.add(pivotColumns[i]);
             }
         }
         System.out.println();
+
+        if (!currentBasisColumns.isEmpty()) {
+            Fraction[] currentSolution = computeBasicSolution(currentBasisColumns);
+            System.out.print("Базис: {");
+            for (int i = 0; i < currentBasisColumns.size(); i++) {
+                System.out.print("x" + (currentBasisColumns.get(i) + 1));
+                if (i < currentBasisColumns.size() - 1) System.out.print(", ");
+            }
+            System.out.println("}");
+
+            System.out.print("Решение: (");
+            for (int i = 0; i < n; i++) {
+                System.out.print("x" + (i + 1) + "=" + currentSolution[i]);
+                if (i < n - 1) System.out.print(", ");
+            }
+            System.out.println(")");
+
+            System.out.print("Свободные: ");
+            for (int i = 0; i < n; i++) {
+                if (currentSolution[i].isZero()) {
+                    System.out.print("x" + (i + 1) + " ");
+                }
+            }
+            System.out.println();
+            System.out.println();
+        }
     }
+
 
     private void findAllPossibleBases(int currentRank, int[] currentPivots) {
         System.out.println("\n==============================");
         System.out.println("ВСЕ БАЗИСНЫЕ РЕШЕНИЯ СИСТЕМЫ");
+        System.out.println("Ранг=" + currentRank + ", Перебор C(" + n + "," + currentRank + ") комбинаций");
         System.out.println("==============================");
 
         foundBasisCount = 0;
-
         List<List<Integer>> allPossibleBases = new ArrayList<>();
         generateCombinations(0, new ArrayList<>(), allPossibleBases, currentRank);
+
+//        System.out.println("Перебрано комбинаций: " + allPossibleBases.size() + "/" + binomialCoefficient(n, currentRank));
 
         for (List<Integer> basisColumns : allPossibleBases) {
             if (checkBasisValid(basisColumns)) {
@@ -190,9 +221,21 @@ public class Jardan {
             }
         }
 
+        long maxPossible = binomialCoefficient(n, currentRank);
         System.out.println("\n==============================");
-        System.out.println("Всего базисных решений: " + foundBasisCount);
+        System.out.println("НАЙДЕНО: " + foundBasisCount + " из " + maxPossible + " возможных (C(" + n + "," + currentRank + "))");
         System.out.println("==============================");
+    }
+
+    private long binomialCoefficient(int n, int k) {
+        if (k > n - k) k = n - k;
+
+        long result = 1;
+        for (int i = 1; i <= k; i++) {
+            result *= (n - k + i);
+            result /= i;
+        }
+        return result;
     }
 
     private void generateCombinations(int start, List<Integer> current,
@@ -385,9 +428,18 @@ public class Jardan {
     }
 
     private boolean isCurrentBasis(List<Integer> basis, int[] currentPivots) {
-        Set<Integer> basisSet = new HashSet<>(basis);
-        for (int pivot : currentPivots) {
-            if (pivot >= 0 && !basisSet.contains(pivot)) {
+        List<Integer> actualPivots = new ArrayList<>();
+        for (int i = 0; i < currentPivots.length; i++) {
+            int pivot = currentPivots[i];
+            if (pivot >= 0) {
+                actualPivots.add(pivot);
+            }
+        }
+
+        if (basis.size() != actualPivots.size()) return false;
+
+        for (int i = 0; i < basis.size(); i++) {
+            if (!basis.get(i).equals(actualPivots.get(i))) {
                 return false;
             }
         }
