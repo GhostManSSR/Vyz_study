@@ -9,8 +9,20 @@
   <component name="ChangeListManager">
     <list default="true" id="fded3199-7f4a-4f3f-88cf-c0b956aadd98" name="Changes" comment="реализация 2 лабы">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_3/server_log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/lab_3/server_log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_4/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/lab_4/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/Fraction.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/Jardan.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/Jardan.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/input.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/input_2.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/input_3.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_1/Jardan/src/out/production/Jardan/input_4.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/lab_4/client" beforeDir="false" afterPath="$PROJECT_DIR$/lab_4/client" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lab_4/client.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lab_4/client.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lab_4/client.o" beforeDir="false" afterPath="$PROJECT_DIR$/lab_4/client.o" afterDir="false" />
@@ -119,6 +131,7 @@
       <workItem from="1770260385559" duration="4004000" />
       <workItem from="1770264430776" duration="652000" />
       <workItem from="1770776461921" duration="346000" />
+      <workItem from="1771930568552" duration="995000" />
     </task>
     <task id="LOCAL-00001" summary="номер свободного порта для lab_1">
       <option name="closed" value="true" />
