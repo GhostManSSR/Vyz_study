@@ -130,14 +130,12 @@ void transposeThrust(const std::vector<float>& h_in, std::vector<float>& h_out, 
     thrust::copy(d_out.begin(), d_out.end(), h_out.begin());
 }
 
-// Измерение времени для CUDA
 template<typename Func>
 float measureCUDATime(Func func, int iter = 50) {
     cudaEvent_t start, stop;
     CHECK_CUDA(cudaEventCreate(&start));
     CHECK_CUDA(cudaEventCreate(&stop));
 
-    // Прогрев
     for (int i = 0; i < iter; ++i) func();
     CHECK_CUDA(cudaDeviceSynchronize());
 
@@ -156,18 +154,15 @@ float measureCUDATime(Func func, int iter = 50) {
 int main() {
     std::cout << std::fixed << std::setprecision(3);
 
-    // 1. Скалярное произведение
     std::cout << "\n=== Скалярное произведение векторов ===\n";
     std::vector<int> vec_sizes = {1000000, 10000000};
 
     for (int n : vec_sizes) {
         std::vector<float> h_a(n, 1.0f), h_b(n, 2.0f);
 
-        // CUDA время
         auto cuda_func = [&]() { dotCUDA(h_a, h_b); };
         float cuda_time = measureCUDATime(cuda_func);
 
-        // Thrust время
         auto start = std::chrono::high_resolution_clock::now();
         float thrust_res = dotThrust(n);
         auto end = std::chrono::high_resolution_clock::now();
@@ -177,7 +172,6 @@ int main() {
                   << "мс (CUDA/Thrust=" << cuda_time/thrust_time << "x)\n";
     }
 
-    // 2. Транспонирование - ИСПРАВЛЕНО C++11 синтаксис
     std::cout << "\n=== Транспонирование матрицы ===\n";
     int matrix_sizes[][2] = {{1024,1024}, {2048,2048}};
 
@@ -188,17 +182,14 @@ int main() {
 
         std::vector<float> h_in(size), h_out(size);
 
-        // Заполнение тестовой матрицы
         for (int j = 0; j < size; ++j) h_in[j] = float(j);
 
-        // CUDA время
         std::vector<float> cuda_out(size);
         auto cuda_trans_func = [&]() {
             transposeCUDA(h_in, cuda_out, width, height);
         };
         float cuda_time = measureCUDATime(cuda_trans_func);
 
-        // Thrust время
         std::vector<float> thrust_out(size);
         auto start = std::chrono::high_resolution_clock::now();
         transposeThrust(h_in, thrust_out, width, height);

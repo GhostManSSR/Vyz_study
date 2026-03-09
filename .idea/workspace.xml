@@ -8,14 +8,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ea285dd0-6449-4bea-bb5b-1fdd1b11fe46" name="Changes" comment="реализация 2 лабы">
-      <change afterPath="$PROJECT_DIR$/lab_10/Makefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_10/lab_10.cu" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_9/lab_9.cu" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_9/lab_9.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lab_9/setup.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lab_9/cuMatrixMul.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_5/lab5" beforeDir="false" afterPath="$PROJECT_DIR$/lab_5/lab5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lab_5/lab_5.cu" beforeDir="false" afterPath="$PROJECT_DIR$/lab_5/lab_5.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_10/lab10" beforeDir="false" afterPath="$PROJECT_DIR$/lab_10/lab10" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_10/lab10_ncu" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_10/lab10_ncu.ncu-rep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_10/lab10_profile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_10/lab_10.cu" beforeDir="false" afterPath="$PROJECT_DIR$/lab_10/lab_10.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_9/lab_9.cu" beforeDir="false" afterPath="$PROJECT_DIR$/lab_9/lab_9.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_9/lab_9.py" beforeDir="false" afterPath="$PROJECT_DIR$/lab_9/lab_9.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,6 +114,7 @@
       <workItem from="1771982639800" duration="722000" />
       <workItem from="1772088421636" duration="3833000" />
       <workItem from="1772513562410" duration="2198000" />
+      <workItem from="1772693126727" duration="5022000" />
     </task>
     <task id="LOCAL-00001" summary="реализация 2 лабораторной">
       <option name="closed" value="true" />
