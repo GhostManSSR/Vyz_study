@@ -19,7 +19,7 @@ public class Main {
         RetryWorker retryWorker = new RetryWorker();
         executor.submit(retryWorker);
 
-        SMTPServer server = new SMTPServer(0);
+        SMTPServer server = new SMTPServer(2525);
         executor.submit(() -> {
             try {
                 server.start();

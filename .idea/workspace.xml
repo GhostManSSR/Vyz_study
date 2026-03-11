@@ -8,6 +8,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fded3199-7f4a-4f3f-88cf-c0b956aadd98" name="Changes" comment="реализация 2 лабы">
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/db/Database.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/delivery/SMTPClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/dns/MXResolver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/model/MailMessage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/queue/MailQueue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/queue/RetryWorker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/security/DKIMSigner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/security/KeyProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/security/SPFValidator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/security/TestKeystore.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/AsyncSMTPServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/PacketAnalyzer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/SMTPCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/SMTPConnection.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/SMTPHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/SMTPParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/SMTPServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/smtp/TLSUpgrade.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rgr/src/main/java/mta/spam/SpamDetector.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -112,6 +131,7 @@
       <workItem from="1770264430776" duration="652000" />
       <workItem from="1770776461921" duration="346000" />
       <workItem from="1771930568552" duration="995000" />
+      <workItem from="1773071619815" duration="560000" />
     </task>
     <task id="LOCAL-00001" summary="номер свободного порта для lab_1">
       <option name="closed" value="true" />

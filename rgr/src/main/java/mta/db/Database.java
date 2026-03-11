@@ -6,7 +6,7 @@ import java.sql.Statement;
 
 public class Database {
 
-    private static final String URL = "jdbc:postgresql://192.168.128.1:5432/mta";
+    private static final String URL = "jdbc:postgresql://127.0.0.1:5432/mta?ssl=false&sslmode=disable";
 
     private static final String USER = "postgres";
     private static final String PASS = "12345";

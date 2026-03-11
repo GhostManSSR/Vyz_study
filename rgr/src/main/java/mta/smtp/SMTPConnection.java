@@ -11,11 +11,16 @@ import javax.net.ssl.*;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Base64;
 
 public class SMTPConnection implements Runnable {
 
     private Socket socket;
     private boolean isTLS = false;
+
+    private StringBuilder data = new StringBuilder();
+    private StringBuilder attachments = new StringBuilder();
 
     public SMTPConnection(Socket socket) {
         this.socket = socket;
@@ -43,18 +48,29 @@ public class SMTPConnection implements Runnable {
 
                 // ===== DATA режим =====
                 if (inData) {
+
                     if (line.equals(".")) {
-                        processData(sender, recipient, spfPass, data.toString());
+
+                        processData(sender, recipient, spfPass,
+                                data.toString(),
+                                attachments.toString());
+
                         out.write("250 Queued\r\n");
                         out.flush();
 
                         sender = null;
                         recipient = null;
                         spfPass = false;
+
                         inData = false;
+
                         data = new StringBuilder();
+                        attachments = new StringBuilder();
+
                         continue;
-                    } else {
+                    }
+                    else {
+
                         data.append(line).append("\r\n");
                         continue;
                     }
@@ -102,6 +118,57 @@ public class SMTPConnection implements Runnable {
                         } else {
                             out.write("250 OK\r\n");
                         }
+                    }
+                }
+                else if (upper.startsWith("FILE")) {
+
+                    if (sender == null || recipient == null) {
+
+                        out.write("503 Need MAIL FROM and RCPT TO first\r\n");
+                        out.flush();
+                        continue;
+                    }
+
+                    try {
+
+                        String path = line.substring(4).trim();
+
+                        File file = new File(path);
+
+                        if (!file.exists()) {
+
+                            out.write("550 File not found\r\n");
+                            out.flush();
+                            continue;
+                        }
+
+                        byte[] fileBytes = Files.readAllBytes(file.toPath());
+
+                        String base64 = Base64.getEncoder().encodeToString(fileBytes);
+
+                        String boundary = "----MiniMTABoundary";
+
+                        attachments.append("--").append(boundary).append("\r\n");
+
+                        attachments.append("Content-Type: application/octet-stream; name=\"")
+                                .append(file.getName()).append("\"\r\n");
+
+                        attachments.append("Content-Transfer-Encoding: base64\r\n");
+
+                        attachments.append("Content-Disposition: attachment; filename=\"")
+                                .append(file.getName()).append("\"\r\n\r\n");
+
+                        attachments.append(base64).append("\r\n");
+
+                        out.write("250 File accepted\r\n");
+                        out.flush();
+
+                    }
+                    catch (Exception e) {
+
+                        e.printStackTrace();
+                        out.write("550 File read error\r\n");
+                        out.flush();
                     }
                 }
                 // ===== DATA =====
@@ -184,33 +251,61 @@ public class SMTPConnection implements Runnable {
         }
     }
 
-    private void processData(String sender, String recipient, boolean spfPass, String messageBody) {
+    private void processData(String sender,
+                             String recipient,
+                             boolean spfPass,
+                             String messageBody,
+                             String attachments) {
+
         try {
+
             boolean isSpam = SpamDetector.isSpam(messageBody);
 
             String dkimHeader = "";
+
             try {
+
                 DKIMSigner signer = new DKIMSigner(KeyProvider.getPrivateKey());
+
                 String signature = signer.sign(messageBody);
+
                 dkimHeader = "DKIM-Signature: " + signature + "\r\n";
-            } catch (Exception e) {
+
+            }
+            catch (Exception e) {
+
                 e.printStackTrace();
             }
+
+            String boundary = "----MiniMTABoundary";
 
             String fullMessage =
                     "From: <" + sender + ">\r\n" +
                             "To: <" + recipient + ">\r\n" +
                             "Subject: MiniMTA test\r\n" +
+                            "MIME-Version: 1.0\r\n" +
+                            "Content-Type: multipart/mixed; boundary=" + boundary + "\r\n" +
                             dkimHeader +
                             "\r\n" +
-                            messageBody + "\r\n";
+
+                            "--" + boundary + "\r\n" +
+                            "Content-Type: text/plain; charset=UTF-8\r\n\r\n" +
+                            messageBody + "\r\n" +
+
+                            attachments +
+
+                            "--" + boundary + "--\r\n";
 
             MailMessage msg = new MailMessage(sender, recipient, fullMessage);
+
             msg.setSpfPass(spfPass);
             msg.setSpam(isSpam);
 
             MailQueue.enqueue(msg);
-        } catch (Exception e) {
+
+        }
+        catch (Exception e) {
+
             e.printStackTrace();
         }
     }
