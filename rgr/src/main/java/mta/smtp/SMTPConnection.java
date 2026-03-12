@@ -28,25 +28,33 @@ public class SMTPConnection implements Runnable {
 
     @Override
     public void run() {
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.US_ASCII));
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.US_ASCII));
 
-            out.write("220 MiniMTA\r\n");
-            out.flush();
+        System.out.println("Client connected: " + socket.getInetAddress());
+
+        try {
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+
+            PrintWriter out = new PrintWriter(
+                    new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+
+            send(out, "220 MiniMTA");
 
             String sender = null;
             String recipient = null;
+
             boolean spfPass = false;
             boolean inData = false;
-            StringBuilder data = new StringBuilder();
 
             String line;
+
             while ((line = in.readLine()) != null) {
+
                 line = line.trim();
+
                 System.out.println("SMTP PACKET: " + line);
 
-                // ===== DATA режим =====
                 if (inData) {
 
                     if (line.equals(".")) {
@@ -55,96 +63,112 @@ public class SMTPConnection implements Runnable {
                                 data.toString(),
                                 attachments.toString());
 
-                        out.write("250 Queued\r\n");
-                        out.flush();
+                        send(out, "250 Queued");
 
                         sender = null;
                         recipient = null;
                         spfPass = false;
 
+                        data.setLength(0);
+                        attachments.setLength(0);
+
                         inData = false;
 
-                        data = new StringBuilder();
-                        attachments = new StringBuilder();
-
                         continue;
                     }
-                    else {
 
-                        data.append(line).append("\r\n");
-                        continue;
-                    }
+                    data.append(line).append("\r\n");
+                    continue;
                 }
 
                 String upper = line.toUpperCase();
 
-                // ===== EHLO / HELO =====
+                // EHLO / HELO
                 if (upper.startsWith("EHLO") || upper.startsWith("HELO")) {
-                    out.write("250-MiniMTA\r\n");
-                    out.write("250-STARTTLS\r\n");
-                    out.write("250 OK\r\n");
+
+                    send(out, "250-MiniMTA");
+                    send(out, "250-STARTTLS");
+                    send(out, "250 OK");
+
                 }
-                // ===== MAIL FROM =====
+
+                // MAIL FROM
                 else if (upper.startsWith("MAIL FROM")) {
+
                     sender = SMTPParser.parseAddress(line);
+
                     if (sender == null) {
-                        out.write("501 Bad address\r\n");
-                        out.flush();
+
+                        send(out, "501 Bad address");
                         continue;
                     }
 
                     String domain = SMTPParser.extractDomain(sender);
+
                     if (domain.endsWith(".local") || domain.equals("localhost")) {
+
                         spfPass = true;
-                        out.write("250 OK\r\n");
+                        send(out, "250 OK");
+
                     } else {
+
                         spfPass = SPFValidator.checkSPF(domain);
+
                         if (!spfPass) {
+
                             sender = null;
-                            out.write("550 SPF check failed\r\n");
+                            send(out, "550 SPF check failed");
+
                         } else {
-                            out.write("250 OK\r\n");
+
+                            send(out, "250 OK");
                         }
                     }
                 }
-                // ===== RCPT TO =====
+
+                // RCPT TO
                 else if (upper.startsWith("RCPT TO")) {
+
                     if (sender == null) {
-                        out.write("503 Need MAIL FROM first\r\n");
+
+                        send(out, "503 Need MAIL FROM first");
+                        continue;
+                    }
+
+                    recipient = SMTPParser.parseAddress(line);
+
+                    if (recipient == null) {
+
+                        send(out, "501 Bad address");
+
                     } else {
-                        recipient = SMTPParser.parseAddress(line);
-                        if (recipient == null) {
-                            out.write("501 Bad address\r\n");
-                        } else {
-                            out.write("250 OK\r\n");
-                        }
+
+                        send(out, "250 OK");
                     }
                 }
+
+                // FILE (attachment)
                 else if (upper.startsWith("FILE")) {
 
                     if (sender == null || recipient == null) {
 
-                        out.write("503 Need MAIL FROM and RCPT TO first\r\n");
-                        out.flush();
+                        send(out, "503 Need MAIL FROM and RCPT TO first");
                         continue;
                     }
 
                     try {
 
                         String path = line.substring(4).trim();
-
                         File file = new File(path);
 
                         if (!file.exists()) {
 
-                            out.write("550 File not found\r\n");
-                            out.flush();
+                            send(out, "550 File not found");
                             continue;
                         }
 
-                        byte[] fileBytes = Files.readAllBytes(file.toPath());
-
-                        String base64 = Base64.getEncoder().encodeToString(fileBytes);
+                        byte[] bytes = Files.readAllBytes(file.toPath());
+                        String base64 = Base64.getEncoder().encodeToString(bytes);
 
                         String boundary = "----MiniMTABoundary";
 
@@ -160,95 +184,117 @@ public class SMTPConnection implements Runnable {
 
                         attachments.append(base64).append("\r\n");
 
-                        out.write("250 File accepted\r\n");
-                        out.flush();
+                        send(out, "250 File accepted");
 
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
 
                         e.printStackTrace();
-                        out.write("550 File read error\r\n");
-                        out.flush();
+                        send(out, "550 File read error");
                     }
                 }
-                // ===== DATA =====
+
+                // DATA
                 else if (upper.equals("DATA")) {
+
                     if (sender == null || recipient == null) {
-                        out.write("503 Bad sequence of commands\r\n");
+
+                        send(out, "503 Bad sequence of commands");
+
                     } else {
+
                         inData = true;
-                        out.write("354 End data with <CR><LF>.<CR><LF>\r\n");
+                        send(out, "354 End data with <CR><LF>.<CR><LF>");
                     }
                 }
-                // ===== RSET =====
+
+                // RSET
                 else if (upper.equals("RSET")) {
+
                     sender = null;
                     recipient = null;
                     spfPass = false;
-                    data = new StringBuilder();
+
+                    data.setLength(0);
+                    attachments.setLength(0);
+
                     inData = false;
-                    out.write("250 Reset OK\r\n");
+
+                    send(out, "250 Reset OK");
                 }
-                // ===== QUIT =====
-                else if (upper.equals("QUIT")) {
-                    out.write("221 Bye\r\n");
-                    out.flush();
-                    socket.close();
-                    return;
-                }
-                // ===== STARTTLS =====
-                else if (upper.startsWith("STARTTLS")) {
+
+                // STARTTLS
+                else if (upper.equals("STARTTLS")) {
+
                     if (isTLS) {
-                        out.write("454 TLS already active\r\n");
-                        out.flush();
+
+                        send(out, "454 TLS already active");
                         continue;
                     }
 
-                    out.write("220 Ready to start TLS\r\n");
-                    out.flush();
+                    send(out, "220 Ready to start TLS");
 
                     try {
+
                         SSLContext sslContext = TLSUpgrade.createSSLContext();
                         SSLSocketFactory factory = sslContext.getSocketFactory();
 
                         SSLSocket sslSocket = (SSLSocket) factory.createSocket(
                                 socket,
-                                socket.getInetAddress().getHostAddress(),
+                                socket.getInetAddress().getHostName(),
                                 socket.getPort(),
-                                true
-                        );
+                                true);
 
                         sslSocket.setUseClientMode(false);
                         sslSocket.setEnabledProtocols(new String[]{"TLSv1.2", "TLSv1.3"});
-                        sslSocket.setEnableSessionCreation(true);
                         sslSocket.startHandshake();
 
-                        in = new BufferedReader(new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.US_ASCII));
-                        out = new BufferedWriter(new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.US_ASCII));
-                        this.socket = sslSocket;
+                        socket = sslSocket;
+
+                        in = new BufferedReader(
+                                new InputStreamReader(sslSocket.getInputStream(), StandardCharsets.UTF_8));
+
+                        out = new PrintWriter(
+                                new OutputStreamWriter(sslSocket.getOutputStream(), StandardCharsets.UTF_8), true);
+
                         isTLS = true;
 
-                        System.out.println("TLS established: " +
-                                sslSocket.getSession().getProtocol() + " / " +
-                                sslSocket.getSession().getCipherSuite());
+                        System.out.println("TLS established: "
+                                + sslSocket.getSession().getProtocol()
+                                + " / "
+                                + sslSocket.getSession().getCipherSuite());
 
                     } catch (Exception e) {
+
                         e.printStackTrace();
-                        out.write("454 TLS not available\r\n");
-                        out.flush();
+                        send(out, "454 TLS not available");
                     }
                 }
-                // ===== Неизвестная команда =====
-                else {
-                    out.write("500 Unknown command\r\n");
+
+                // QUIT
+                else if (upper.equals("QUIT")) {
+
+                    send(out, "221 Bye");
+                    socket.close();
+                    return;
                 }
 
-                out.flush();
+                // UNKNOWN
+                else {
+
+                    send(out, "500 Unknown command");
+                }
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
+    }
+
+    private void send(PrintWriter out, String msg) {
+
+        out.println(msg);
+        System.out.println("SMTP SEND: " + msg);
     }
 
     private void processData(String sender,
@@ -266,13 +312,11 @@ public class SMTPConnection implements Runnable {
             try {
 
                 DKIMSigner signer = new DKIMSigner(KeyProvider.getPrivateKey());
-
                 String signature = signer.sign(messageBody);
 
                 dkimHeader = "DKIM-Signature: " + signature + "\r\n";
 
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
 
                 e.printStackTrace();
             }
@@ -303,8 +347,7 @@ public class SMTPConnection implements Runnable {
 
             MailQueue.enqueue(msg);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
 
             e.printStackTrace();
         }

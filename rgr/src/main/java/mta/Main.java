@@ -19,7 +19,7 @@ public class Main {
         RetryWorker retryWorker = new RetryWorker();
         executor.submit(retryWorker);
 
-        SMTPServer server = new SMTPServer(2525);
+        SMTPServer server = new SMTPServer(0);
         executor.submit(() -> {
             try {
                 server.start();
@@ -27,8 +27,6 @@ public class Main {
                 e.printStackTrace();
             }
         });
-
-        System.out.println("MiniMTA running on port 2525...");
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("\nShutting down MiniMTA...");
