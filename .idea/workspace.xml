@@ -9,6 +9,22 @@
   <component name="ChangeListManager">
     <list default="true" id="ea285dd0-6449-4bea-bb5b-1fdd1b11fe46" name="Changes" comment="Реализация всех лаб кроме 13">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_13/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/lab_13/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_13/lab13_final" beforeDir="false" afterPath="$PROJECT_DIR$/lab_13/lab13_final" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_13/lab13_wmma.cu" beforeDir="false" afterPath="$PROJECT_DIR$/lab_13/lab13_wmma.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_5/lab5" beforeDir="false" afterPath="$PROJECT_DIR$/lab_5/lab5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_7/lab7.cu" beforeDir="false" afterPath="$PROJECT_DIR$/lab_7/lab7.cu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.cpp1.ii" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.cpp1.ii" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.cpp4.ii" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.cpp4.ii" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.cudafe1.c" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.cudafe1.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.cudafe1.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.cudafe1.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.cudafe1.gpu" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.cudafe1.gpu" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.cudafe1.stub.c" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.cudafe1.stub.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.fatbin.c" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.fatbin.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst.ptx" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst.ptx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst_dlink.fatbin.c" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst_dlink.fatbin.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lab_8/mst_dlink.reg.c" beforeDir="false" afterPath="$PROJECT_DIR$/lab_8/mst_dlink.reg.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,6 +124,8 @@
       <workItem from="1772513562410" duration="2198000" />
       <workItem from="1772693126727" duration="5022000" />
       <workItem from="1773197572660" duration="4699000" />
+      <workItem from="1773298248431" duration="4672000" />
+      <workItem from="1773723633740" duration="913000" />
     </task>
     <task id="LOCAL-00001" summary="реализация 2 лабораторной">
       <option name="closed" value="true" />

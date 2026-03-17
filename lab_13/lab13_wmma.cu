@@ -2,127 +2,168 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#include <mma.h>
+#include <math.h>
 
 #define CHECK_CUDA(call) { cudaError_t err = call; if (err != cudaSuccess) { \
-  fprintf(stderr, "CUDA error: %s\n", cudaGetErrorString(err)); exit(1); } }
+  printf("CUDA error: %s\n", cudaGetErrorString(err)); exit(1);} }
 
-#define CHECK_CUBLAS(call) { cublasStatus_t err = call; if (err != CUBLAS_STATUS_SUCCESS) { \
-  fprintf(stderr, "cuBLAS error %d\n", (int)err); exit(1); } }
+#define CHECK_CUBLAS(call) { if(call != CUBLAS_STATUS_SUCCESS){ \
+  printf("CUBLAS error\n"); exit(1);} }
 
-// 🔥 ТОЧНАЯ КОПИЯ ИЗ LAB12 (работает!)
-void gemm_regular(cublasHandle_t handle, float *d_A, float *d_B, float *d_C, int N, const char* name) {
-    float alpha = 1.0f, beta = 0.0f;
-    printf("  %-12s: ", name);
+using namespace nvcuda;
+using half = __half;
 
-    cudaEvent_t start, stop;
-    CHECK_CUDA(cudaEventCreate(&start));
-    CHECK_CUDA(cudaEventCreate(&stop));
+#define WMMA_M 16
+#define WMMA_N 16
+#define WMMA_K 16
 
-    CHECK_CUDA(cudaEventRecord(start));
-    CHECK_CUBLAS(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N,
-                           &alpha, d_A, N, d_B, N, &beta, d_C, N));
-    CHECK_CUDA(cudaEventRecord(stop));
-    CHECK_CUDA(cudaDeviceSynchronize());
+__global__ void wmmaKernel(half* A, half* B, float* C, int M, int N, int K) {
+    int row = blockIdx.x * WMMA_M;
+    int col = blockIdx.y * WMMA_N;
 
-    float ms; CHECK_CUDA(cudaEventElapsedTime(&ms, start, stop));
-    double flops = 2.0 * N * N * N / 1e9;
-    printf("%6.2f ms | %6.1f GFLOPS\n", ms, flops/(ms/1000));
-    CHECK_CUDA(cudaEventDestroy(start)); CHECK_CUDA(cudaEventDestroy(stop));
-}
+    if (row + WMMA_M > M || col + WMMA_N > N) return;
 
-// 🔥 Tensor Cores (добавлено к Lab12)
-void gemm_tensor_cores(cublasHandle_t handle, float *d_A, float *d_B, float *d_C, int N, const char* name) {
-    float alpha = 1.0f, beta = 0.0f;
-    printf("  %-12s: ", name);
+    wmma::fragment<wmma::matrix_a, WMMA_M, WMMA_N, WMMA_K, half, wmma::row_major> a;
+    wmma::fragment<wmma::matrix_b, WMMA_M, WMMA_N, WMMA_K, half, wmma::row_major> b;
+    wmma::fragment<wmma::accumulator, WMMA_M, WMMA_N, WMMA_K, float> c;
 
-    // Активация Tensor Cores RTX 3050
-    CHECK_CUBLAS(cublasSetMathMode(handle, CUBLAS_TENSOR_OP_MATH));
+    wmma::fill_fragment(c, 0.0f);
 
-    cudaEvent_t start, stop;
-    CHECK_CUDA(cudaEventCreate(&start));
-    CHECK_CUDA(cudaEventCreate(&stop));
-
-    CHECK_CUDA(cudaEventRecord(start));
-    CHECK_CUBLAS(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N,
-                           &alpha, d_A, N, d_B, N, &beta, d_C, N));
-    CHECK_CUDA(cudaEventRecord(stop));
-    CHECK_CUDA(cudaDeviceSynchronize());
-
-    float ms; CHECK_CUDA(cudaEventElapsedTime(&ms, start, stop));
-    double flops = 2.0 * N * N * N / 1e9;
-    printf("%6.2f ms | %6.1f GFLOPS\n", ms, flops/(ms/1000));
-    CHECK_CUDA(cudaEventDestroy(start)); CHECK_CUDA(cudaEventDestroy(stop));
-}
-
-int main() {
-    printf("=== ЛАБОРАТОРНАЯ 13: cuBLAS + Tensor Cores ===\n");
-    printf("RTX 3050 Laptop GPU | CUDA 12.0 WSL2\n\n");
-
-    // 🔥 ТОЧНАЯ ИНИЦИАЛИЗАЦИЯ ИЗ LAB12
-    float *test_ptr;
-    CHECK_CUDA(cudaMalloc(&test_ptr, 1024*sizeof(float)));
-    CHECK_CUDA(cudaFree(test_ptr));
-
-    // Проверка GPU (как в Lab12)
-    int nDevices;
-    CHECK_CUDA(cudaGetDeviceCount(&nDevices));
-    printf("✅ GPU: %d устройств\n", nDevices);
-
-    cudaDeviceProp prop;
-    CHECK_CUDA(cudaGetDeviceProperties(&prop, 0));
-    printf("✅ %s (Compute %d.%d)\n", prop.name, prop.major, prop.minor);
-    printf("✅ Tensor Cores готовы\n\n");
-
-    // cuBLAS (как в Lab12)
-    cublasHandle_t handle;
-    CHECK_CUBLAS(cublasCreate(&handle));
-
-    // 🔥 РАЗМЕРЫ ИЗ LAB12
-    int sizes[] = {256, 512, 1024};
-
-    for (int i = 0; i < 3; i++) {
-        int N = sizes[i];
-        printf("🔢 %dx%d матрицы\n", N, N);
-        printf("Метод            Время(ms)  GFLOPS\n");
-        printf("-----------------------------\n");
-
-        size_t size = N * N * sizeof(float);
-        float *d_A, *d_B, *d_C_reg, *d_C_tc;
-
-        CHECK_CUDA(cudaMalloc(&d_A, size));
-        CHECK_CUDA(cudaMalloc(&d_B, size));
-        CHECK_CUDA(cudaMalloc(&d_C_reg, size));
-        CHECK_CUDA(cudaMalloc(&d_C_tc, size));
-
-        // 🔥 ИНИЦИАЛИЗАЦИЯ ИЗ LAB12
-        float *h_A = (float*)malloc(size);
-        float *h_B = (float*)malloc(size);
-        for (int j = 0; j < N*N; j++) {
-            h_A[j] = 1.0f + (j%100)*0.001f;
-            h_B[j] = 2.0f + (j%100)*0.001f;
-        }
-        CHECK_CUDA(cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice));
-        CHECK_CUDA(cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice));
-        free(h_A); free(h_B);
-
-        // 1️⃣ cuBLAS Regular (работало в Lab12!)
-        cudaMemset(d_C_reg, 0, size);
-        gemm_regular(handle, d_A, d_B, d_C_reg, N, "cuBLAS Regular");
-
-        // 2️⃣ cuBLAS Tensor Cores (Lab13!)
-        cudaMemset(d_C_tc, 0, size);
-        gemm_tensor_cores(handle, d_A, d_B, d_C_tc, N, "cuBLAS TC");
-
-        // Очистка (как в Lab12)
-        CHECK_CUDA(cudaFree(d_A)); CHECK_CUDA(cudaFree(d_B));
-        CHECK_CUDA(cudaFree(d_C_reg)); CHECK_CUDA(cudaFree(d_C_tc));
-        printf("\n");
+    for (int k = 0; k < K; k += WMMA_K) {
+        wmma::load_matrix_sync(a, A + row * K + k, K);
+        wmma::load_matrix_sync(b, B + k * N + col, N);
+        wmma::mma_sync(c, a, b, c);
     }
 
-    CHECK_CUBLAS(cublasDestroy(handle));
-    printf("✅ ЛАБОРАТОРНАЯ 13 ВЫПОЛНЕНА!\n");
-    printf("📚 cuBLAS Regular = Lab12 (работает)\n");
-    printf("🔬 cuBLAS TC = Lab13 Tensor Cores\n");
-    printf("🎯 RTX 3050: 1.5-2.5x ускорение TC\n");
+    wmma::store_matrix_sync(C + row * N + col, c, N, wmma::mem_row_major);
+}
+
+void init(half* a, int size) {
+    for (int i = 0; i < size; i++)
+        a[i] = __float2half((float)rand()/RAND_MAX);
+}
+
+bool check(float* a, float* b, int size) {
+    float max_diff = 0;
+    for (int i = 0; i < size; i++) {
+        float d = fabs(a[i] - b[i]);
+        if (d > max_diff) max_diff = d;
+    }
+    printf("Max diff: %.3f\n", max_diff);
+    return max_diff < 0.5f;
+}
+
+double wmmaRun(half* A, half* B, float* C, int M, int N, int K) {
+    dim3 grid((M+15)/16, (N+15)/16);
+    dim3 block(32,1);
+
+    cudaEvent_t s,e;
+    cudaEventCreate(&s);
+    cudaEventCreate(&e);
+
+    cudaEventRecord(s);
+    for(int i=0;i<10;i++)
+        wmmaKernel<<<grid,block>>>(A,B,C,M,N,K);
+    cudaEventRecord(e);
+    cudaEventSynchronize(e);
+
+    float ms;
+    cudaEventElapsedTime(&ms,s,e);
+    return ms/10;
+}
+
+double cublasRun(cublasHandle_t h, half* A, half* B, float* C, int M, int N, int K) {
+    float alpha=1,beta=0;
+
+    cudaEvent_t s,e;
+    cudaEventCreate(&s);
+    cudaEventCreate(&e);
+
+    cudaEventRecord(s);
+    for(int i=0;i<10;i++){
+        cublasGemmEx(h,
+            CUBLAS_OP_T, CUBLAS_OP_T,
+            M,N,K,
+            &alpha,
+            A, CUDA_R_16F, K,
+            B, CUDA_R_16F, N,
+            &beta,
+            C, CUDA_R_32F, M,
+            CUDA_R_32F,
+            CUBLAS_GEMM_DEFAULT_TENSOR_OP);
+    }
+    cudaEventRecord(e);
+    cudaEventSynchronize(e);
+
+    float ms;
+    cudaEventElapsedTime(&ms,s,e);
+    return ms/10;
+}
+
+int main(){
+    cudaDeviceProp p;
+    cudaGetDeviceProperties(&p,0);
+
+    printf("Устройство: %s\n",p.name);
+    printf("Архитектура: %d.%d\n",p.major,p.minor);
+    printf("Tensor Cores: %s\n",(p.major>=7)?"Да":"Нет");
+    printf("SMs: %d\n\n",p.multiProcessorCount);
+
+    int sizes[]={64,128,256,512,1024};
+
+    printf("Size      WMMA(ms)  cuBLAS(ms)  GFLOPS   Speedup   OK\n");
+    printf("----------------------------------------------------------\n");
+
+    cublasHandle_t h;
+    cublasCreate(&h);
+    cublasSetMathMode(h,CUBLAS_TENSOR_OP_MATH);
+
+    for(int s=0;s<5;s++){
+        int M=sizes[s],N=sizes[s],K=sizes[s];
+
+        size_t As=M*K*sizeof(half);
+        size_t Bs=K*N*sizeof(half);
+        size_t Cs=M*N*sizeof(float);
+
+        half *hA,*hB;
+        float *hC1,*hC2;
+
+        cudaHostAlloc(&hA,As,0);
+        cudaHostAlloc(&hB,Bs,0);
+        cudaHostAlloc(&hC1,Cs,0);
+        cudaHostAlloc(&hC2,Cs,0);
+
+        init(hA,M*K);
+        init(hB,K*N);
+
+        half *dA,*dB;
+        float *dC1,*dC2;
+
+        cudaMalloc(&dA,As);
+        cudaMalloc(&dB,Bs);
+        cudaMalloc(&dC1,Cs);
+        cudaMalloc(&dC2,Cs);
+
+        cudaMemcpy(dA,hA,As,cudaMemcpyHostToDevice);
+        cudaMemcpy(dB,hB,Bs,cudaMemcpyHostToDevice);
+
+        double t1=wmmaRun(dA,dB,dC1,M,N,K);
+        double t2=cublasRun(h,dA,dB,dC2,M,N,K);
+
+        cudaMemcpy(hC1,dC1,Cs,cudaMemcpyDeviceToHost);
+        cudaMemcpy(hC2,dC2,Cs,cudaMemcpyDeviceToHost);
+
+        double gflops=(2.0*M*N*K)/(t1*1e6);
+
+        bool ok=check(hC1,hC2,M*N);
+
+        printf("%dx%dx%d  %8.3f  %8.3f  %8.1f   %6.2fx   %s\n",
+            M,M,M,t1,t2,gflops,t1>0?t2/t1:0,ok?"✓":"✗");
+
+        cudaFree(dA); cudaFree(dB);
+        cudaFree(dC1); cudaFree(dC2);
+    }
+
     return 0;
 }

@@ -5,7 +5,6 @@ SOURCE = lab13_wmma.cu
 NVCCFLAGS = -O3 -arch=sm_86  # RTX 3050 = sm_86
 
 all: $(TARGET)
-	@echo "✅ Lab13 собрана!"
 	@./$(TARGET)
 
 $(TARGET): $(SOURCE)
