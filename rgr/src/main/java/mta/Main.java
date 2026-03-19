@@ -1,6 +1,7 @@
 package mta;
 
 import mta.db.Database;
+import mta.db.Database;
 import mta.queue.RetryWorker;
 import mta.smtp.SMTPServer;
 
