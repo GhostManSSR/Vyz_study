@@ -114,7 +114,6 @@ void vectorAddBaseline(float *h_a, float *h_b, float *h_c) {
   cudaFree(d_a); cudaFree(d_b); cudaFree(d_c);
 }
 
-// НОВОЕ: Автоматическая оптимизация chunkSize для vectorAdd
 void vectorAddAutoTune(float *h_a, float *h_b, float *h_c) {
   printf("\n=== АВТООПТИМИЗАЦИЯ Vector Add ===\n");
 
@@ -122,14 +121,13 @@ void vectorAddAutoTune(float *h_a, float *h_b, float *h_c) {
   size_t bestChunk = 0;
   size_t chunkSizes[N_TEST_CHUNKS];
 
-  // Генерация тест. размеров: 1M, 4M, 16M, 32M, 64M, 128M, 256M, full/2, full/4, full/8, full/16, full
   size_t sizes[] = {1<<20, 4<<20, 16<<20, 32<<20, 64<<20, 128<<20, 256<<20,
                     N_ELEMENTS/2, N_ELEMENTS/4, N_ELEMENTS/8, N_ELEMENTS/16, N_ELEMENTS};
   for (int i = 0; i < N_TEST_CHUNKS; i++) {
-    chunkSizes[i] = sizes[i] / sizeof(float);  // в элементах
+    chunkSizes[i] = sizes[i] / sizeof(float);
   }
 
-  size_t maxChunkBytes = (N_ELEMENTS * sizeof(float)); // max для выделения
+  size_t maxChunkBytes = (N_ELEMENTS * sizeof(float));
 
   // Подготовка streams и device памяти
   cudaStream_t streams[N_STREAMS];

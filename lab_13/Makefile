@@ -17,4 +17,4 @@ run: $(TARGET)
 	./$(TARGET)
 
 check:
-	nvidia-smi && nvcc --version && echo "✅ CUDA готова!"
+	nvidia-smi && nvcc --version && echo "CUDA готова!"
