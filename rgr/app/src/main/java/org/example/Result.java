@@ -36,25 +36,25 @@ public class Result {
 
     public void print() {
 
-        System.out.println("\n=== RESULT ===");
-        System.out.println("Status: " + status);
+        System.out.println("\n=== Результат ===");
+        System.out.println("Статус: " + status);
 
         switch (status) {
 
             case OPTIMAL -> {
-                System.out.println("Unique optimal solution:");
+                System.out.println("Единственное оптимальное решение:");
                 for (int i = 0; i < solution.length; i++) {
                     System.out.println("x" + (i + 1) + " = " + solution[i]);
                 }
             }
 
             case INFINITE -> {
-                System.out.println("Infinite number of optimal solutions:");
+                System.out.println("Бесконечно много оптимальных решений:");
                 for (int i = 0; i < solution.length; i++) {
                     System.out.println("x" + (i + 1) + " = " + solution[i]);
                 }
 
-                System.out.print("Free variables: ");
+                System.out.print("Свободные переменные: ");
                 if (freeVariables != null) {
                     for (int v : freeVariables) {
                         System.out.print("x" + (v + 1) + " ");
@@ -64,7 +64,7 @@ public class Result {
             }
 
             case NO_SOLUTION -> {
-                System.out.println("No feasible solution.");
+                System.out.println("Решений нет");
             }
         }
     }

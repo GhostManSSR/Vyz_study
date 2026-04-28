@@ -4,6 +4,7 @@ public class DualSimplex {
 
     private final Matrix table;
     private final int zRow;
+    private static final boolean DEBUG = true;
 
     public DualSimplex(Matrix table) {
         this.table = table;
@@ -17,7 +18,7 @@ public class DualSimplex {
 
         int step = 0;
 
-        System.out.println("=== DUAL SIMPLEX START ===");
+        System.out.println("=== Двойственный симплекс-метод ===");
 
         if (!isDualFeasible()) {
             System.out.println("→ Таблица не является двойственно допустимой");
@@ -26,12 +27,12 @@ public class DualSimplex {
 
         while (true) {
 
-            printTable("Step " + step);
+            printTable("Шаг " + step);
 
             int row = findMostNegativeBRow();
 
             if (row == -1) {
-                System.out.println("→ OPTIMAL");
+                System.out.println("→ Решение оптимально");
                 return buildResult();
             }
 
@@ -119,8 +120,23 @@ public class DualSimplex {
             throw new RuntimeException("Pivot = 0");
         }
 
+        System.out.println("Ведущая строка = " + pr);
+        System.out.println("Ведущая коллонка = " + pc);
+        System.out.println("Ведущий элемент = " + p);
+
+        System.out.println("--> Нормализация строки " + pr);
+
         for (int j = 0; j < table.getCols(); j++) {
-            table.set(pr, j, table.get(pr, j).div(p));
+
+            Fraction oldVal = table.get(pr, j);
+            Fraction newVal = oldVal.div(p);
+
+            if (DEBUG) {
+                System.out.println("R" + pr + "[" + j + "]: " +
+                        oldVal + " / " + p + " = " + newVal);
+            }
+
+            table.set(pr, j, newVal);
         }
 
         for (int i = 0; i < table.getRows(); i++) {
@@ -131,15 +147,27 @@ public class DualSimplex {
 
             if (factor.isZero()) continue;
 
+            System.out.println("\n--> Приводим строку " + i + " используя множитель " + factor);
+
             for (int j = 0; j < table.getCols(); j++) {
-                table.set(i, j,
-                        table.get(i, j).sub(
-                                factor.mul(table.get(pr, j))
-                        )
-                );
+
+                Fraction oldVal = table.get(i, j);
+                Fraction pivotVal = table.get(pr, j);
+
+                Fraction newVal = oldVal.sub(factor.mul(pivotVal));
+
+                if (DEBUG) {
+                    System.out.println(
+                            "R" + i + "[" + j + "]: " +
+                                    oldVal + " - (" + factor + " * " + pivotVal + ") = " + newVal
+                    );
+                }
+
+                table.set(i, j, newVal);
             }
         }
     }
+
 
     private void printTable(String title) {
 
@@ -153,7 +181,7 @@ public class DualSimplex {
         for (int j = 0; j < cols - 1; j++) {
             System.out.printf("x%-4d", j + 1);
         }
-        System.out.println("| b");
+        System.out.println("| 1");
 
         System.out.println("----+--------------------------------");
 
