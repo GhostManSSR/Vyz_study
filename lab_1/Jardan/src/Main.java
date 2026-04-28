@@ -10,7 +10,7 @@ void main() {
 //        Jardan solver_3 = new Jardan("input_3.txt");
 //        solver_3.solve();
         System.out.println("\n====== ================ 7 Nomer ============== ===========\n");
-        Jardan solver_4 = new Jardan("input_4.txt");
+        Jardan solver_4 = new Jardan("input_1.txt");
         solver_4.solve();
     } catch (Exception e) {
         System.err.println("Ошибка: " + e.getMessage());

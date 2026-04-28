@@ -3,90 +3,65 @@ package org.example;
 public class DualSimplex {
 
     private final Matrix table;
-    private int zRow;
+    private final int zRow;
 
     public DualSimplex(Matrix table) {
         this.table = table;
         this.zRow = table.getRows() - 1;
+
+        normalizeZRow();
     }
+
 
     public Result solve() {
 
         int step = 0;
 
-        System.out.println("=== START ===");
+        System.out.println("=== DUAL SIMPLEX START ===");
 
-        normalizeZRow();
+        if (!isDualFeasible()) {
+            System.out.println("→ Таблица не является двойственно допустимой");
+            return Result.noSolution();
+        }
 
-        // =========================
-        // DUAL SIMPLEX
-        // =========================
         while (true) {
 
-            printTable("Dual Simplex Step " + step);
+            printTable("Step " + step);
 
             int row = findMostNegativeBRow();
 
             if (row == -1) {
-                System.out.println("→ Все b >= 0 → допустимый базис найден");
-                break;
+                System.out.println("→ OPTIMAL");
+                return buildResult();
             }
 
             int col = findDualPivotColumn(row);
 
             if (col == -1) {
+                System.out.println("→ Нет допустимого разрешающего столбца");
                 return Result.noSolution();
             }
 
             pivot(row, col);
             step++;
         }
+    }
 
-        System.out.println("\n=== PRIMAL SIMPLEX ===");
+    private boolean isDualFeasible() {
 
-        step = 0;
-
-        // =========================
-        // PRIMAL SIMPLEX
-        // =========================
-        while (true) {
-
-            printTable("Primal Simplex Step " + step);
-
-            int col = findPrimalPivotColumn();
-
-            if (col == -1) {
-                System.out.println("→ OPTIMUM");
-                break;
+        for (int j = 0; j < table.getCols() - 1; j++) {
+            if (table.get(zRow, j).compareTo(Fraction.ZERO) < 0) {
+                return false;
             }
-
-            int row = findPrimalPivotRow(col);
-
-            if (row == -1) {
-                return Result.noSolution();
-            }
-
-            pivot(row, col);
-            step++;
         }
 
-        return buildResult();
+        return true;
     }
 
-    // =========================
-    // Z
-    // =========================
-    private void normalizeZRow() {
-        zRow = table.getRows() - 1;
-    }
-
-    // =========================
-    // DUAL SIMPLEX
-    // =========================
     private int findMostNegativeBRow() {
 
         int row = -1;
-        Fraction min = new Fraction(0);
+        Fraction min = Fraction.ZERO;
 
         for (int i = 0; i < table.getRows(); i++) {
 
@@ -94,13 +69,15 @@ public class DualSimplex {
 
             Fraction b = table.get(i, table.getCols() - 1);
 
-            if (b.compareTo(new Fraction(0)) < 0) {
+            if (b.compareTo(Fraction.ZERO) < 0) {
+
                 if (row == -1 || b.compareTo(min) < 0) {
                     min = b;
                     row = i;
                 }
             }
         }
+
         return row;
     }
 
@@ -113,72 +90,27 @@ public class DualSimplex {
 
             Fraction a = table.get(row, j);
 
-            if (a.compareTo(new Fraction(0)) < 0) {
+            if (!a.isNegative() || a.isZero()) continue;
 
-                Fraction ratio = table.get(zRow, j).div(a);
+            Fraction z = table.get(zRow, j);
+            Fraction ratio = z.div(a).abs();
 
-                if (col == -1 || best == null || ratio.compareTo(best) < 0) {
-                    best = ratio;
-                    col = j;
-                }
+            if (col == -1 || ratio.compareTo(best) < 0) {
+                best = ratio;
+                col = j;
             }
         }
 
         return col;
     }
 
-    // =========================
-    // PRIMAL SIMPLEX
-    // =========================
-    private int findPrimalPivotColumn() {
-
-        int col = -1;
-        Fraction min = null;
-
-        for (int j = 0; j < table.getCols() - 1; j++) {
-
-            Fraction c = table.get(zRow, j);
-
-            if (c.compareTo(new Fraction(0)) < 0) {
-
-                if (col == -1 || min == null || c.compareTo(min) < 0) {
-                    min = c;
-                    col = j;
-                }
-            }
+    private void normalizeZRow() {
+        for (int j = 0; j < table.getCols(); j++) {
+            Fraction v = table.get(zRow, j);
+            table.set(zRow, j, v.neg());
         }
-
-        return col;
     }
 
-    private int findPrimalPivotRow(int col) {
-
-        int row = -1;
-        Fraction best = null;
-
-        for (int i = 0; i < table.getRows(); i++) {
-
-            if (i == zRow) continue;
-
-            Fraction a = table.get(i, col);
-
-            if (a.compareTo(new Fraction(0)) > 0) {
-
-                Fraction ratio = table.get(i, table.getCols() - 1).div(a);
-
-                if (row == -1 || best == null || ratio.compareTo(best) < 0) {
-                    best = ratio;
-                    row = i;
-                }
-            }
-        }
-
-        return row;
-    }
-
-    // =========================
-    // PIVOT (ИСПРАВЛЕН + Z ОБНОВЛЯЕТСЯ)
-    // =========================
     private void pivot(int pr, int pc) {
 
         Fraction p = table.get(pr, pc);
@@ -187,12 +119,10 @@ public class DualSimplex {
             throw new RuntimeException("Pivot = 0");
         }
 
-        // нормализация pivot строки
         for (int j = 0; j < table.getCols(); j++) {
             table.set(pr, j, table.get(pr, j).div(p));
         }
 
-        // остальные строки включая Z
         for (int i = 0; i < table.getRows(); i++) {
 
             if (i == pr) continue;
@@ -202,77 +132,108 @@ public class DualSimplex {
             if (factor.isZero()) continue;
 
             for (int j = 0; j < table.getCols(); j++) {
-
-                Fraction newVal =
-                        table.get(i, j)
-                                .sub(factor.mul(table.get(pr, j)));
-
-                table.set(i, j, newVal);
+                table.set(i, j,
+                        table.get(i, j).sub(
+                                factor.mul(table.get(pr, j))
+                        )
+                );
             }
         }
     }
 
-    // =========================
-    // Z correction (КЛЮЧЕВАЯ ЧАСТЬ)
-    // =========================
-    private void recalculateZ() {
-
-        // пересчёт Z как линейной комбинации ограничений
-        for (int i = 0; i < table.getRows(); i++) {
-
-            if (i == zRow) continue;
-
-            Fraction factor = table.get(i, zRow);
-
-            for (int j = 0; j < table.getCols(); j++) {
-
-                table.set(zRow, j,
-                        table.get(zRow, j)
-                                .sub(factor.mul(table.get(i, j))));
-            }
-        }
-    }
-
-    // =========================
-    // PRINT
-    // =========================
     private void printTable(String title) {
 
         System.out.println("\n=== " + title + " ===");
 
-        for (int i = 0; i < table.getRows(); i++) {
+        int rows = table.getRows();
+        int cols = table.getCols();
 
-            if (i == zRow)
-                System.out.print("Z  | ");
-            else
-                System.out.print("R" + i + " | ");
+        System.out.print("б.п | ");
 
-            for (int j = 0; j < table.getCols(); j++) {
-                System.out.print(table.get(i, j) + "\t");
+        for (int j = 0; j < cols - 1; j++) {
+            System.out.printf("x%-4d", j + 1);
+        }
+        System.out.println("| b");
+
+        System.out.println("----+--------------------------------");
+
+        for (int i = 0; i < rows; i++) {
+
+            if (i == zRow) {
+                System.out.print("Z   | ");
+            } else {
+                int basic = findBasicColumn(i);
+                System.out.printf((basic != -1 ? "x%-3d| " : "?   | "),
+                        basic + 1);
             }
+
+            for (int j = 0; j < cols; j++) {
+                System.out.printf("%-6s", table.get(i, j));
+            }
+
             System.out.println();
         }
     }
 
-    // =========================
-    // RESULT
-    // =========================
+    private int findBasicColumn(int row) {
+
+        for (int j = 0; j < table.getCols() - 1; j++) {
+
+            if (!table.get(row, j).equals(Fraction.ONE)) continue;
+
+            boolean ok = true;
+
+            for (int i = 0; i < table.getRows(); i++) {
+
+                if (i == row || i == zRow) continue;
+
+                if (!table.get(i, j).isZero()) {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok) return j;
+        }
+
+        return -1;
+    }
+
     private Result buildResult() {
 
         Result r = new Result();
 
         int cols = table.getCols();
+        int vars = cols - 1;
 
-        r.solution = new Fraction[cols - 1];
+        r.solution = new Fraction[vars];
 
-        for (int j = 0; j < cols - 1; j++) {
+        boolean hasFreeVariable = false;
+        int[] free = new int[vars];
+        int freeCount = 0;
+
+        for (int j = 0; j < vars; j++) {
 
             int row = findBasicRow(j);
 
-            if (row != -1)
+            if (row != -1) {
                 r.solution[j] = table.get(row, cols - 1);
-            else
-                r.solution[j] = new Fraction(0);
+            } else {
+                r.solution[j] = Fraction.ZERO;
+
+                if (table.get(zRow, j).isZero()) {
+                    free[freeCount++] = j;
+                    hasFreeVariable = true;
+                }
+            }
+        }
+
+        if (hasFreeVariable) {
+
+            int[] freeVars = new int[freeCount];
+            System.arraycopy(free, 0, freeVars, 0, freeCount);
+
+            return Result.infinite(r.solution, freeVars);
         }
 
         r.status = Result.Status.OPTIMAL;
@@ -281,13 +242,11 @@ public class DualSimplex {
 
     private int findBasicRow(int col) {
 
-        int rowIndex = -1;
-
         for (int i = 0; i < table.getRows(); i++) {
 
             if (i == zRow) continue;
 
-            if (!table.get(i, col).equals(new Fraction(1))) continue;
+            if (!table.get(i, col).equals(Fraction.ONE)) continue;
 
             boolean ok = true;
 
