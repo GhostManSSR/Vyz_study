@@ -29,12 +29,52 @@ public class Matrix {
         data[r2] = temp;
     }
 
-    public void print() {
-        for (Fraction[] row : data) {
-            for (Fraction val : row) {
-                System.out.print(val + "\t");
+    public void printMatrix(Matrix table, int[] basis, int zRow) {
+
+        int m = table.getRows();
+        int n = table.getCols() - 1;
+
+        String sep = "-----------------------------------------------------------";
+
+        System.out.println(sep);
+
+        // ===== HEADER =====
+        System.out.print("| БП   | 1     |");
+
+        for (int j = 0; j < n; j++) {
+            System.out.printf(" x%-4d |", j + 1);
+        }
+
+        System.out.println();
+        System.out.println(sep);
+
+        for (int i = 0; i < m; i++) {
+
+            if (i == zRow) {
+                System.out.printf("| %-4s | %-5s |", "Z", table.get(i, n));
+            } else {
+                int b = basis[i];
+                String name = (b == -1) ? "?" : "x" + (b + 1);
+
+                System.out.printf("| %-4s | %-5s |", name, table.get(i, n));
             }
+
+            for (int j = 0; j < n; j++) {
+                System.out.printf(" %-5s |", table.get(i, j));
+            }
+
             System.out.println();
         }
+
+        System.out.println(sep);
+
+        System.out.print("| CO   | -     |");
+
+        for (int j = 0; j < n; j++) {
+                System.out.print(" -     |");
+        }
+
+        System.out.println();
+        System.out.println(sep);
     }
 }

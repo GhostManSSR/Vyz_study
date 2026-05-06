@@ -20,9 +20,6 @@ public class App {
 
         Matrix matrix = FileReaderUtil.readMatrix(is);
 
-        System.out.println("Input:");
-        matrix.print();
-
         DualSimplex solver = new DualSimplex(matrix);
         Result result = solver.solve();
 
