@@ -30,10 +30,10 @@ public class DualSimplex {
 
     public Result solve() {
 
-        System.out.println("=== Двойственный симплекс-метод ===");
+        System.out.println("=== Двойственный симплекс-метод===");
 
         if (!isDualFeasible()) {
-            System.out.println("→ Таблица не является двойственно допустимой");
+            System.out.println("→ начальная таблица не двойственно допустима");
             return Result.noSolution();
         }
 
@@ -41,9 +41,14 @@ public class DualSimplex {
 
         while (true) {
 
+            // =========================
+            // 1. ВЫБОР PIVOT ROW
+            // =========================
             int pivotRow = findPivotRow();
 
-            // ===== OPTIMAL =====
+            // =========================
+            // OPTIMAL CONDITION
+            // =========================
             if (pivotRow == -1) {
 
                 printTable("Финальная таблица", null);
@@ -53,70 +58,118 @@ public class DualSimplex {
                 Fraction[] x = analyzeSolution();
                 Fraction z = table.get(zRow, n);
 
-                int alt = findAlternativeEnteringVariable();
+                boolean hasAlternative = false;
 
-                if (alt != -1) {
-                    System.out.println("Найден альтернативный оптимум");
+                for (int j = 0; j < n; j++) {
+
+                    if (!table.get(zRow, j).isZero() || findBasisRow(j) != -1)
+                        continue;
+
+                    boolean canPivot = false;
+
+                    for (int i = 0; i < m; i++) {
+                        if (table.get(i, j).compareTo(Fraction.ZERO) > 0) {
+                            canPivot = true;
+                            break;
+                        }
+                    }
+
+                    if (!canPivot) {
+                        System.out.println("\n→ Решение оптимально (найдена точка)");
+
+                        System.out.print("X = (");
+                        for (int i = 0; i < x.length; i++) {
+                            System.out.print(x[i]);
+                            if (i != x.length - 1) System.out.print(", ");
+                        }
+                        System.out.println(")");
+
+                        System.out.println("Z = " + z);
+                        System.out.println("→ найден луч (rc = 0, но нет a_ij > 0)");
+                        return Result.unbounded();
+                    }
+
+                    hasAlternative = true;
+                }
+
+                if (hasAlternative) {
+                    System.out.println("→ существует альтернативный оптимум");
                     return buildLambdaSolution();
                 }
 
                 return Result.optimal(x, z);
             }
 
-            Fraction[] ratios = calculateRatios(pivotRow);
+            // =========================
+            // 2. CHECK FEASIBILITY OF ROW
+            // =========================
+            boolean hasNegativeCoeff = false;
 
-            printTable("Шаг " + (step + 1), ratios);
+            for (int j = 0; j < n; j++) {
+                if (table.get(pivotRow, j).compareTo(Fraction.ZERO) < 0) {
+                    hasNegativeCoeff = true;
+                    break;
+                }
+            }
+
+            // RHS < 0, но нет отрицательных коэффициентов → infeasible
+            if (!hasNegativeCoeff) {
+                System.out.println("➡ b < 0 нет отрицательных коэффициентов");
+                return Result.noSolution();
+            }
+
+            // =========================
+            // 3. CHOOSE PIVOT COLUMN (ratio test)
+            // =========================
+            Fraction[] ratios = new Fraction[n];
+
+            for (int j = 0; j < n; j++) {
+
+                Fraction a = table.get(pivotRow, j);
+
+                if (a.compareTo(Fraction.ZERO) < 0) {
+
+                    Fraction z = table.get(zRow, j);
+
+                    ratios[j] = z.abs().div(a.abs());
+                } else {
+                    ratios[j] = null;
+                }
+            }
 
             int pivotCol = findPivotColumn(ratios);
 
-            // ===== UNBOUNDED =====
+            // =========================
+            // 4. UNBOUNDED CHECK
+            // =========================
             if (pivotCol == -1) {
 
-                PivotAnalysis info = analyzePivotFailure(pivotRow);
+                System.out.println("\n➡ no valid pivot column");
 
-                if (!info.hasNegative) {
-                    System.out.println("В разрешающей строке нет отрицательных значений");
-                    return Result.throwsSolution();
-                }
-
-                if (!info.hasPositive) {
-
-                    System.out.println("Причина: в pivot-строке нет допустимых направлений роста");
-                    System.out.println("Все коэффициенты ≤ 0 → невозможно выполнить шаг улучшения");
-                    System.out.println("➡ Система несовместна (INFEASIBLE)");
-
-                    return Result.throwsSolution();
-                }
-
-                boolean hasNegative = false;
+                boolean hasAnyNegative = false;
 
                 for (int j = 0; j < n; j++) {
                     if (table.get(pivotRow, j).compareTo(Fraction.ZERO) < 0) {
-                        hasNegative = true;
+                        hasAnyNegative = true;
                         break;
                     }
                 }
 
-                if (!hasNegative) {
-                    System.out.println("➡ Все коэффициенты в строке ≥ 0");
-                    System.out.println("➡ Целевая функция НЕОГРАНИЧЕНА (UNBOUNDED)");
+                if (!hasAnyNegative) {
+                    System.out.println("➡ UNBOUNDED");
                     return Result.unbounded();
                 }
 
-                // =========================
-                // MIXED CASE (самый важный)
-                // =========================
-                System.out.println("Причина: отсутствуют допустимые симплекс-отношения");
-                System.out.println("Все ratio = null → нет допустимого базиса");
-                System.out.println("➡ Ошибка постановки задачи / вырожденность");
-
+                System.out.println("➡ infeasible pivot step");
                 return Result.noSolution();
             }
 
-            System.out.println("\nРазрешающий элемент: " +
-                    table.get(pivotRow, pivotCol) +
-                    " (row " + (pivotRow + 1) +
-                    ", col x" + (pivotCol + 1) + ")");
+            // =========================
+            // 5. PIVOT
+            // =========================
+            System.out.println("\nPivot:");
+            System.out.println("row = " + (pivotRow + 1));
+            System.out.println("col = x" + (pivotCol + 1));
 
             pivot(pivotRow, pivotCol);
 
@@ -179,9 +232,14 @@ public class DualSimplex {
             }
         }
 
+//        if (pivotRow == -1) {
+//            restoreMatrix(table, backup);
+//            return Result.optimal(x1, z);
+//        }
         if (pivotRow == -1) {
             restoreMatrix(table, backup);
-            return Result.optimal(x1, z);
+
+            return Result.unbounded();
         }
 
         // 4. делаем pivot

@@ -94,7 +94,7 @@ public class Result {
             }
 
             case UNBOUNDED -> {
-                System.out.println("Функция не ограничена (UNBOUNDED)");
+                System.out.println("Функция не ограничена");
             }
 
             case INFINITE -> {
