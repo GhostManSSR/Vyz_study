@@ -26,8 +26,6 @@ public class DualSimplex {
         printTable("Входные данные", null);
     }
 
-    // ================= SOLVE =================
-
     public Result solve() {
 
         System.out.println("=== Двойственный симплекс-метод===");
@@ -41,14 +39,8 @@ public class DualSimplex {
 
         while (true) {
 
-            // =========================
-            // 1. ВЫБОР PIVOT ROW
-            // =========================
             int pivotRow = findPivotRow();
 
-            // =========================
-            // OPTIMAL CONDITION
-            // =========================
             if (pivotRow == -1) {
 
                 printTable("Финальная таблица", null);
@@ -75,8 +67,6 @@ public class DualSimplex {
                     }
 
                     if (!canPivot) {
-                        System.out.println("\n→ Решение оптимально (найдена точка)");
-
                         System.out.print("X = (");
                         for (int i = 0; i < x.length; i++) {
                             System.out.print(x[i]);
@@ -100,9 +90,6 @@ public class DualSimplex {
                 return Result.optimal(x, z);
             }
 
-            // =========================
-            // 2. CHECK FEASIBILITY OF ROW
-            // =========================
             boolean hasNegativeCoeff = false;
 
             for (int j = 0; j < n; j++) {
@@ -112,15 +99,11 @@ public class DualSimplex {
                 }
             }
 
-            // RHS < 0, но нет отрицательных коэффициентов → infeasible
             if (!hasNegativeCoeff) {
-                System.out.println("➡ b < 0 нет отрицательных коэффициентов");
+                System.out.println("➡ b < 0 нет отрицательных коэффициентов в строке");
                 return Result.noSolution();
             }
 
-            // =========================
-            // 3. CHOOSE PIVOT COLUMN (ratio test)
-            // =========================
             Fraction[] ratios = new Fraction[n];
 
             for (int j = 0; j < n; j++) {
@@ -139,9 +122,6 @@ public class DualSimplex {
 
             int pivotCol = findPivotColumn(ratios);
 
-            // =========================
-            // 4. UNBOUNDED CHECK
-            // =========================
             if (pivotCol == -1) {
 
                 System.out.println("\n➡ no valid pivot column");
@@ -164,10 +144,7 @@ public class DualSimplex {
                 return Result.noSolution();
             }
 
-            // =========================
-            // 5. PIVOT
-            // =========================
-            System.out.println("\nPivot:");
+            System.out.println("\nРазрешающий элемента:");
             System.out.println("row = " + (pivotRow + 1));
             System.out.println("col = x" + (pivotCol + 1));
 
@@ -184,7 +161,6 @@ public class DualSimplex {
 
         int entering = -1;
 
-        // 1. ищем альтернативную переменную
         for (int j = 0; j < n; j++) {
 
             if (table.get(zRow, j).isZero() && findBasisRow(j) == -1) {
@@ -209,11 +185,9 @@ public class DualSimplex {
             return Result.optimal(x1, z);
         }
 
-        // 2. сохраняем состояние
         Matrix backup = copyMatrix(table);
         int[] basisBackup = Arrays.copyOf(basis, basis.length);
 
-        // 3. ищем pivot row (ratio test)
         int pivotRow = -1;
         Fraction best = null;
 
@@ -232,17 +206,12 @@ public class DualSimplex {
             }
         }
 
-//        if (pivotRow == -1) {
-//            restoreMatrix(table, backup);
-//            return Result.optimal(x1, z);
-//        }
         if (pivotRow == -1) {
             restoreMatrix(table, backup);
 
             return Result.unbounded();
         }
 
-        // 4. делаем pivot
         pivot(pivotRow, entering);
 
         System.out.println("\n=== Таблица состояния (X2) ===");
@@ -250,7 +219,6 @@ public class DualSimplex {
 
         Fraction[] x2 = snapshotSolution();
 
-        // 5. откат ВСЕГО состояния
         restoreMatrix(table, backup);
         System.arraycopy(basisBackup, 0, basis, 0, basis.length);
 
@@ -316,8 +284,6 @@ public class DualSimplex {
         return res;
     }
 
-    // ================= FEASIBILITY =================
-
     private boolean isDualFeasible() {
 
         boolean ok = true;
@@ -347,8 +313,6 @@ public class DualSimplex {
         return ok;
     }
 
-    // ================= PIVOT ROW =================
-
     private int findPivotRow() {
 
         int row = -1;
@@ -368,8 +332,6 @@ public class DualSimplex {
 
         return row;
     }
-
-    // ================= RATIOS =================
 
     private Fraction[] calculateRatios(int row) {
 
@@ -408,8 +370,6 @@ public class DualSimplex {
 
         return col;
     }
-
-    // ================= PIVOT =================
 
     private void pivot(int pr, int pc) {
 
@@ -461,34 +421,6 @@ public class DualSimplex {
         basis[pr] = pc;
     }
 
-    private int findAlternativeEnteringVariable() {
-
-        for (int j = 0; j < n; j++) {
-
-            // reduced cost = 0
-            if (!table.get(zRow, j).isZero()) continue;
-
-            // НЕ базисная переменная
-            if (findBasisRow(j) != -1) continue;
-
-            // ОБЯЗАТЕЛЬНО: есть допустимое направление
-            boolean hasPositive = false;
-
-            for (int i = 0; i < m; i++) {
-                if (table.get(i, j).compareTo(Fraction.ZERO) > 0) {
-                    hasPositive = true;
-                    break;
-                }
-            }
-
-            if (hasPositive) return j;
-        }
-
-        return -1;
-    }
-
-    // ================= BASIS =================
-
     private void findInitialBasis() {
 
         for (int i = 0; i < m; i++) basis[i] = NOT_SET;
@@ -519,8 +451,6 @@ public class DualSimplex {
         }
     }
 
-    // ================= OUTPUT =================
-
     private void printTable(String title, Fraction[] ratios) {
 
         System.out.println("\n=== " + title + " ===");
@@ -534,7 +464,6 @@ public class DualSimplex {
 
         System.out.println(sep);
 
-        // ===== HEADER =====
         System.out.printf("| %-4s | %-5s |", "БП", "1");
 
         for (int j = 0; j < n; j++) {
@@ -544,7 +473,6 @@ public class DualSimplex {
         System.out.println();
         System.out.println(sep);
 
-        // ===== BODY =====
         for (int i = 0; i < rows; i++) {
 
             if (i == zRow) {
@@ -566,7 +494,6 @@ public class DualSimplex {
 
         System.out.println(sep);
 
-        // ===== CO ROW =====
         if (ratios != null) {
 
             System.out.printf("| %-4s | %-5s |", "CO", "-");
@@ -593,39 +520,6 @@ public class DualSimplex {
             System.out.println(sep);
         }
     }
-
-    private void printRatios(Fraction[] ratios) {
-
-        System.out.println("\nСимплекс-отношения:");
-
-        for (int j = 0; j < ratios.length; j++) {
-
-            if (ratios[j] != null) {
-                System.out.println("x" + (j + 1) + " = " + ratios[j]);
-            }
-        }
-    }
-
-    private void printResult() {
-
-        System.out.println("\nТекущее решение:");
-
-        for (int j = 0; j < n; j++) {
-
-            int row = findBasisRow(j);
-
-            if (row != -1) {
-                System.out.println("x" + (j + 1) + " = " +
-                        table.get(row, n));
-            } else {
-                System.out.println("x" + (j + 1) + " = 0");
-            }
-        }
-
-        System.out.println("Z = " + table.get(zRow, n));
-    }
-
-    // ================= ANALYZE =================
 
     private Fraction[] analyzeSolution() {
 

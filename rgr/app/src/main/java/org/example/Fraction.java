@@ -18,10 +18,6 @@ public class Fraction {
         this(num, 1);
     }
 
-    // =========================
-    // SAFE OPS
-    // =========================
-
     public Fraction neg() {
         return new Fraction(-num, den);
     }
@@ -43,10 +39,6 @@ public class Fraction {
         return new Fraction(Math.abs(num), den);
     }
 
-    // =========================
-    // ADD / SUB / MUL / DIV
-    // =========================
-
     public Fraction add(Fraction o) {
         return new Fraction(
                 safeMul(num, o.den) + safeMul(o.num, den),
@@ -61,36 +53,12 @@ public class Fraction {
         );
     }
 
-//    public Fraction mul(Fraction o) {
-//
-//        if (this.isZero() || o.isZero()) {
-//            return Fraction.ZERO;
-//        }
-//
-//        return new Fraction(
-//                safeMul(num, o.num),
-//                safeMul(den, o.den)
-//        );
-//    }
-
     public Fraction mul(Fraction o) {
         return new Fraction(
                 num * o.num,
                 den * o.den
         );
     }
-
-//    public Fraction div(Fraction o) {
-//        if (o.isZero()) {
-//            throw new ArithmeticException("Division by zero fraction");
-//        }
-//        // можно добавить лог
-//        System.out.println("Dividing: " + this + " / " + o);
-//        if (this.isZero()) {
-//            return Fraction.ZERO;
-//        }
-//        return new Fraction(safeMul(num, o.den), safeMul(den, o.num));
-//    }
 
     public Fraction div(Fraction o) {
         if (o.isZero())
@@ -101,11 +69,6 @@ public class Fraction {
                 den * o.num
         );
     }
-
-
-    // =========================
-    // SAFE MUL
-    // =========================
 
     private long safeMul(long a, long b) {
 
@@ -119,10 +82,6 @@ public class Fraction {
 
         return a * b;
     }
-
-    // =========================
-    // NORMALIZATION
-    // =========================
 
     private void normalize() {
         if (den < 0) {
@@ -142,10 +101,6 @@ public class Fraction {
         }
         return a;
     }
-
-    // =========================
-    // COMPARE
-    // =========================
 
     public int compareTo(Fraction o) {
         return Long.compare(

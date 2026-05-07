@@ -38,7 +38,6 @@ public class Matrix {
 
         System.out.println(sep);
 
-        // ===== HEADER =====
         System.out.print("| БП   | 1     |");
 
         for (int j = 0; j < n; j++) {

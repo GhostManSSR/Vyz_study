@@ -63,6 +63,14 @@ public class Result {
         return r;
     }
 
+    private Fraction[] calcLambda(Fraction lambda) {
+        Fraction[] res = new Fraction[solution.length];
+        for (int i = 0; i < solution.length; i++) {
+            res[i] = solution[i].add(lambda.mul(secondSolution[i].sub(solution[i])));
+        }
+        return res;
+    }
+
     public void print() {
 
         switch (status) {
@@ -117,10 +125,18 @@ public class Result {
                     Fraction b = secondSolution[i];
                     Fraction d = b.sub(a);
 
-                    expanded.append(a)
-                            .append(" + lambda*(")
-                            .append(d)
-                            .append(")");
+                    if (a.isZero() && d.isZero()) {
+                        expanded.append("0");
+                    } else if (d.isZero()) {
+                        expanded.append(a);
+                    } else if (a.isZero()) {
+                        expanded.append("lambda*(").append(d).append(")");
+                    } else {
+                        expanded.append(a)
+                                .append(" + lambda*(")
+                                .append(d)
+                                .append(")");
+                    }
 
                     if (i != solution.length - 1) expanded.append("; ");
                 }
