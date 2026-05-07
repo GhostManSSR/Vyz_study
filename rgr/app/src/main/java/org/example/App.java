@@ -12,7 +12,7 @@ public class App {
 
         InputStream is = App.class
                 .getClassLoader()
-                .getResourceAsStream("input_3.txt");
+                .getResourceAsStream("input_4.txt");
 
         if (is == null) {
             throw new RuntimeException("input.txt not found in resources");

@@ -16,7 +16,7 @@ public class Result {
     public int[] freeVariables;
     public Fraction zValue;
 
-    public Fraction[] secondSolution; // X2
+    public Fraction[] secondSolution;
 
     public static Result noSolution() {
         Result r = new Result();
@@ -102,7 +102,7 @@ public class Result {
             }
 
             case UNBOUNDED -> {
-                System.out.println("Функция не ограничена");
+                System.out.println("\nФункция не ограничена");
             }
 
             case INFINITE -> {
@@ -146,14 +146,6 @@ public class Result {
                 System.out.println(expanded);
 
                 System.out.println("\nZmax = " + zValue + ", где 0 ≤ lambda ≤ 1");
-
-//                if (freeVariables != null && freeVariables.length > 0) {
-//                    System.out.print("\nСвободная переменная: ");
-//                    for (int v : freeVariables) {
-//                        System.out.print("x" + (v + 1) + " ");
-//                    }
-//                    System.out.println();
-//                }
             }
         }
     }

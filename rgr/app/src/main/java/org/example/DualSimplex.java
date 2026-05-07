@@ -38,6 +38,9 @@ public class DualSimplex {
         int step = 0;
 
         while (true) {
+            System.out.println("\n==============================");
+            System.out.println("ШАГ " + (step + 1));
+            System.out.println("==============================");
 
             int pivotRow = findPivotRow();
 
@@ -75,7 +78,10 @@ public class DualSimplex {
                         System.out.println(")");
 
                         System.out.println("Z = " + z);
-                        System.out.println("→ найден луч (rc = 0, но нет a_ij > 0)");
+                        System.out.printf("ЗЛП имеет бесконечно много решений");
+                        System.out.println("\n→ найден луч (rc = 0, но нет a_ij > 0)");
+                        System.out.printf("Альтернативынй оптимум возникает из-за нулевой оценки у не базисной переменной");
+                        System.out.printf("\nНевозможно найти вторую вершину");
                         return Result.unbounded();
                     }
 
@@ -89,6 +95,9 @@ public class DualSimplex {
 
                 return Result.optimal(x, z);
             }
+
+            Fraction[] ratiosCurrent = calculateRatios(pivotRow);
+            printTable("Текущая таблица", ratiosCurrent);
 
             boolean hasNegativeCoeff = false;
 
@@ -247,25 +256,6 @@ public class DualSimplex {
                 target.set(i, j, src.get(i, j));
             }
         }
-    }
-
-    private PivotAnalysis analyzePivotFailure(int row) {
-
-        boolean hasNegativeCoeff = false;
-        boolean hasPositiveCoeff = false;
-
-        for (int j = 0; j < n; j++) {
-
-            Fraction a = table.get(row, j);
-
-            if (a.compareTo(Fraction.ZERO) < 0) {
-                hasNegativeCoeff = true;
-            } else if (a.compareTo(Fraction.ZERO) > 0) {
-                hasPositiveCoeff = true;
-            }
-        }
-
-        return new PivotAnalysis(hasNegativeCoeff, hasPositiveCoeff);
     }
 
     private Fraction[] snapshotSolution() {
@@ -492,6 +482,8 @@ public class DualSimplex {
             System.out.println();
         }
 
+        Fraction[] co = (ratios != null) ? ratios : calculateRatiosForTable();
+
         System.out.println(sep);
 
         if (ratios != null) {
@@ -499,9 +491,8 @@ public class DualSimplex {
             System.out.printf("| %-4s | %-5s |", "CO", "-");
 
             for (int j = 0; j < n; j++) {
-
-                if (ratios[j] != null) {
-                    System.out.printf(" %-6s|", ratios[j]);
+                if (co[j] != null) {
+                    System.out.printf(" %-6s|", co[j]);
                 } else {
                     System.out.printf(" %-6s|", "-");
                 }
@@ -519,6 +510,28 @@ public class DualSimplex {
             System.out.println();
             System.out.println(sep);
         }
+    }
+
+    private Fraction[] calculateRatiosForTable() {
+
+        Fraction[] ratios = new Fraction[n];
+        Arrays.fill(ratios, null);
+
+        int pivotRow = findPivotRow();
+        if (pivotRow == -1) {
+            return ratios;
+        }
+
+        for (int j = 0; j < n; j++) {
+            Fraction a = table.get(pivotRow, j);
+
+            if (a.compareTo(Fraction.ZERO) < 0) {
+                Fraction z = table.get(zRow, j);
+                ratios[j] = z.abs().div(a.abs());
+            }
+        }
+
+        return ratios;
     }
 
     private Fraction[] analyzeSolution() {
