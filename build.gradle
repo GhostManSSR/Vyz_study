@@ -1,0 +1,147 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'ru.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-flyway'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-jdbc-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.register('migration') {
+	doLast {
+		def migrationName = project.findProperty('migrationName')
+
+		if (!migrationName) {
+			throw new GradleException(
+					"Укажи название: ./gradlew migration -PmigrationName=add_ord_date"
+			)
+		}
+
+		def timestamp = new Date().format('yyyyMMddHHmmss')
+		def fileName = "V${timestamp}__${migrationName}.sql"
+
+		def dir = file('src/main/resources/db/migration')
+		dir.mkdirs()
+
+		def migrationFile = new File(dir, fileName)
+
+		migrationFile.text = """-- Migration: ${migrationName}
+-- Created: ${new Date()}
+
+"""
+
+		println "Created migration:"
+		println migrationFile.absolutePath
+	}
+}
+
+tasks.register("dbQuery") {
+	doLast {
+		def sqlFile = project.findProperty("file")
+
+		if (!sqlFile) {
+			throw new GradleException(
+					"Укажи SQL-файл: ./gradlew dbQuery -Pfile=sql/select_all.sql"
+			)
+		}
+
+		def sqlPath = file(sqlFile)
+
+		if (!sqlPath.exists()) {
+			throw new GradleException(
+					"SQL-файл не найден: ${sqlPath.absolutePath}"
+			)
+		}
+
+		def process = new ProcessBuilder(
+				"docker",
+				"exec",
+				"-i",
+				"postgres-db",
+				"psql",
+				"-U",
+				"postgres",
+				"-d",
+				"my_bd"
+		)
+				.redirectErrorStream(true)
+				.start()
+
+		process.outputStream.withWriter("UTF-8") { writer ->
+			writer.write(sqlPath.text)
+		}
+
+		process.inputStream.withReader("UTF-8") { reader ->
+			println reader.text
+		}
+
+		def exitCode = process.waitFor()
+
+		if (exitCode != 0) {
+			throw new GradleException(
+					"SQL-запрос завершился с ошибкой. Код: ${exitCode}"
+			)
+		}
+	}
+}
+
+tasks.register("dbUpdate") {
+	doLast {
+		def sqlFile = project.findProperty("file")
+
+		if (!sqlFile) {
+			throw new GradleException(
+					"Укажи SQL-файл: ./gradlew dbUpdate -Pfile=sql/update_user.sql"
+			)
+		}
+
+		def sql = file(sqlFile).text
+
+		def url = "jdbc:postgresql://localhost:5433/my_bd"
+		def username = "postgres"
+		def password = "Segnal96"
+
+		def connection = java.sql.DriverManager.getConnection(
+				url,
+				username,
+				password
+		)
+
+		try {
+			def statement = connection.createStatement()
+
+			def affectedRows = statement.executeUpdate(sql)
+
+			println "SQL успешно выполнен."
+			println "Изменено строк: ${affectedRows}"
+
+			statement.close()
+		} finally {
+			connection.close()
+		}
+	}
+}

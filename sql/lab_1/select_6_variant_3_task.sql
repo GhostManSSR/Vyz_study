@@ -1,0 +1,3 @@
+SELECT DISTINCT cnum
+FROM ord
+WHERE pnum >= 1006;

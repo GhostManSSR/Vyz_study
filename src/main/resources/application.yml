@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: db-worker
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/my_bd
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true

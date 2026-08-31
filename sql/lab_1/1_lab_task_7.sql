@@ -1,0 +1,1 @@
+ALTER TABLE ord ADD COLUMN ord_date DATE;

@@ -1,0 +1,2 @@
+DELETE FROM sal
+WHERE snum = 3007;
