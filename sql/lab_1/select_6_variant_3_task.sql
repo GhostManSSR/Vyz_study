@@ -1,3 +1,3 @@
 SELECT DISTINCT cnum
-FROM ord
+FROM my_schema.ord
 WHERE pnum >= 1006;

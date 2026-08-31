@@ -1,1 +1,1 @@
-ALTER TABLE ord ADD COLUMN ord_date DATE;
+ALTER TABLE my_schema.ord ADD COLUMN ord_date DATE;

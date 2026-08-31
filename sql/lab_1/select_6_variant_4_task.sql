@@ -1,3 +1,3 @@
 SELECT *
-FROM sal
+FROM my_schema.sal
 WHERE comm > 0.12 AND (city = 'Vladivostok' OR city = 'Novosibirsk');
