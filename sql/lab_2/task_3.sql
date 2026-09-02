@@ -16,3 +16,8 @@ SELECT REPLACE(
        ) AS city_modified
 FROM my_schema.prod
 WHERE LENGTH(city) > 6;
+
+
+-- SELECT TRANSLATE(LOWER(city), 'aeiou', 'ooooo') AS city_modified
+-- FROM my_schema.prod
+-- WHERE LENGTH(city) > 6;
