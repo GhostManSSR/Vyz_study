@@ -4,126 +4,121 @@ namespace SortingAlgorithms
     {
         public int[] SortAscending(int[] array)
         {
-            if (array.Length <= 1)
+            int[] result = (int[])array.Clone();
+
+            for (int width = 1; width < result.Length; width *= 2)
             {
-                return (int[])array.Clone();
+                for (int left = 0; left < result.Length; left += 2 * width)
+                {
+                    int middle = Math.Min(left + width, result.Length);
+                    int right = Math.Min(left + 2 * width, result.Length);
+
+                    MergeAscending(result, left, middle, right);
+                }
             }
 
-            int middle = array.Length / 2;
-
-            int[] left = new int[middle];
-            int[] right = new int[array.Length - middle];
-
-            Array.Copy(array, 0, left, 0, middle);
-            Array.Copy(array, middle, right, 0, right.Length);
-
-            left = SortAscending(left);
-            right = SortAscending(right);
-
-            return MergeAscending(left, right);
+            return result;
         }
 
-        private int[] MergeAscending(int[] left, int[] right)
+        private void MergeAscending(int[] array, int left, int middle, int right)
         {
-            int[] result = new int[left.Length + right.Length];
+            int[] temp = new int[right - left];
 
-            int i = 0;
-            int j = 0;
+            int i = left;
+            int j = middle;
             int k = 0;
 
-            while (i < left.Length && j < right.Length)
+            while (i < middle && j < right)
             {
-                if (left[i] <= right[j])
+                if (array[i] <= array[j])
                 {
-                    result[k] = left[i];
+                    temp[k] = array[i];
                     i++;
                 }
                 else
                 {
-                    result[k] = right[j];
+                    temp[k] = array[j];
                     j++;
                 }
 
                 k++;
             }
 
-            while (i < left.Length)
+            while (i < middle)
             {
-                result[k] = left[i];
+                temp[k] = array[i];
                 i++;
                 k++;
             }
 
-            while (j < right.Length)
+            while (j < right)
             {
-                result[k] = right[j];
+                temp[k] = array[j];
                 j++;
                 k++;
             }
 
-            return result;
+            Array.Copy(temp, 0, array, left, temp.Length);
         }
+
 
         public int[] SortDescending(int[] array)
         {
-            if (array.Length <= 1)
+            int[] result = (int[])array.Clone();
+
+            for (int width = 1; width < result.Length; width *= 2)
             {
-                return (int[])array.Clone();
+                for (int left = 0; left < result.Length; left += 2 * width)
+                {
+                    int middle = Math.Min(left + width, result.Length);
+                    int right = Math.Min(left + 2 * width, result.Length);
+
+                    MergeDescending(result, left, middle, right);
+                }
             }
 
-            int middle = array.Length / 2;
-
-            int[] left = new int[middle];
-            int[] right = new int[array.Length - middle];
-
-            Array.Copy(array, 0, left, 0, middle);
-            Array.Copy(array, middle, right, 0, right.Length);
-
-            left = SortDescending(left);
-            right = SortDescending(right);
-
-            return MergeDescending(left, right);
+            return result;
         }
 
-        private int[] MergeDescending(int[] left, int[] right)
+        private void MergeDescending(int[] array, int left, int middle, int right)
         {
-            int[] result = new int[left.Length + right.Length];
+            int[] temp = new int[right - left];
 
-            int i = 0;
-            int j = 0;
+            int i = left;
+            int j = middle;
             int k = 0;
 
-            while (i < left.Length && j < right.Length)
+            while (i < middle && j < right)
             {
-                if (left[i] >= right[j])
+                if (array[i] >= array[j])
                 {
-                    result[k] = left[i];
+                    temp[k] = array[i];
                     i++;
                 }
                 else
                 {
-                    result[k] = right[j];
+                    temp[k] = array[j];
                     j++;
                 }
 
                 k++;
             }
 
-            while (i < left.Length)
+            while (i < middle)
             {
-                result[k] = left[i];
+                temp[k] = array[i];
                 i++;
                 k++;
             }
 
-            while (j < right.Length)
+            while (j < right)
             {
-                result[k] = right[j];
+                temp[k] = array[j];
                 j++;
                 k++;
             }
 
-            return result;
+            Array.Copy(temp, 0, array, left, temp.Length);
         }
     }
 }

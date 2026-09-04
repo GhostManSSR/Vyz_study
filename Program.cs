@@ -14,7 +14,9 @@ namespace SortingAlgorithms
                 1_000,
                 5_000,
                 10_000,
-                20_000
+                20_000,
+                50_000,
+                100_000
             };
 
             SelectSort selectSort = new SelectSort();
