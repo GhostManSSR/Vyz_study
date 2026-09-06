@@ -1,0 +1,12 @@
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\bin\Debug\net10.0\OrderCalc.deps.json
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\bin\Debug\net10.0\OrderCalc.dll
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\bin\Debug\net10.0\OrderCalc.pdb
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\OrderCalc.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\OrderCalc.AssemblyInfoInputs.cache
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\OrderCalc.AssemblyInfo.cs
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\OrderCalc.csproj.CoreCompileInputs.cache
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\OrderCalc.sourcelink.json
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\OrderCalc.dll
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\refint\OrderCalc.dll
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\OrderCalc.pdb
+C:\Users\Timofey\Desktop\git\Vyz_study\StructuralTesting\OrderCalc\obj\Debug\net10.0\ref\OrderCalc.dll
