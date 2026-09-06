@@ -2,31 +2,26 @@ namespace OrderCalc;
 
 public class ArrayCalculations
 {
-    public static void RotatePricesRight(double[] prices, int shift)
+    public static double ProductOddIndices(double[] prices)
     {
-        // условие 1: пустой массив или некорректный сдвиг
-        if (prices == null || prices.Length == 0 || shift <= 0)
-            return;
+        if (prices == null || prices.Length == 0)
+            return 1.0;
 
-        // сдвиг больше длины — берём остаток
-        shift = shift % prices.Length;
+        double product = 1.0;
+        bool found = false;
 
-        // условие 2: если сдвиг кратен длине — без изменений
-        if (shift == 0)
-            return;
-
-        // цикл 1: создаём копию
-        double[] copy = new double[prices.Length];
         for (int i = 0; i < prices.Length; i++)
         {
-            copy[i] = prices[i];
+            if (i % 2 != 0)
+            {
+                product *= prices[i];
+                found = true;
+            }
         }
 
-        // цикл 2: переставляем элементы
-        for (int i = 0; i < prices.Length; i++)
-        {
-            int newIndex = (i + shift) % prices.Length;
-            prices[newIndex] = copy[i];
-        }
+        if (!found)
+            return 1.0;
+
+        return product;
     }
 }
