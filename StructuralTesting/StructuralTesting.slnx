@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="OrderCalc.Tests/OrderCalc.Tests.csproj" />
-  <Project Path="OrderCalc/OrderCalc.csproj" />
-</Solution>
