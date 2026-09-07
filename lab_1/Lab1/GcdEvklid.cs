@@ -31,11 +31,18 @@ public class GcdEvklid
         return u;
     }
 
-    public long ExtendedGcd(
-        long a,
-        long b,
-        out long x,
-        out long y)
+    /// <summary>
+    /// Обобщённый алгоритм Евклида.
+    ///
+    /// Находит:
+    /// gcd(a, b)
+    /// x
+    /// y
+    ///
+    /// такие, что:
+    /// a*x + b*y = gcd(a, b)
+    /// </summary>
+    public long ExtendedGcd(long a, long b, out long x, out long y)
     {
         if (a == 0 && b == 0)
         {
@@ -143,9 +150,7 @@ public class GcdEvklid
     /// <summary>
     /// Генерирует два взаимно простых числа.
     /// </summary>
-    public (long a, long b) GenerateCoprimeNumbers(
-        long min,
-        long max)
+    public (long a, long b) GenerateCoprimeNumbers(long min, long max)
     {
         long a;
         long b;
@@ -293,11 +298,7 @@ public class GcdEvklid
                 "Модуль должен быть больше 1.");
         }
 
-        long gcd = ExtendedGcd(
-            a,
-            modulus,
-            out long x,
-            out _);
+        long gcd = ExtendedGcd(a, modulus, out long x, out _);
 
         if (gcd != 1)
         {
