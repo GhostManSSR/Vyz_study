@@ -10,5 +10,10 @@ class Program
 
         Console.WriteLine(_fastModular.Solver(3, 10, 10));
 
+        GcdEvklid _gcdEvklid = new GcdEvklid(_fastModular);
+
+        var (a ,b) = _gcdEvklid.GetNumbers(1);
+        
+        Console.WriteLine(_gcdEvklid.Gcd(a, b));
     }
 }

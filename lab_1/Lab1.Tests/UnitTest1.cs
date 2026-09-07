@@ -75,8 +75,44 @@ public class UnitTest1
     // ============================================================ // Тест RandomLong // ============================================================
       
     [Fact] public void RandomLong_ShouldReturnNumberInRange() 
-    { long min = 1; long max = 10; long result = _gcdEvklid.RandomLong(min, max); 
+    { 
+        long min = 1; 
+        long max = 10; 
+        long result = _gcdEvklid.RandomLong(min, max); 
         Assert.InRange(result, min, max); 
+    }
+
+    [Fact]
+    public void Gcd_ShouldWorkWithZero()
+    {
+        Assert.Equal( 10, _gcdEvklid.Gcd(10, 0)); 
+        Assert.Equal( 10, _gcdEvklid.Gcd(0, 10)); 
+        Assert.Equal( 0, _gcdEvklid.Gcd(0, 0));
+    }
+
+    [Fact]
+    public void Gcd_ShouldWorkWithNegativeNumbers()
+    {
+        Assert.Equal( 6, _gcdEvklid.Gcd(-48, 18)); 
+        Assert.Equal( 6, _gcdEvklid.Gcd(48, -18)); 
+        Assert.Equal( 6, _gcdEvklid.Gcd(-48, -18)); 
+        Assert.Equal( 5, _gcdEvklid.Gcd(-25, 10));
+    }
+
+    [Theory]
+    [InlineData(48, 18)]
+    [InlineData(240, 46)]
+    [InlineData(100, 25)]
+    [InlineData(17, 5)]
+    [InlineData(123, 456)]
+    [InlineData(-48, 18)]
+    [InlineData(48, -18)]
+    [InlineData(-48, -18)]
+    public void ExtendedGcd_ShouldSatisfyBezoutIdentityForDifferentNumbers(long a, long b)
+    {
+        long gcd = _gcdEvklid.ExtendedGcd( a, b, out long x, out long y); 
+        Assert.Equal( gcd, a * x + b * y); 
+        Assert.Equal( _gcdEvklid.Gcd(a, b), gcd);
     }
 }
 
