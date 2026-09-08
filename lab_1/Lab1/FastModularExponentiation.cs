@@ -27,6 +27,109 @@ public class FastModularExponentiation
         return (a,b, c);
     }
     
+    public (long a, long b, long c) GetNumbers(int mode, long min = 2, long max = 1000, int iterations = 20)
+    {
+        return mode switch
+        {
+            1 => ReadNumbers(),
+
+            2 => GenerateNumbers(min, max),
+
+            3 => GeneratePrimeNumbers(
+                min,
+                max,
+                iterations),
+
+            _ => throw new ArgumentException(
+                "Неизвестный режим генерации.")
+        };
+    }
+    
+        public long GeneratePrime(long min, long max, int iterations = 20)
+    {
+        if (min < 2)
+        {
+            min = 2;
+        }
+
+        if (min > max)
+        {
+            throw new ArgumentException(
+                "Минимальное значение не может быть больше максимального.");
+        }
+
+        while (true)
+        {
+            long number = GenerateNumber(min, max);
+
+            if (IsPrimeFermat(number, iterations))
+            {
+                return number;
+            }
+        }
+    }
+    
+    public bool IsPrimeFermat(long n, int iterations = 20)
+    {
+        if (n < 2)
+            return false;
+
+        if (n == 2 || n == 3)
+            return true;
+
+        if (n % 2 == 0)
+            return false;
+
+        Random random = new();
+
+        for (int i = 0; i < iterations; i++)
+        {
+            long a = random.NextInt64(2, n - 1);
+
+            if (Gcd(a, n) != 1)
+                return false;
+
+            if (Solver(a, n - 1, n) != 1)
+                return false;
+        }
+
+        return true;
+    }
+    
+    private static long Gcd(long a, long b)
+    {
+        a = Math.Abs(a);
+        b = Math.Abs(b);
+
+        while (b != 0)
+        {
+            (a, b) = (b, a % b);
+        }
+
+        return a;
+    }
+    
+    
+    public (long a, long b, long c) GeneratePrimeNumbers(
+        long min,
+        long max,
+        int iterations = 20)
+    {
+        long a = GeneratePrime(
+            min,
+            max,
+            iterations);
+
+        long b = GeneratePrime(
+            min,
+            max,
+            iterations);
+        
+        long c = GeneratePrime(min, max, iterations);
+
+        return (a, b, c);
+    }
+    
     public long GenerateNumber(long min, long max)
     {
         return RandomLong(min, max);

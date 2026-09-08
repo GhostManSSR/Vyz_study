@@ -6,39 +6,47 @@ class Program
 {
     static void Main()
     {
-        DiscreteLog.RunInteractive();
-
-        DiscreteLog.RunWithGeneratedParameters();
-
-        var a = 2;
-        var y = 8;
-        var p = 17;
-
-        var x = DiscreteLog.BabyStepGiantStep(a, y, p);
-        if (x.HasValue)
-            Console.WriteLine($"Для a={a}, y={y}, p={p} найдено x = {x}");
-        else
-            Console.WriteLine($"Решение не найдено для a={a}, y={y}, p={p}");
-
-        var pBig = 104729;
-        var aBig = 12345;
-        var xTrue = 6789;
-        var yBig = DiscreteLog.ModPow(aBig, xTrue, pBig); // y = a^x mod p
-
-        var xFound = DiscreteLog.BabyStepGiantStep(aBig, yBig, pBig);
-        Console.WriteLine($"p = {pBig}, a = {aBig}, x_true = {xTrue}, y = {yBig}");
-        Console.WriteLine($"Найдено x = {xFound}, совпадает с истинным: {xFound == xTrue}");
-        // Console.WriteLine(_fastModular.Solver(2, 8, 10));
+        // DiscreteLog.RunInteractive();
         //
-        // GcdEvklid _gcdEvklid = new GcdEvklid(_fastModular);
+        // DiscreteLog.RunWithGeneratedParameters();
         //
-        // var (a ,b) = _gcdEvklid.GetNumbers(1);
+        // var a = 2;
+        // var y = 8;
+        // var p = 17;
         //
-        // Console.WriteLine(_gcdEvklid.Gcd(a, b));
+        // var x = DiscreteLog.BabyStepGiantStep(a, y, p);
+        // if (x.HasValue)
+        //     Console.WriteLine($"Для a={a}, y={y}, p={p} найдено x = {x}");
+        // else
+        //     Console.WriteLine($"Решение не найдено для a={a}, y={y}, p={p}");
         //
-        // var (c, d) = _gcdEvklid.GenerateCoprimeNumbers(100, 1000);
-        // Console.WriteLine((c,d));
+        // var pBig = 104729;
+        // var aBig = 12345;
+        // var xTrue = 6789;
+        // var yBig = DiscreteLog.ModPow(aBig, xTrue, pBig); // y = a^x mod p
         //
-        // Console.WriteLine(_gcdEvklid.Gcd(c, d));
+        // var xFound = DiscreteLog.BabyStepGiantStep(aBig, yBig, pBig);
+        // Console.WriteLine($"p = {pBig}, a = {aBig}, x_true = {xTrue}, y = {yBig}");
+        // Console.WriteLine($"Найдено x = {xFound}, совпадает с истинным: {xFound == xTrue}");
+        
+        FastModularExponentiation _fastModular =  new FastModularExponentiation();
+        
+        
+        Console.WriteLine(_fastModular.Solver(2, 8, 10));
+
+        var (h, x, p) = _fastModular.GetNumbers(1);
+        
+        Console.WriteLine(_fastModular.Solver(h, x, p));
+        
+        GcdEvklid _gcdEvklid = new GcdEvklid(_fastModular);
+        
+        var (a ,b) = _gcdEvklid.GetNumbers(1);
+        
+        Console.WriteLine(_gcdEvklid.Gcd(a, b));
+        
+        var (c, d) = _gcdEvklid.GenerateCoprimeNumbers(100, 1000);
+        Console.WriteLine((c,d));
+        
+        Console.WriteLine(_gcdEvklid.Gcd(c, d));
     }
 }

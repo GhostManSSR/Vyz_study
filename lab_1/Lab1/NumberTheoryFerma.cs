@@ -2,16 +2,13 @@ namespace Lab1;
 
 public class NumberTheoryFerma
 {
-    private readonly FastModularExponentiation _fastModularExponentiation; 
-    private readonly GcdEvklid _gcdEvklid;
+    private readonly FastModularExponentiation _fastModular;
 
-    public NumberTheoryFerma(FastModularExponentiation fastModularExponentiation, GcdEvklid gcdEvklid)
+    public NumberTheoryFerma(FastModularExponentiation fastModular)
     {
-        _fastModularExponentiation = fastModularExponentiation;
-        _gcdEvklid = gcdEvklid;
+        _fastModular = fastModular;
     }
-    
-    
+
     public bool IsPrimeFermat(long n, int iterations = 20)
     {
         if (n < 2)
@@ -23,17 +20,32 @@ public class NumberTheoryFerma
         if (n % 2 == 0)
             return false;
 
+        Random random = new();
+
         for (int i = 0; i < iterations; i++)
         {
-            long a = _gcdEvklid.RandomLong(2, n - 2);
+            long a = random.NextInt64(2, n - 1);
 
-            if (_gcdEvklid.Gcd(a, n) != 1)
+            if (Gcd(a, n) != 1)
                 return false;
 
-            if (_fastModularExponentiation.Solver(a, n - 1, n) != 1)
+            if (_fastModular.Solver(a, n - 1, n) != 1)
                 return false;
         }
 
         return true;
+    }
+
+    private static long Gcd(long a, long b)
+    {
+        a = Math.Abs(a);
+        b = Math.Abs(b);
+
+        while (b != 0)
+        {
+            (a, b) = (b, a % b);
+        }
+
+        return a;
     }
 }

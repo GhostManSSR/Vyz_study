@@ -11,9 +11,7 @@ public class UnitTest1
         _fastModular = new FastModularExponentiation();
         _gcdEvklid = new GcdEvklid(_fastModular);
 
-        _numberTheoryFerma = new NumberTheoryFerma(
-            _fastModular,
-            _gcdEvklid);
+        _numberTheoryFerma = new NumberTheoryFerma(_fastModular);
     }
 
     [Fact]
