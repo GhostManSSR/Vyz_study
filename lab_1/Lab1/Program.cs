@@ -8,10 +8,8 @@ class Program
     {
         DiscreteLog.RunInteractive();
 
-        // Вариант 2: запуск на сгенерированных параметрах (для тестов/демо)
         DiscreteLog.RunWithGeneratedParameters();
 
-        // Вариант 3: вызов алгоритма напрямую с конкретными значениями
         var a = 2;
         var y = 8;
         var p = 17;
@@ -22,7 +20,6 @@ class Program
         else
             Console.WriteLine($"Решение не найдено для a={a}, y={y}, p={p}");
 
-        // Вариант 4: проверка на больших числах (пример)
         var pBig = 104729;
         var aBig = 12345;
         var xTrue = 6789;

@@ -3,7 +3,7 @@ namespace Lab1;
 using System.Collections.Generic;
 using System.Numerics;
 
-public static class DiscreteLog
+public class DiscreteLog
 {
     
     static BigInteger IntegerSqrt(BigInteger n)
