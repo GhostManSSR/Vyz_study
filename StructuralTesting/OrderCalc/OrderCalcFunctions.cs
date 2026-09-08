@@ -13,7 +13,8 @@ public static class OrderCalcFunctions
         {
             return isPremium ? total * 0.80 : total * 0.85;
         }
-        else if (total >= 5000)
+        
+        if (total >= 5000)
         {
             return isPremium ? total * 0.90 : total * 0.95;
         }

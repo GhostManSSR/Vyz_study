@@ -58,4 +58,13 @@ public class MatrixCalculationsTests
 
         Assert.Equal(0, result);
     }
+
+    [Fact] 
+    public void SumEvenAboveSecondaryDiagonal_NullMatrix()
+    {
+        int[][] matrix = null!;
+        
+        int res = MatrixCalculations.SumEvenAboveSecondaryDiagonal(matrix);
+        Assert.Equal(0, res);
+    }
 }
