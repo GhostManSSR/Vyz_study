@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Numerics;
 
 namespace SortingAlgorithms
 {
@@ -62,10 +63,74 @@ namespace SortingAlgorithms
                     FormatTime(mergeTime)
                 );
             }
+            
+            Console.WriteLine();
+            Console.WriteLine("Проверка прямого и обратного преобразования");
+            Console.WriteLine();
+            
+            DiscreteFourierTransform dft =  new DiscreteFourierTransform();
+ 
+            double[] testSignal =
+            {
+                1, 2, 3, 4, 5, 6, 7, 8
+            };
+
+            Console.WriteLine("Исходный сигнал:");
+
+            for (int i = 0; i < testSignal.Length; i++)
+            {
+                Console.WriteLine(
+                    "x[{0}] = {1:F4}",
+                    i,
+                    testSignal[i]
+                );
+            }
+
+            Complex[] result = dft.Transform(testSignal);
+
+            Console.WriteLine();
+            Console.WriteLine("Прямое ДПФ:");
+
+            for (int i = 0; i < result.Length; i++)
+            {
+                Console.WriteLine(
+                    "X[{0}] = {1:F4} + {2:F4}i",
+                    i,
+                    result[i].Real,
+                    result[i].Imaginary
+                );
+            }
+
+            Complex[] restored = dft.InverseTransform(result);
+
+            Console.WriteLine();
+            Console.WriteLine("Обратное ДПФ:");
+
+            for (int i = 0; i < restored.Length; i++)
+            {
+                Console.WriteLine(
+                    "x[{0}] = {1:F4} + {2:F4}i",
+                    i,
+                    restored[i].Real,
+                    restored[i].Imaginary
+                );
+            }
 
             Console.WriteLine();
             Console.WriteLine("Нажмите Enter для выхода...");
             Console.ReadLine();
+        }
+        
+        static double[] GenerateSignal(int size, Random random)
+        {
+            double[] signal = new double[size];
+
+            for (int i = 0; i < size; i++)
+            {
+                signal[i] = random.NextDouble() * 100;
+            }
+
+            return signal;
         }
 
         static int[] GenerateArray(int size, Random random)
