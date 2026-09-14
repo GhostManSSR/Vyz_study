@@ -150,7 +150,7 @@ public class DiscreteLog
     /// - случайное x ∈ [0, p-2],
     /// - y = a^x mod p.
     /// </summary>
-    public static void RunWithGeneratedParameters()
+    public static bool RunWithGeneratedParameters()
     {
         // Для реальных задач p должно быть большим простым; здесь — пример.
         var rand = new Random();
@@ -173,5 +173,6 @@ public class DiscreteLog
             Console.WriteLine($"Найдено x = {xFound}, проверка: {xFound == xTrue}");
         else
             Console.WriteLine("Решение не найдено.");
+        return xFound == xTrue;
     }
 }

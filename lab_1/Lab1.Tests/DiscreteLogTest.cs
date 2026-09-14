@@ -21,6 +21,51 @@ public class DiscreteLogTest
     }
 
     [Fact]
+    public void BabyStepGiantStep_Generates()
+    {
+        Assert.True(DiscreteLog.RunWithGeneratedParameters());
+    }
+
+    [Fact]
+    public void RunInteractive_WhenSolutionExists_PrintsFoundX()
+    {
+        // Arrange
+        // Ищем x в выражении:
+        // 2^x ≡ 8 (mod 11)
+        // Верный ответ: x = 3.
+        var input = new StringReader(
+            "2" + Environment.NewLine +
+            "8" + Environment.NewLine +
+            "11" + Environment.NewLine
+        );
+
+        var output = new StringWriter();
+
+        var originalIn = Console.In;
+        var originalOut = Console.Out;
+
+        try
+        {
+            Console.SetIn(input);
+            Console.SetOut(output);
+
+            DiscreteLog.RunInteractive();
+
+            var result = output.ToString();
+
+            Assert.Contains("Введите a:", result);
+            Assert.Contains("Введите y:", result);
+            Assert.Contains("Введите p (простое):", result);
+            Assert.Contains("Найдено x = 3", result);
+        }
+        finally
+        {
+            Console.SetIn(originalIn);
+            Console.SetOut(originalOut);
+        }
+    }
+
+    [Fact]
     public void BabyStepGiantStep_SmallPrime_ReturnsValidLogarithm()
     {
         // 3^5 mod 17 = 5
