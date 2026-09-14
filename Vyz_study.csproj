@@ -2,9 +2,23 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Основной entry point -->
+    <Compile Include="Program.cs" />
+
+    <!-- Твои учебные файлы -->
+    <Compile Include="lab_1\BubbleSort.cs" />
+    <Compile Include="lab_1\MergeSort.cs" />
+    <Compile Include="lab_1\SelectSort.cs" />
+    <Compile Include="lab_1\ConvolutionDemo.cs" />
+    <Compile Include="lab_1\DiscreteFourierTransform.cs" />
+
+    <!-- Если Lab1 и Lab1.Tests — отдельные проекты, их сюда НЕ включай -->
+  </ItemGroup>
 
 </Project>
