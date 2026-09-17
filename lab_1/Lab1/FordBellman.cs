@@ -50,7 +50,6 @@
 
             var edgeList = new List<Edge>(edges);
 
-            // n-1 итерация релаксации
             for (int i = 0; i < n - 1; i++)
             {
                 bool changed = false;
@@ -70,7 +69,6 @@
                 if (!changed) break;
             }
 
-            // Проверка на отрицательный цикл
             bool hasNegativeCycle = false;
             foreach (var e in edgeList)
             {
@@ -86,11 +84,10 @@
             return new FordBellmanResult(dist, prev, hasNegativeCycle);
         }
 
-        // Восстановление пути от source до target
         public static List<int> GetPath(FordBellmanResult result, int target)
         {
             if (result.Previous[target] == -1 && target != Array.IndexOf(result.Distances, 0))
-                return new List<int>(); // пути нет
+                return new List<int>();
 
             var path = new List<int>();
             int v = target;
@@ -105,7 +102,6 @@
             return path;
         }
 
-        // Вспомогательный метод для печати результата
         public static void PrintResult(string name, FordBellmanResult result, int source)
         {
             Console.WriteLine($"{name}:");

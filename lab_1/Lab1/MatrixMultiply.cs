@@ -30,7 +30,6 @@ public class MatrixMultiply
             return c;
         }
 
-        // Умножение матриц алгоритмом Штрассена (для квадратных матриц размера 2^k)
         public static double[,] MultiplyStrassen(double[,] a, double[,] b)
         {
             int n = a.GetLength(0);
@@ -41,7 +40,6 @@ public class MatrixMultiply
             if (n != m || n2 != m2 || n != n2)
                 throw new ArgumentException("Алгоритм Штрассена реализован для квадратных матриц одинакового размера.");
 
-            // Приводим размер к степени двойки
             int size = 1;
             while (size < n) size <<= 1;
 
@@ -57,7 +55,6 @@ public class MatrixMultiply
 
             double[,] cPadded = StrassenRecursive(aPadded, bPadded, size);
 
-            // Обрезаем до исходного размера
             double[,] c = new double[n, n];
             for (int i = 0; i < n; i++)
                 for (int j = 0; j < n; j++)
@@ -68,16 +65,14 @@ public class MatrixMultiply
 
         private static double[,] StrassenRecursive(double[,] a, double[,] b, int size)
         {
-            if (size <= 64) // для маленьких матриц выгоднее наивный алгоритм
+            if (size <= 64)
                 return MultiplyNaiveBlock(a, b, size);
 
             int half = size >> 1;
 
-            // Выделяем подблоки
             var (a11, a12, a21, a22) = GetBlocks(a, half, size);
             var (b11, b12, b21, b22) = GetBlocks(b, half, size);
 
-            // 7 произведений по Штрассену
             double[,] m1 = StrassenRecursive(Add(a11, a22), Add(b11, b22), half);
             double[,] m2 = StrassenRecursive(Add(a21, a22), b11, half);
             double[,] m3 = StrassenRecursive(a11, Subtract(b12, b22), half);
@@ -86,7 +81,6 @@ public class MatrixMultiply
             double[,] m6 = StrassenRecursive(Subtract(a21, a11), Add(b11, b12), half);
             double[,] m7 = StrassenRecursive(Subtract(a12, a22), Add(b21, b22), half);
 
-            // Собираем результат
             double[,] c11 = Add(Subtract(Add(m1, m4), m5), m7);
             double[,] c12 = Add(m3, m5);
             double[,] c21 = Add(m2, m4);
@@ -167,7 +161,6 @@ public class MatrixMultiply
             return c;
         }
 
-        // Вспомогательный метод для печати матрицы (удобно для тестов)
         public static void PrintMatrix(string name, double[,] m)
         {
             int n = m.GetLength(0);
