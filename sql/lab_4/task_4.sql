@@ -6,6 +6,6 @@ WHERE cnum NOT IN (
     WHERE o.pnum IN (
         SELECT p.pnum
         FROM prod p
-        WHERE p.city = 'Обнинск'
+        WHERE p.city = 'Obninsk'
     )
 );
