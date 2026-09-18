@@ -169,6 +169,32 @@ public class FastModularExponentiation
         }
     }
     
+    public static long MultiplyModulo(long a, long b, long mod)
+    {
+        a %= mod;
+        b %= mod;
+
+        long result = 0;
+
+        while (b > 0)
+        {
+            if ((b & 1) != 0)
+                result = AddModulo(result, a, mod);
+
+            a = AddModulo(a, a, mod);
+            b >>= 1;
+        }
+
+        return result;
+    }
+
+    private static long AddModulo(long a, long b, long mod)
+    {
+        // a и b уже в диапазоне [0, mod - 1]
+        return a >= mod - b
+            ? a - (mod - b)
+            : a + b;
+    }
     
     
     public long Solver(long parameterA, long parameterX, long parameterP)
