@@ -76,6 +76,76 @@ public class ElGamel
             $"Не удалось подобрать первообразный корень для p = {p}.");
     }
     
+    public long SolveFromConsole()
+    {
+        Console.Write("Введите p: ");
+        long p = long.Parse(Console.ReadLine()!);
+
+        Console.Write("Введите g: ");
+        long g = long.Parse(Console.ReadLine()!);
+
+        Console.Write("Введите x: ");
+        long x = long.Parse(Console.ReadLine()!);
+
+        Console.Write("Введите C: ");
+        long c = long.Parse(Console.ReadLine()!);
+
+        Console.Write("Введите D: ");
+        long d = long.Parse(Console.ReadLine()!);
+
+        // Проверяем p
+        if (!_ferma.IsPrimeFermat(p))
+            throw new ArgumentException(
+                "p должно быть простым числом.");
+
+        // Проверяем g
+        if (g <= 1 || g >= p)
+            throw new ArgumentException(
+                "g должно находиться в диапазоне (1, p).");
+
+        // Проверяем закрытый ключ x
+        if (x <= 0 || x >= p - 1)
+            throw new ArgumentException(
+                "x должно находиться в диапазоне [1, p - 2].");
+
+        // Проверяем C
+        if (c <= 0 || c >= p)
+            throw new ArgumentException(
+                "C должно находиться в диапазоне [1, p - 1].");
+
+        // Проверяем D
+        if (d <= 0 || d >= p)
+            throw new ArgumentException(
+                "D должно находиться в диапазоне [1, p - 1].");
+
+        // Вычисляем открытый ключ:
+        // y = g^x mod p
+        long y = _fastModularExponentiation.Solver(
+            g,
+            x,
+            p);
+
+        // Расшифровываем:
+        // m = D * (C^x)^(-1) mod p
+        long decryptedMessage = DecryptAlice(
+            c,
+            x,
+            d,
+            p);
+
+        Console.WriteLine();
+        Console.WriteLine("Результат:");
+        Console.WriteLine($"p = {p}");
+        Console.WriteLine($"g = {g}");
+        Console.WriteLine($"x = {x}");
+        Console.WriteLine($"y = {y}");
+        Console.WriteLine($"C = {c}");
+        Console.WriteLine($"D = {d}");
+        Console.WriteLine($"M = {decryptedMessage}");
+
+        return decryptedMessage;
+    }
+    
     private static List<long> GetUniquePrimeFactors(long value)
     {
         var factors = new List<long>();
@@ -166,30 +236,69 @@ public class ElGamel
     }
     
     /// <summary>
-    /// Шифрует файл, используя ключи ElGamal.
+    /// Шифрует любой файл с помощью алгоритма Эль-Гамаля.
+    ///
     /// Формат зашифрованного файла:
-    /// 4 байта: количество блоков (int)
-    /// далее для каждого блока: 8 байт u (long) + 8 байт v (long).
+    /// 4 байта  - сигнатура "EG01"
+    /// 8 байт  - количество исходных байт
+    /// Для каждого байта:
+    ///     8 байт - u
+    ///     8 байт - v
     /// </summary>
-    public void EncryptFile(string inputPath, string outputPath, ElGamalKeys keys)
+    public void EncryptFile(
+        string inputPath,
+        string outputPath,
+        ElGamalKeys keys)
     {
-        if (keys.P <= 256)
-            throw new InvalidOperationException(
-                "Для побайтового шифрования p должно быть > 256.");
+        if (string.IsNullOrWhiteSpace(inputPath))
+            throw new ArgumentException(
+                "Не указан исходный файл.",
+                nameof(inputPath));
 
-        byte[] plainBytes = File.ReadAllBytes(inputPath);
+        if (string.IsNullOrWhiteSpace(outputPath))
+            throw new ArgumentException(
+                "Не указан выходной файл.",
+                nameof(outputPath));
 
-        using var output = new FileStream(outputPath, FileMode.Create, FileAccess.Write);
+        if (!File.Exists(inputPath))
+            throw new FileNotFoundException(
+                "Исходный файл не найден.",
+                inputPath);
+
+        ValidateKeys(keys);
+
+        if (Path.GetFullPath(inputPath) == Path.GetFullPath(outputPath))
+            throw new ArgumentException(
+                "Исходный и выходной файлы не должны совпадать.");
+
+        using var input = new FileStream(
+            inputPath,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read);
+
+        using var output = new FileStream(
+            outputPath,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None);
+
         using var writer = new BinaryWriter(output);
 
-        int blockCount = plainBytes.Length;
-        writer.Write(blockCount);
+        // Сигнатура формата файла.
+        writer.Write(new byte[] { (byte)'E', (byte)'G', (byte)'0', (byte)'1' });
 
-        foreach (byte b in plainBytes)
+        // Записываем размер исходного файла.
+        writer.Write(input.Length);
+
+        int currentByte;
+
+        while ((currentByte = input.ReadByte()) != -1)
         {
-            long message = b + 1L; // чтобы message ∈ [1, 256]
+            // byte 0..255 преобразуем в 1..256.
+            long message = currentByte + 1L;
 
-            (long u, long v) = EncryptBlock(message, keys);
+            var (u, v) = EncryptBlock(message, keys);
 
             writer.Write(u);
             writer.Write(v);
@@ -197,18 +306,78 @@ public class ElGamel
     }
 
     /// <summary>
-    /// Расшифровывает файл, зашифрованный методом EncryptFile.
+    /// Расшифровывает файл, созданный методом EncryptFile.
     /// </summary>
-    public void DecryptFile(string inputPath, string outputPath, ElGamalKeys keys)
+    public void DecryptFile(
+        string inputPath,
+        string outputPath,
+        ElGamalKeys keys)
     {
-        using var input = new FileStream(inputPath, FileMode.Open, FileAccess.Read);
+        if (string.IsNullOrWhiteSpace(inputPath))
+            throw new ArgumentException(
+                "Не указан зашифрованный файл.",
+                nameof(inputPath));
+
+        if (string.IsNullOrWhiteSpace(outputPath))
+            throw new ArgumentException(
+                "Не указан выходной файл.",
+                nameof(outputPath));
+
+        if (!File.Exists(inputPath))
+            throw new FileNotFoundException(
+                "Зашифрованный файл не найден.",
+                inputPath);
+
+        ValidateKeys(keys);
+
+        if (Path.GetFullPath(inputPath) == Path.GetFullPath(outputPath))
+            throw new ArgumentException(
+                "Исходный и выходной файлы не должны совпадать.");
+
+        using var input = new FileStream(
+            inputPath,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read);
+
         using var reader = new BinaryReader(input);
 
-        int blockCount = reader.ReadInt32();
+        using var output = new FileStream(
+            outputPath,
+            FileMode.Create,
+            FileAccess.Write,
+            FileShare.None);
 
-        var decryptedBytes = new byte[blockCount];
+        // Проверяем сигнатуру.
+        byte[] signature = reader.ReadBytes(4);
 
-        for (int i = 0; i < blockCount; i++)
+        if (signature.Length != 4 ||
+            signature[0] != 'E' ||
+            signature[1] != 'G' ||
+            signature[2] != '0' ||
+            signature[3] != '1')
+        {
+            throw new InvalidOperationException(
+                "Файл не является файлом ElGamal.");
+        }
+
+        long fileSize = reader.ReadInt64();
+
+        if (fileSize < 0)
+        {
+            throw new InvalidOperationException(
+                "Некорректный размер исходного файла.");
+        }
+
+        long expectedSize = 4 + 8 + fileSize * 16;
+
+        if (input.Length != expectedSize)
+        {
+            throw new InvalidOperationException(
+                "Зашифрованный файл повреждён или имеет некорректный формат.");
+        }
+
+        for (long i = 0; i < fileSize; i++)
         {
             long u = reader.ReadInt64();
             long v = reader.ReadInt64();
@@ -223,9 +392,45 @@ public class ElGamel
                     $"Получено некорректное значение байта: {originalByte}.");
             }
 
-            decryptedBytes[i] = (byte)originalByte;
+            output.WriteByte((byte)originalByte);
         }
-
-        File.WriteAllBytes(outputPath, decryptedBytes);
     }
+
+    public ElGamalKeys GenerateKeys()
+    {
+        long p = GeneratePrimeNumber();
+        var (g, x, y) = GenerateParametersAlice(p);
+
+        return new ElGamalKeys(p, g, x, y);
+    }
+    
+    /// <summary>
+    /// Проверяет корректность ключей Эль-Гамаля.
+    /// </summary>
+    private void ValidateKeys(ElGamalKeys keys)
+    {
+        if (keys == null)
+            throw new ArgumentNullException(nameof(keys));
+
+        if (keys.P <= 256)
+            throw new ArgumentException(
+                "P должно быть больше 256.");
+
+        if (!_ferma.IsPrimeFermat(keys.P))
+            throw new ArgumentException(
+                "P должно быть простым числом.");
+
+        if (keys.G <= 1 || keys.G >= keys.P)
+            throw new ArgumentException(
+                "G должно находиться в диапазоне (1, P).");
+
+        if (keys.X <= 0 || keys.X >= keys.P - 1)
+            throw new ArgumentException(
+                "X должно находиться в диапазоне [1, P - 2].");
+
+        if (keys.Y <= 0 || keys.Y >= keys.P)
+            throw new ArgumentException(
+                "Y должно находиться в диапазоне [1, P - 1].");
+    }
+    
 }

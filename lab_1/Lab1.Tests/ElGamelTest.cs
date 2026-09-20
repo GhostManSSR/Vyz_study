@@ -35,4 +35,26 @@ public class ElGamelTest
         }
     }
     
+    [Fact]
+    public void SolveFromConsole_DecryptsMessageCorrectly()
+    {
+        Console.SetIn(new StringReader(
+            "467" + Environment.NewLine +
+            "2" + Environment.NewLine +
+            "127" + Environment.NewLine +
+            "32" + Environment.NewLine +
+            "311"
+        ));
+
+        try
+        {
+            var result = _elgamel.SolveFromConsole();
+
+            Assert.Equal(123, result);
+        }
+        finally
+        {
+            Console.SetIn(new StreamReader(Console.OpenStandardInput()));
+        }
+    }
 }
