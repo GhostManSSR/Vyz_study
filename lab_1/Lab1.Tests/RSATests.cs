@@ -196,7 +196,6 @@ public class _rsaTests
             53,
             2753);
 
-        // Act
         _rsa.EncryptFile(
             sourceFile,
             encryptedFile);
@@ -205,7 +204,6 @@ public class _rsaTests
             encryptedFile,
             decryptedFile);
 
-        // Assert
         Assert.True(
             File.Exists(encryptedFile));
 
@@ -224,7 +222,6 @@ public class _rsaTests
     [Fact]
     public void EncryptDecryptBinaryFile_ShouldRestoreOriginalBytes()
     {
-        // Arrange
         string directory =
             CreateTestDirectory();
 
@@ -261,7 +258,6 @@ public class _rsaTests
             53,
             2753);
 
-        // Act
         _rsa.EncryptFile(
             sourceFile,
             encryptedFile);
@@ -270,7 +266,6 @@ public class _rsaTests
             encryptedFile,
             decryptedFile);
 
-        // Assert
         Assert.True(
             File.Exists(encryptedFile));
 
@@ -286,7 +281,6 @@ public class _rsaTests
     [Fact]
     public void EncryptDecryptEmptyFile_ShouldRestoreEmptyFile()
     {
-        // Arrange
         string directory =
             CreateTestDirectory();
 
@@ -314,7 +308,6 @@ public class _rsaTests
             53,
             2753);
 
-        // Act
         _rsa.EncryptFile(
             sourceFile,
             encryptedFile);
@@ -323,7 +316,6 @@ public class _rsaTests
             encryptedFile,
             decryptedFile);
 
-        // Assert
         Assert.True(
             File.Exists(encryptedFile));
 
@@ -338,7 +330,6 @@ public class _rsaTests
     [Fact]
     public void GenerateKeysFromConsole_ShouldReadP_Q_D()
     {
-        // Arrange
         TextReader originalInput =
             Console.In;
 
@@ -350,10 +341,8 @@ public class _rsaTests
                     "53\n" +
                     "2753\n"));
 
-            // Act
             _rsa.GenerateKeysFromConsole();
 
-            // Assert
             Assert.Equal(
                 61,
                 _rsa.P);
@@ -392,7 +381,6 @@ public class _rsaTests
     [Fact]
     public void DecryptFile_WithWrongKey_ShouldThrow()
     {
-        // Arrange
         string directory =
             CreateTestDirectory();
 
@@ -428,7 +416,6 @@ public class _rsaTests
             sourceFile,
             originalData);
 
-        // Первый ключ.
         _rsa.GenerateKeys(
             61,
             53,
@@ -438,7 +425,6 @@ public class _rsaTests
             sourceFile,
             encryptedFile);
 
-        // Второй ключ.
         FastModularExponentiation fastModular2 =
             new FastModularExponentiation();
 
@@ -456,7 +442,6 @@ public class _rsaTests
             47,
             157);
 
-        // Act + Assert
         Assert.Throws<InvalidOperationException>(
             () =>
                 rsa2.DecryptFile(
@@ -472,7 +457,6 @@ public class _rsaTests
         long q = 53;
         long d = 2753;
 
-        // Act + Assert
         Assert.Throws<ArgumentException>(
             () =>
                 _rsa.GenerateKeys(
@@ -484,12 +468,10 @@ public class _rsaTests
     [Fact]
     public void GenerateKeys_WithNonPrimeQ_ShouldThrow()
     {
-        // Arrange
         long p = 61;
         long q = 60;
         long d = 2753;
 
-        // Act + Assert
         Assert.Throws<ArgumentException>(
             () =>
                 _rsa.GenerateKeys(
@@ -501,12 +483,10 @@ public class _rsaTests
     [Fact]
     public void GenerateKeys_WithSamePAndQ_ShouldThrow()
     {
-        // Arrange
         long p = 61;
         long q = 61;
         long d = 2753;
 
-        // Act + Assert
         Assert.Throws<ArgumentException>(
             () =>
                 _rsa.GenerateKeys(
@@ -518,7 +498,6 @@ public class _rsaTests
     [Fact]
     public void GenerateKeys_WithInvalidD_ShouldThrow()
     {
-        // Arrange
         long p = 61;
         long q = 53;
 
@@ -529,7 +508,6 @@ public class _rsaTests
 
         long d = 3120;
 
-        // Act + Assert
         Assert.Throws<ArgumentException>(
             () =>
                 _rsa.GenerateKeys(
@@ -541,7 +519,6 @@ public class _rsaTests
     [Fact]
     public void GenerateKeys_WithDNotCoprimeToPhi_ShouldThrow()
     {
-        // Arrange
         long p = 61;
         long q = 53;
 
@@ -550,7 +527,6 @@ public class _rsaTests
 
         long d = 6;
 
-        // Act + Assert
         Assert.Throws<ArgumentException>(
             () =>
                 _rsa.GenerateKeys(
@@ -562,14 +538,12 @@ public class _rsaTests
     [Fact]
     public void GenerateKeys_WithSmallPAndQ_ShouldThrow()
     {
-        // Arrange
         long p = 11;
         long q = 13;
         long d = 7;
 
         // N = 143 <= 255.
 
-        // Act + Assert
         Assert.Throws<ArgumentException>(
             () =>
                 _rsa.GenerateKeys(
@@ -581,10 +555,8 @@ public class _rsaTests
     [Fact]
     public void EncryptByte_WithoutKeys_ShouldThrow()
     {
-        // Arrange
         byte value = 100;
 
-        // Act + Assert
         Assert.Throws<InvalidOperationException>(
             () =>
                 _rsa.EncryptByte(value));
@@ -593,10 +565,8 @@ public class _rsaTests
     [Fact]
     public void DecryptByte_WithoutKeys_ShouldThrow()
     {
-        // Arrange
         long encrypted = 100;
 
-        // Act + Assert
         Assert.Throws<InvalidOperationException>(
             () =>
                 _rsa.DecryptByte(encrypted));
@@ -605,13 +575,11 @@ public class _rsaTests
     [Fact]
     public void EncryptDecrypt_AllByteValues_ShouldRestoreOriginal()
     {
-        // Arrange
         _rsa.GenerateKeys(
             61,
             53,
             2753);
 
-        // Act + Assert
         for (int i = byte.MinValue;
              i <= byte.MaxValue;
              i++)

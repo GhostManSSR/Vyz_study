@@ -19,7 +19,6 @@ public class ElGamelFileTests
     [Fact]
     public void EncryptAndDecrypt_TextFile_ShouldRestoreOriginalFile()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string sourceFile =
@@ -38,7 +37,6 @@ public class ElGamelFileTests
 
         ElGamalKeys keys = _elGamel.GenerateKeys();
 
-        // Act
         _elGamel.EncryptFile(
             sourceFile,
             encryptedFile,
@@ -49,7 +47,6 @@ public class ElGamelFileTests
             decryptedFile,
             keys);
 
-        // Assert
         string decryptedText =
             File.ReadAllText(decryptedFile);
         
@@ -65,7 +62,6 @@ public class ElGamelFileTests
     [Fact]
     public void EncryptAndDecrypt_BinaryFile_ShouldRestoreOriginalBytes()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string sourceFile =
@@ -77,7 +73,6 @@ public class ElGamelFileTests
         string decryptedFile =
             Path.Combine(directory, "image-restored.jpg");
 
-        // Создаём набор всех возможных значений byte.
         byte[] originalBytes = new byte[256];
 
         for (int i = 0; i < 256; i++)
@@ -92,7 +87,6 @@ public class ElGamelFileTests
         ElGamalKeys keys =
             _elGamel.GenerateKeys();
 
-        // Act
         _elGamel.EncryptFile(
             sourceFile,
             encryptedFile,
@@ -106,7 +100,6 @@ public class ElGamelFileTests
         byte[] decryptedBytes =
             File.ReadAllBytes(decryptedFile);
 
-        // Assert
         Assert.Equal(
             originalBytes,
             decryptedBytes);
@@ -115,7 +108,6 @@ public class ElGamelFileTests
     [Fact]
     public void EncryptAndDecrypt_RandomBinaryFile_ShouldRestoreOriginal()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string sourceFile =
@@ -138,7 +130,6 @@ public class ElGamelFileTests
         ElGamalKeys keys =
             _elGamel.GenerateKeys();
 
-        // Act
         _elGamel.EncryptFile(
             sourceFile,
             encryptedFile,
@@ -152,7 +143,6 @@ public class ElGamelFileTests
         byte[] decryptedBytes =
             File.ReadAllBytes(decryptedFile);
 
-        // Assert
         Assert.Equal(
             originalBytes,
             decryptedBytes);
@@ -161,7 +151,6 @@ public class ElGamelFileTests
     [Fact]
     public void EncryptAndDecrypt_EmptyFile_ShouldRestoreEmptyFile()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string sourceFile =
@@ -180,7 +169,6 @@ public class ElGamelFileTests
         ElGamalKeys keys =
             _elGamel.GenerateKeys();
 
-        // Act
         _elGamel.EncryptFile(
             sourceFile,
             encryptedFile,
@@ -191,7 +179,6 @@ public class ElGamelFileTests
             decryptedFile,
             keys);
 
-        // Assert
         Assert.True(File.Exists(decryptedFile));
 
         byte[] decryptedBytes =
@@ -203,7 +190,6 @@ public class ElGamelFileTests
     [Fact]
     public void EncryptFile_ShouldCreateEncryptedFile()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string sourceFile =
@@ -232,13 +218,11 @@ public class ElGamelFileTests
         ElGamalKeys keys =
             _elGamel.GenerateKeys();
 
-        // Act
         _elGamel.EncryptFile(
             sourceFile,
             encryptedFile,
             keys);
 
-        // Assert
         Assert.True(
             File.Exists(encryptedFile));
 
@@ -248,8 +232,6 @@ public class ElGamelFileTests
         byte[] encrypted =
             File.ReadAllBytes(encryptedFile);
 
-        // Зашифрованный файл не должен
-        // совпадать с исходным.
         Assert.NotEqual(
             data,
             encrypted);
@@ -258,7 +240,6 @@ public class ElGamelFileTests
     [Fact]
     public void DecryptFile_WithWrongKey_ShouldThrow()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string sourceFile =
@@ -286,13 +267,11 @@ public class ElGamelFileTests
         ElGamalKeys wrongKeys =
             _elGamel.GenerateKeys();
 
-        // Act
         _elGamel.EncryptFile(
             sourceFile,
             encryptedFile,
             encryptionKeys);
 
-        // Assert
         Assert.Throws<InvalidOperationException>(
             () => _elGamel.DecryptFile(
                 encryptedFile,
@@ -303,7 +282,6 @@ public class ElGamelFileTests
     [Fact]
     public void EncryptFile_WithMissingInputFile_ShouldThrow()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string sourceFile =
@@ -315,7 +293,6 @@ public class ElGamelFileTests
         ElGamalKeys keys =
             _elGamel.GenerateKeys();
 
-        // Act + Assert
         Assert.Throws<FileNotFoundException>(
             () => _elGamel.EncryptFile(
                 sourceFile,
@@ -326,7 +303,6 @@ public class ElGamelFileTests
     [Fact]
     public void DecryptFile_WithInvalidFile_ShouldThrow()
     {
-        // Arrange
         string directory = CreateTestDirectory();
 
         string invalidFile =
@@ -345,7 +321,6 @@ public class ElGamelFileTests
         ElGamalKeys keys =
             _elGamel.GenerateKeys();
 
-        // Act + Assert
         Assert.Throws<InvalidOperationException>(
             () => _elGamel.DecryptFile(
                 invalidFile,
@@ -356,13 +331,11 @@ public class ElGamelFileTests
     [Fact]
     public void EncryptBlockAndDecryptBlock_ShouldRestoreMessage()
     {
-        // Arrange
         ElGamalKeys keys =
             _elGamel.GenerateKeys();
 
         long message = 123;
 
-        // Act
         var encrypted =
             _elGamel.EncryptBlock(
                 message,
@@ -374,7 +347,6 @@ public class ElGamelFileTests
                 encrypted.v,
                 keys);
 
-        // Assert
         Assert.Equal(
             message,
             decrypted);

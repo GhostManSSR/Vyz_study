@@ -28,7 +28,7 @@ class Program
         // var xFound = DiscreteLog.BabyStepGiantStep(aBig, yBig, pBig);
         // Console.WriteLine($"p = {pBig}, a = {aBig}, x_true = {xTrue}, y = {yBig}");
         // Console.WriteLine($"Найдено x = {xFound}, совпадает с истинным: {xFound == xTrue}");
-        
+
         // FastModularExponentiation _fastModular =  new FastModularExponentiation();
         //
         //
@@ -48,68 +48,71 @@ class Program
         // Console.WriteLine((c,d));
         //
         // Console.WriteLine(_gcdEvklid.Gcd(c, d));
-        
-        
-        var diffieHellman = new DiffieHellman();
+        FastModularExponentiation _fastModularExponentiation = new FastModularExponentiation();
+        ElGamel _elGamel = new ElGamel(_fastModularExponentiation);
 
-        Console.WriteLine("Алгоритм Диффи-Хеллмана");
-        Console.WriteLine();
-
-        Console.Write("Введите p: ");
-        long p = long.Parse(Console.ReadLine()!);
-
-        Console.Write("Введите g: ");
-        long g = long.Parse(Console.ReadLine()!);
-
-        Console.Write("Введите закрытый ключ Xa: ");
-        long xa = long.Parse(Console.ReadLine()!);
-
-        Console.Write("Введите закрытый ключ Xb: ");
-        long xb = long.Parse(Console.ReadLine()!);
-
-        try
-        {
-            DiffieHellman _diffieHellman = new DiffieHellman();
-
-            var (Ya, Yb, keyA, keyB) = _diffieHellman.GenerateSharedKey(p, g, xa, xb);
-            
-            Console.WriteLine();
-            Console.WriteLine("Результат:");
-            Console.WriteLine();
-
-            Console.WriteLine($"p  = {p}");
-            Console.WriteLine($"g  = {g}");
-
-            Console.WriteLine();
-            Console.WriteLine("Абонент A:");
-            Console.WriteLine($"Xa = {xa}");
-            Console.WriteLine($"Ya = {Ya}");
-
-            Console.WriteLine();
-            Console.WriteLine("Абонент B:");
-            Console.WriteLine($"Xb = {xb}");
-            Console.WriteLine($"Yb = {Yb}");
-
-            Console.WriteLine();
-            Console.WriteLine($"Общий ключ A: {keyA}");
-            Console.WriteLine($"Общий ключ B: {keyB}");
-
-            Console.WriteLine();
-
-            if (keyA == keyB)
-            {
-                Console.WriteLine(
-                    "Общий ключ успешно сформирован.");
-            }
-            else
-            {
-                Console.WriteLine(
-                    "Ошибка: ключи не совпадают.");
-            }
-        }
-        catch (ArgumentException ex)
-        {
-            Console.WriteLine($"Ошибка: {ex.Message}");
-        }
+        _elGamel.SolverElGamel();
+        //     var diffieHellman = new DiffieHellman();
+        //
+        //     Console.WriteLine("Алгоритм Диффи-Хеллмана");
+        //     Console.WriteLine();
+        //
+        //     Console.Write("Введите p: ");
+        //     long p = long.Parse(Console.ReadLine()!);
+        //
+        //     Console.Write("Введите g: ");
+        //     long g = long.Parse(Console.ReadLine()!);
+        //
+        //     Console.Write("Введите закрытый ключ Xa: ");
+        //     long xa = long.Parse(Console.ReadLine()!);
+        //
+        //     Console.Write("Введите закрытый ключ Xb: ");
+        //     long xb = long.Parse(Console.ReadLine()!);
+        //
+        //     try
+        //     {
+        //         DiffieHellman _diffieHellman = new DiffieHellman();
+        //
+        //         var (Ya, Yb, keyA, keyB) = _diffieHellman.GenerateSharedKey(p, g, xa, xb);
+        //         
+        //         Console.WriteLine();
+        //         Console.WriteLine("Результат:");
+        //         Console.WriteLine();
+        //
+        //         Console.WriteLine($"p  = {p}");
+        //         Console.WriteLine($"g  = {g}");
+        //
+        //         Console.WriteLine();
+        //         Console.WriteLine("Абонент A:");
+        //         Console.WriteLine($"Xa = {xa}");
+        //         Console.WriteLine($"Ya = {Ya}");
+        //
+        //         Console.WriteLine();
+        //         Console.WriteLine("Абонент B:");
+        //         Console.WriteLine($"Xb = {xb}");
+        //         Console.WriteLine($"Yb = {Yb}");
+        //
+        //         Console.WriteLine();
+        //         Console.WriteLine($"Общий ключ A: {keyA}");
+        //         Console.WriteLine($"Общий ключ B: {keyB}");
+        //
+        //         Console.WriteLine();
+        //
+        //         if (keyA == keyB)
+        //         {
+        //             Console.WriteLine(
+        //                 "Общий ключ успешно сформирован.");
+        //         }
+        //         else
+        //         {
+        //             Console.WriteLine(
+        //                 "Ошибка: ключи не совпадают.");
+        //         }
+        //     }
+        //     catch (ArgumentException ex)
+        //     {
+        //         Console.WriteLine($"Ошибка: {ex.Message}");
+        //     }
+        // }
     }
 }

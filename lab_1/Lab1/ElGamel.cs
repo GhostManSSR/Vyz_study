@@ -127,11 +127,7 @@ public class ElGamel
 
         // Расшифровываем:
         // m = D * (C^x)^(-1) mod p
-        long decryptedMessage = DecryptAlice(
-            c,
-            x,
-            d,
-            p);
+        long decryptedMessage = DecryptAlice(c, x, d, p);
 
         Console.WriteLine();
         Console.WriteLine("Результат:");
