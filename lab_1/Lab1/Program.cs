@@ -8,249 +8,127 @@ namespace SortingAlgorithms
     {
         static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine("------------------ UnboundedKnapsack -----------------------");
+            int[] weights = { 3, 4, 2 };
+            int[] values = { 4, 5, 3 };
 
-            double[] signal = { 1, 2, 3, 4, 5 };
-            double[] kernel = { 1, 0, -1 };
+            int capacity = 10;
 
-            Console.WriteLine("========================================");
-            Console.WriteLine("      ДЕМОНСТРАЦИЯ АЛГОРИТМОВ СВЁРТКИ");
-            Console.WriteLine("========================================");
+            UnboundedKnapsack knapsack = new UnboundedKnapsack();
 
-            ConvolutionDemo.PrintArray("Signal", signal);
-            ConvolutionDemo.PrintArray("Kernel", kernel);
-
-            Console.WriteLine("\n=== 1. Прямая свёртка O(n * m) ===");
-
-            var simpleCounter = new ConvolutionDemo.OperationsCounter();
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            double[] simpleResult = ConvolutionDemo.SimpleConvolve(
-                signal,
-                kernel,
-                simpleCounter);
-            stopwatch.Stop();
-
-            ConvolutionDemo.PrintArray("Simple result", simpleResult);
-            PrintStatistics(
-                "Прямая свёртка",
-                stopwatch.Elapsed,
-                simpleCounter);
-
-            Console.WriteLine("\n=== 2. Свёртка через обычное DFT O(N²) ===");
-
-            var dftCounter = new ConvolutionDemo.OperationsCounter();
-
-            stopwatch.Restart();
-            double[] dftResult = ConvolutionDemo.DFTConvolve(
-                signal,
-                kernel,
-                dftCounter);
-            stopwatch.Stop();
-
-            ConvolutionDemo.PrintArray("DFT result", dftResult);
-            PrintStatistics(
-                "Свёртка через DFT",
-                stopwatch.Elapsed,
-                dftCounter);
-
-            Console.WriteLine("\n=== 3. Свёртка через FFT O(N log N) ===");
-
-            var fftCounter = new ConvolutionDemo.OperationsCounter();
-
-            stopwatch.Restart();
-            double[] fftResult = ConvolutionDemo.FFTConvolve(
-                signal,
-                kernel,
-                fftCounter);
-            stopwatch.Stop();
-
-            ConvolutionDemo.PrintArray("FFT result", fftResult);
-            PrintStatistics(
-                "Свёртка через FFT",
-                stopwatch.Elapsed,
-                fftCounter);
-
-            Console.WriteLine("\n=== Проверка совпадения результатов ===");
-
-            bool simpleAndDftMatch = ConvolutionDemo.ArraysAlmostEqual(
-                simpleResult,
-                dftResult);
-
-            bool simpleAndFftMatch = ConvolutionDemo.ArraysAlmostEqual(
-                simpleResult,
-                fftResult);
-
-            Console.WriteLine($"Simple == DFT: {simpleAndDftMatch}");
-            Console.WriteLine($"Simple == FFT: {simpleAndFftMatch}");
-
-            Console.WriteLine("\n=== Теоретическая трудоёмкость ===");
-
-            int resultLength = signal.Length + kernel.Length - 1;
-            int transformSize = ConvolutionDemo.GetNextPowerOfTwo(resultLength);
-
-            Console.WriteLine($"Длина результата: {resultLength}");
-            Console.WriteLine($"Размер преобразования N: {transformSize}");
-            Console.WriteLine($"Прямая свёртка: O({signal.Length} * {kernel.Length})");
-            Console.WriteLine($"DFT-свёртка: O({transformSize}²)");
-            Console.WriteLine(
-                $"FFT-свёртка: O({transformSize} * log2({transformSize}))");
-
-            Console.WriteLine("\n========================================");
-            Console.WriteLine("       БЕНЧМАРК НА СЛУЧАЙНЫХ ДАННЫХ");
-            Console.WriteLine("========================================");
-
-            RunConvolutionBenchmark();
-
-            Console.WriteLine("\n========================================");
-            Console.WriteLine("      ТЕСТ УМНОЖЕНИЯ МАТРИЦ");
-            Console.WriteLine("========================================");
-
-            double[,] a =
-            {
-                { 1, 2, 3 },
-                { 4, 5, 6 },
-                { 7, 8, 9 }
-            };
-
-            double[,] b =
-            {
-                { 9, 8, 7 },
-                { 6, 5, 4 },
-                { 3, 2, 1 }
-            };
-
-            double[,] cNaive = MatrixMultiply.MultiplyNaive(a, b);
-            double[,] cStrassen = MatrixMultiply.MultiplyStrassen(a, b);
-
-            MatrixMultiply.PrintMatrix("A", a);
-            MatrixMultiply.PrintMatrix("B", b);
-            MatrixMultiply.PrintMatrix("Naive A*B", cNaive);
-            MatrixMultiply.PrintMatrix("Strassen A*B", cStrassen);
-
-            Console.WriteLine("\n========================================");
-            Console.WriteLine("      ТЕСТ ФОРДА–БЕЛЛМАНА");
-            Console.WriteLine("========================================");
-
-            var edges = new List<Edge>
-            {
-                new Edge(0, 1, 4),
-                new Edge(0, 2, 5),
-                new Edge(1, 2, -3),
-                new Edge(1, 3, 1),
-                new Edge(2, 3, 4)
-            };
-
-            int verticesCount = 4;
-            int source = 0;
-
-            var fbResult = FordBellman.Run(verticesCount, edges, source);
-
-            FordBellman.PrintResult(
-                "Кратчайшие пути из вершины 0",
-                fbResult,
-                source);
-        }
-
-        private static void RunConvolutionBenchmark()
-        {
-            int[] sizes = { 16, 32, 64, 128, 256, 512, 1024 };
-            Random random = new Random(42);
+            int result = knapsack.Solve(
+                weights,
+                values,
+                capacity
+            );
 
             Console.WriteLine(
-                "Размер | Прямая, мс | DFT, мс | FFT, мс | " +
-                "Операции direct | Операции DFT | Операции FFT");
-
-            Console.WriteLine(new string('-', 105));
-
-            foreach (int size in sizes)
+                $"Максимальная стоимость: {result}"
+            );
+            
+            Console.WriteLine("------------------ Kraskal -----------------------");
+            List<KruskalAlgorithm.Edge> edges = new()
             {
-                double[] signal = CreateRandomArray(size, random);
-                double[] kernel = CreateRandomArray(size, random);
+                new(0, 1, 10),
+                new(0, 2, 6),
+                new(0, 3, 5),
+                new(1, 3, 15),
+                new(2, 3, 4)
+            };
 
-                var simpleCounter = new ConvolutionDemo.OperationsCounter();
-                var dftCounter = new ConvolutionDemo.OperationsCounter();
-                var fftCounter = new ConvolutionDemo.OperationsCounter();
+            KruskalAlgorithm kruskal =
+                new KruskalAlgorithm(4);
 
-                Stopwatch sw = Stopwatch.StartNew();
-                double[] simple = ConvolutionDemo.SimpleConvolve(
-                    signal,
-                    kernel,
-                    simpleCounter);
-                sw.Stop();
-                double simpleMs = sw.Elapsed.TotalMilliseconds;
+            List<KruskalAlgorithm.Edge> resultCraskal =
+                kruskal.Solve(4, edges);
 
-                sw.Restart();
-                double[] dft = ConvolutionDemo.DFTConvolve(
-                    signal,
-                    kernel,
-                    dftCounter);
-                sw.Stop();
-                double dftMs = sw.Elapsed.TotalMilliseconds;
+            int totalWeight = 0;
 
-                sw.Restart();
-                double[] fft = ConvolutionDemo.FFTConvolve(
-                    signal,
-                    kernel,
-                    fftCounter);
-                sw.Stop();
-                double fftMs = sw.Elapsed.TotalMilliseconds;
+            Console.WriteLine("Минимальное остовное дерево:");
 
-                bool dftCorrect = ConvolutionDemo.ArraysAlmostEqual(
-                    simple,
-                    dft,
-                    1e-5);
-
-                bool fftCorrect = ConvolutionDemo.ArraysAlmostEqual(
-                    simple,
-                    fft,
-                    1e-5);
-
+            foreach (var edge in resultCraskal)
+            {
                 Console.WriteLine(
-                    $"{size,5} | " +
-                    $"{simpleMs,11:F3} | " +
-                    $"{dftMs,7:F3} | " +
-                    $"{fftMs,7:F3} | " +
-                    $"{simpleCounter.TotalArithmeticOperations,17} | " +
-                    $"{dftCounter.TotalArithmeticOperations,14} | " +
-                    $"{fftCounter.TotalArithmeticOperations,14}");
+                    $"{edge.From} -- {edge.To} : {edge.Weight}");
 
-                if (!dftCorrect || !fftCorrect)
-                {
-                    Console.WriteLine(
-                        $"  ВНИМАНИЕ: ошибка проверки результата для размера {size}. " +
-                        $"DFT: {dftCorrect}, FFT: {fftCorrect}");
-                }
+                totalWeight += edge.Weight;
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Примечание:");
-            Console.WriteLine("- На малых массивах прямая свёртка может быть быстрее.");
-            Console.WriteLine("- DFT почти всегда заметно медленнее FFT.");
-            Console.WriteLine("- На больших массивах преимущество FFT становится существенным.");
-            Console.WriteLine("- Время зависит от CPU, режима Debug/Release и фоновой нагрузки.");
-        }
+            Console.WriteLine(
+                $"Общий вес: {totalWeight}");
+            
+            
+            Console.WriteLine("------------------ Deikstra ----------------------");
+            List<DijkstraAlgorithm.Edge>[] graph =
+                new List<DijkstraAlgorithm.Edge>[5];
 
-        private static double[] CreateRandomArray(int size, Random random)
-        {
-            double[] result = new double[size];
-
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < graph.Length; i++)
             {
-                result[i] = random.NextDouble() * 20.0 - 10.0;
+                graph[i] = new List<DijkstraAlgorithm.Edge>();
             }
 
-            return result;
-        }
+            graph[0].Add(new(1, 10));
+            graph[0].Add(new(2, 3));
 
-        private static void PrintStatistics(
-            string algorithmName,
-            TimeSpan elapsed,
-            ConvolutionDemo.OperationsCounter counter)
-        {
-            Console.WriteLine($"{algorithmName}:");
-            Console.WriteLine($"Время: {elapsed.TotalMilliseconds:F6} мс");
-            Console.WriteLine($"Операции: {counter}");
+            graph[1].Add(new(2, 1));
+            graph[1].Add(new(3, 2));
+
+            graph[2].Add(new(1, 4));
+            graph[2].Add(new(3, 8));
+            graph[2].Add(new(4, 2));
+
+            graph[3].Add(new(4, 7));
+
+            graph[4].Add(new(3, 9));
+
+            DijkstraAlgorithm dijkstra =
+                new DijkstraAlgorithm();
+
+            int[] distances =
+                dijkstra.Solve(graph, 0);
+
+            Console.WriteLine(
+                "Кратчайшие расстояния от вершины 0:");
+
+            for (int i = 0; i < distances.Length; i++)
+            {
+                Console.WriteLine(
+                    $"0 -> {i} = {distances[i]}");
+            }
+            
+            Console.WriteLine("------------------ Skobki rastanovka ----------------------");
+            
+            int[] dimensions =
+            {
+                10,
+                20,
+                30,
+                40,
+                30
+            };
+
+            MatrixChainMultiplication algorithm =
+                new MatrixChainMultiplication();
+
+            int operations =
+                algorithm.Solve(dimensions);
+
+            string order =
+                algorithm.GetOptimalOrder();
+
+            Console.WriteLine(
+                $"Минимальное количество операций: {operations}");
+
+            Console.WriteLine(
+                $"Оптимальная расстановка: {order}");
+            
+            // Console.WriteLine("----------- Ftp 1000000000000 elements");
+            // FftBenchmark benchmark =
+            //     new FftBenchmark();
+            //
+            // benchmark.Run(20);
+            // benchmark.Run(22);
+            // benchmark.Run(40);
         }
     }
 }
