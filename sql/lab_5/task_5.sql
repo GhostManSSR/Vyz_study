@@ -1,3 +1,2 @@
 SELECT *
-FROM sal
-         NATURAL JOIN cust;
+FROM sal NATURAL JOIN cust;
