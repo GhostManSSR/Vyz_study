@@ -1,6 +1,8 @@
 package BugBug.androidApp.ui.registration
 
-
+import BugBug.androidApp.model.Author
+import BugBug.androidApp.model.GameSettings
+import BugBug.androidApp.R
 import BugBug.androidApp.model.Gender
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -11,10 +13,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import java.util.Calendar
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,6 +26,12 @@ fun RegistrationScreen(
 ) {
     val state by vm.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    state.authors.forEach { author ->
+        android.util.Log.d("RegistrationScreen", "author ${author.name} photoResId = ${author.photoResId}")
+    }
+
+    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf("Регистрация", "Правила", "Авторы", "Настройки")
 
     LaunchedEffect(state.error) {
         state.error?.let {
