@@ -15,9 +15,8 @@ namespace TaskManagerLab.Models
             nextTaskId = 1;
             nextProjectId = 1;
 
-            // Демонстрационные данные: два проекта и по задаче в каждом
-            AddProject("Учёба");   // Id = 1
-            AddProject("Работа");  // Id = 2
+            AddProject("Учёба"); 
+            AddProject("Работа");
 
             AddTask(1, "Лабораторная работа", "Реализовать на C#", "High", "In Progress");
             AddTask(2, "Купить продукты",     "Молоко, хлеб",      "Low",  "Todo");
@@ -110,7 +109,6 @@ namespace TaskManagerLab.Models
 
         public void DeleteProject(int index)
         {
-            // Каскадное удаление: сначала убираем все задачи этого проекта
             List<Project> projects = projectRepository.GetAll();
             if (index >= 0 && index < projects.Count)
             {
