@@ -7,6 +7,7 @@ import BugBug.androidApp.ui.registration.RegistrationScreen
 import BugBug.androidApp.ui.registration.RegistrationViewModel
 import BugBug.androidApp.ui.result.ResultScreen
 import BugBug.androidApp.ui.rules.RulesScreen
+import BugBug.androidApp.ui.settings.GameSettingsViewModel
 import BugBug.androidApp.ui.settings.SettingsScreen
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,12 +27,12 @@ object Routes {
 
 @Composable
 fun AppNavHost(
-    regVm: RegistrationViewModel = viewModel()
+    regVm: RegistrationViewModel = viewModel(),
+    settingsVm: GameSettingsViewModel = viewModel()
 ) {
     val nav = rememberNavController()
-
-    var difficulty by remember { mutableStateOf(3) }
-    var soundEnabled by remember { mutableStateOf(true) }
+    val gameSettings by settingsVm.settings.collectAsState()
+    val difficulty = gameSettings.difficulty
 
     NavHost(nav, startDestination = Routes.REGISTRATION) {
 
@@ -69,7 +70,9 @@ fun AppNavHost(
         composable(Routes.GAME) {
             GameScreen(
                 onExit = { nav.popBackStack() },
-                difficulty = difficulty
+                difficulty = difficulty,
+                settings = gameSettings,
+                vm = viewModel()
             )
         }
 
@@ -84,10 +87,10 @@ fun AppNavHost(
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { nav.popBackStack() },
-                difficulty = difficulty,
-                soundEnabled = soundEnabled,
-                onDifficultyChange = { difficulty = it },
-                onSoundChange = { soundEnabled = it }
+                settings = gameSettings,
+                onSettingsChange = { newSettings ->
+                    settingsVm.updateSettings(newSettings)
+                }
             )
         }
     }
