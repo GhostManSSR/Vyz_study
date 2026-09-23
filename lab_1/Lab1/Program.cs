@@ -129,6 +129,96 @@ namespace SortingAlgorithms
             // benchmark.Run(20);
             // benchmark.Run(22);
             // benchmark.Run(40);
+            
+            Console.WriteLine("-----------------------RGR variant 9------------------");
+            // b = бесконечность / отсутствие дуги
+        int I = Graph.INF;
+
+        int[,] matrix =
+        {
+            { I, 13, 7, 5, 2, 9 },
+            { 8, I, 4, 6, 5, I },
+            { 8, 4, I, 3, 6, 2 },
+            { 5, 6, 1, I, 0, 1 },
+            { I, 6, 1, 4, I, 9 },
+            { 10, 0, 8, 3, 7, I }
+        };
+
+        Graph graph_1 = new Graph(matrix);
+
+        graph_1.Print();
+
+        // ==========================================
+        // 1. Прямой перебор
+        // ==========================================
+
+        BruteForceTspSolver bruteForce =
+            new BruteForceTspSolver(graph_1);
+
+        TspResult bruteResult =
+            bruteForce.Solve();
+
+        bruteResult.Print(
+            "МЕТОД ПРЯМОГО ПЕРЕБОРА"
+        );
+
+        // ==========================================
+        // 2. Ветви и границы
+        // ==========================================
+
+        BranchAndBoundTspSolver branchAndBound =
+            new BranchAndBoundTspSolver(graph_1);
+
+        TspResult branchResult =
+            branchAndBound.Solve();
+
+        branchResult.Print(
+            "МЕТОД ВЕТВЕЙ И ГРАНИЦ"
+        );
+
+        // ==========================================
+        // Сравнение
+        // ==========================================
+
+        Console.WriteLine();
+        Console.WriteLine("===== СРАВНЕНИЕ =====");
+
+        Console.WriteLine(
+            $"Прямой перебор:       " +
+            $"{bruteResult.ExecutionTime.TotalMilliseconds:F4} мс"
+        );
+
+        Console.WriteLine(
+            $"Ветви и границы:      " +
+            $"{branchResult.ExecutionTime.TotalMilliseconds:F4} мс"
+        );
+
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"Стоимость перебора:   {bruteResult.Cost}"
+        );
+
+        Console.WriteLine(
+            $"Стоимость В&Г:        {branchResult.Cost}"
+        );
+
+        Console.WriteLine();
+
+        Console.WriteLine(
+            $"У прямого перебора операций: " +
+            $"{bruteResult.Operations}"
+        );
+
+        Console.WriteLine(
+            $"У В&Г операций:              " +
+            $"{branchResult.Operations}"
+        );
+
+        Console.WriteLine(
+            $"Отсечено ветвей:             " +
+            $"{branchResult.PrunedBranches}"
+        );
         }
     }
 }
