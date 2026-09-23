@@ -1,8 +1,5 @@
 package BugBug.androidApp.ui.registration
 
-import BugBug.androidApp.model.Author
-import BugBug.androidApp.model.GameSettings
-import BugBug.androidApp.R
 import BugBug.androidApp.model.Gender
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -13,25 +10,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationScreen(
     onSaved: () -> Unit,
-    vm: RegistrationViewModel = viewModel()
+    vm: RegistrationViewModel
 ) {
     val state by vm.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    state.authors.forEach { author ->
-        android.util.Log.d("RegistrationScreen", "author ${author.name} photoResId = ${author.photoResId}")
-    }
-
-    var selectedTab by remember { mutableStateOf(0) }
-    val tabs = listOf("Регистрация", "Правила", "Авторы", "Настройки")
 
     LaunchedEffect(state.error) {
         state.error?.let {
@@ -52,15 +41,14 @@ fun RegistrationScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Секция: личные данные
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
-                    Text("Личные данные",
+                    Text(
+                        "Личные данные",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary)
-
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     Spacer(Modifier.height(8.dp))
-
                     OutlinedTextField(
                         value = state.fullName,
                         onValueChange = vm::onNameChange,
@@ -68,9 +56,7 @@ fun RegistrationScreen(
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
-
                     Spacer(Modifier.height(12.dp))
-
                     Text("Пол")
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
@@ -87,13 +73,13 @@ fun RegistrationScreen(
                 }
             }
 
-            // Секция: игровые настройки
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
-                    Text("Игровые настройки",
+                    Text(
+                        "Игровые настройки",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary)
-
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     Spacer(Modifier.height(8.dp))
 
                     var expanded by remember { mutableStateOf(false) }
@@ -107,7 +93,7 @@ fun RegistrationScreen(
                             readOnly = true,
                             label = { Text("Курс") },
                             modifier = Modifier
-                                .menuAnchor()
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                                 .fillMaxWidth()
                         )
                         ExposedDropdownMenu(
@@ -127,7 +113,6 @@ fun RegistrationScreen(
                     }
 
                     Spacer(Modifier.height(12.dp))
-
                     Text("Сложность: ${state.difficulty} / 10")
                     Slider(
                         value = state.difficulty.toFloat(),
@@ -138,13 +123,13 @@ fun RegistrationScreen(
                 }
             }
 
-            // Секция: дата и зодиак
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
-                    Text("Дата рождения",
+                    Text(
+                        "Дата рождения",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary)
-
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     Spacer(Modifier.height(8.dp))
 
                     var showPicker by remember { mutableStateOf(false) }
@@ -155,9 +140,11 @@ fun RegistrationScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         val c = state.birthDate
-                        Text("${c.get(Calendar.DAY_OF_MONTH)}." +
-                                "${c.get(Calendar.MONTH) + 1}." +
-                                "${c.get(Calendar.YEAR)}")
+                        Text(
+                            "${c.get(Calendar.DAY_OF_MONTH)}." +
+                                    "${c.get(Calendar.MONTH) + 1}." +
+                                    "${c.get(Calendar.YEAR)}"
+                        )
                     }
 
                     if (showPicker) {
@@ -183,7 +170,6 @@ fun RegistrationScreen(
                     }
 
                     Spacer(Modifier.height(12.dp))
-
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(state.zodiac.iconRes),
