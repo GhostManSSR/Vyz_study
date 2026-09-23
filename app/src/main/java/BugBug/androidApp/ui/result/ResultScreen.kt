@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -19,12 +18,10 @@ import java.util.Locale
 @Composable
 fun ResultScreen(
     onBack: () -> Unit,
-    vm: RegistrationViewModel = viewModel()
+    onContinue: () -> Unit,
+    vm: RegistrationViewModel
 ) {
     val player by vm.savedPlayer.collectAsState()
-    val p = player ?: return
-
-    val fmt = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
     Scaffold(
         topBar = {
@@ -36,6 +33,21 @@ fun ResultScreen(
             )
         }
     ) { padding ->
+        val p = player
+        if (p == null) {
+            Column(
+                Modifier.padding(padding).padding(24.dp).fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Нет данных игрока", style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.height(16.dp))
+                Button(onClick = onBack) { Text("Вернуться к форме") }
+            }
+            return@Scaffold
+        }
+
+        val fmt = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         Column(
             Modifier.padding(padding).padding(24.dp).fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -48,7 +60,7 @@ fun ResultScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            Card {
+            Card(Modifier.fillMaxWidth()) {
                 Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Image(
                         painter = painterResource(p.zodiac.iconRes),
@@ -61,6 +73,37 @@ fun ResultScreen(
                         style = MaterialTheme.typography.headlineSmall
                     )
                 }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Column(Modifier.padding(20.dp)) {
+                    Text(
+                        "Добро пожаловать, ${p.fullName.substringBefore(' ')}!",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "Ты — ${p.zodiac.title}. Уровень: ${p.difficulty}/10. Готов к бою с жуками?",
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Button(
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("В главное меню")
             }
         }
     }
