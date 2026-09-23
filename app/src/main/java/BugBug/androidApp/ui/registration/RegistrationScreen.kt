@@ -111,15 +111,6 @@ fun RegistrationScreen(
                             }
                         }
                     }
-
-                    Spacer(Modifier.height(12.dp))
-                    Text("Сложность: ${state.difficulty} / 10")
-                    Slider(
-                        value = state.difficulty.toFloat(),
-                        onValueChange = { vm.onDifficultyChange(it.toInt()) },
-                        valueRange = 0f..10f,
-                        steps = 9
-                    )
                 }
             }
 
