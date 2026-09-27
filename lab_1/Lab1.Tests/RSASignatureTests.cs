@@ -3,8 +3,8 @@
 public class RSASignatureTests
 {
     /*
-     * p = 1009
-     * q = 1013
+     * p = 32503
+     * q = 32507
      *
      * N = 1022117
      *
@@ -13,7 +13,7 @@ public class RSASignatureTests
      */
     private RSASignature CreateRsa()
     {
-        return new RSASignature(1009, 1013);
+        return new RSASignature(32503, 32507);
     }
     
     private string CreateTestDirectory()
@@ -32,15 +32,15 @@ public class RSASignatureTests
     {
         RSASignature rsa = CreateRsa();
 
-        Assert.Equal(1009, rsa.P);
-        Assert.Equal(1013, rsa.Q);
+        Assert.Equal(32503, rsa.P);
+        Assert.Equal(32507, rsa.Q);
 
         Assert.Equal(
-            1009L * 1013L,
+            32503L * 32507L,
             rsa.N);
 
         Assert.Equal(
-            (1009L - 1) * (1013L - 1),
+            (32503L - 1) * (32507L - 1),
             rsa.Phi);
 
         Assert.True(rsa.PublicKey > 1);

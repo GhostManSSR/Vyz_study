@@ -9,6 +9,11 @@ public class RSASignature
     // чтобы каждый байт хеша (0..255) был меньше N.
     private readonly long _p;
     private readonly long _q;
+    private const long MinP = 32500;
+    private const long MaxP = 45000;
+
+    private const long MinQ = 32500;
+    private const long MaxQ = 45000;
 
     // N = p * q
     private readonly long _n;
@@ -38,6 +43,14 @@ public class RSASignature
     {
         if (p < 3 || q < 3)
             throw new ArgumentException("p и q должны быть больше 2.");
+        
+        if (p < MinP || p > MaxP)
+            throw new ArgumentException(
+                $"p должно находиться в диапазоне [{MinP}; {MaxP}].");
+
+        if (q < MinQ || q > MaxQ)
+            throw new ArgumentException(
+                $"q должно находиться в диапазоне [{MinQ}; {MaxQ}].");
 
         if (!IsPrime(p))
             throw new ArgumentException($"Число p={p} не является простым.");
