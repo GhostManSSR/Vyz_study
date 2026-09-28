@@ -4,9 +4,6 @@ namespace Lab1;
 
 public class RSASignature
 {
-     // p и q должны быть простыми.
-    // Их произведение должно быть достаточно большим,
-    // чтобы каждый байт хеша (0..255) был меньше N.
     private readonly long _p;
     private readonly long _q;
     private const long MinP = 32500;
@@ -71,18 +68,18 @@ public class RSASignature
         }
 
         /*
-         * Выбираем открытый ключ e.
+         * Выбираем открытый ключ d.
          *
          * Нужно:
-         * 1. 1 < e < φ(N)
-         * 2. gcd(e, φ(N)) = 1
+         * 1. 1 < d < φ(N)
+         * 2. gcd(d, φ(N)) = 1
          */
         _publicKey = FindPublicKey(_phi);
 
         /*
-         * Находим закрытый ключ d:
+         * Находим закрытый ключ c:
          *
-         * d * e ≡ 1 (mod φ(N))
+         * c * d ≡ 1 (mod φ(N))
          */
         _privateKey = ModInverse(_publicKey, _phi);
     }
@@ -177,7 +174,7 @@ public class RSASignature
         for (int i = 0; i < hash.Length; i++)
         {
             /*
-             * s = m^d mod N
+             * s = m^c mod N
              *
              * Здесь используется закрытый ключ.
              */
@@ -207,7 +204,7 @@ public class RSASignature
         for (int i = 0; i < hash.Length; i++)
         {
             /*
-             * m = s^e mod N
+             * m = s^d mod N
              *
              * Используем открытый ключ.
              */
@@ -221,6 +218,80 @@ public class RSASignature
         }
 
         return true;
+    }
+    
+    /// <summary>
+    /// Шифрует файл побайтово с использованием закрытого ключа.
+    /// Возвращает массив зашифрованных байтов (каждый байт -> long).
+    /// </summary>
+    public long[] EncryptFile(string filePath)
+    {
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException("Файл не найден.", filePath);
+
+        byte[] data = File.ReadAllBytes(filePath);
+
+        long[] encrypted = new long[data.Length];
+
+        for (int i = 0; i < data.Length; i++)
+        {
+            // Шифрование: s = m^privateKey mod N
+            encrypted[i] = FastModularExponentiation(
+                data[i],
+                _privateKey,
+                _n);
+        }
+
+        return encrypted;
+    }
+    
+    /// <summary>
+    /// Шифрует файл и сохраняет зашифрованные данные в отдельный файл.
+    /// </summary>
+    public void SaveEncryptedFile(string filePath, string encryptedFilePath)
+    {
+        long[] encrypted = EncryptFile(filePath);
+    
+        string data = string.Join(" ", encrypted);
+    
+        File.WriteAllText(encryptedFilePath, data);
+    }
+    
+    /// <summary>
+    /// Расшифровывает файл, зашифрованный методом EncryptFile.
+    /// </summary>
+    public byte[] DecryptFile(string encryptedFilePath)
+    {
+        if (!File.Exists(encryptedFilePath))
+            throw new FileNotFoundException(
+                "Зашифрованный файл не найден.", 
+                encryptedFilePath);
+
+        string data = File.ReadAllText(encryptedFilePath);
+
+        string[] values = data
+            .Split(
+                new[] { ' ', '\r', '\n', '\t' },
+                StringSplitOptions.RemoveEmptyEntries);
+
+        byte[] decrypted = new byte[values.Length];
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            if (!long.TryParse(values[i], out long encryptedValue))
+                throw new InvalidDataException(
+                    $"Некорректное значение: {values[i]}");
+
+            // Расшифровка: m = s^publicKey mod N
+            long decryptedValue = FastModularExponentiation(
+                encryptedValue,
+                _publicKey,
+                _n);
+
+            decrypted[i] = (byte)decryptedValue;
+        }
+
+        return decrypted;
     }
 
     /// <summary>

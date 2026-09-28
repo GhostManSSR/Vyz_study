@@ -5,10 +5,7 @@ namespace Lab1;
 
 public class ElGamalSignature
 {
-      // Простое число p
     private readonly long _p;
-
-    // Примитивный корень по модулю p
     private readonly long _g;
 
     // Закрытый ключ x
@@ -68,9 +65,7 @@ public class ElGamalSignature
         }
         else
         {
-            _privateKey = RandomNumberGenerator.GetInt32(
-                2,
-                checked((int)(p - 1)));
+            _privateKey = RandomNumberGenerator.GetInt32(2, checked((int)(p - 1)));
         }
 
         /*
@@ -122,9 +117,7 @@ public class ElGamalSignature
         byte[] hash =
             CalculateHash(filePath);
 
-        return VerifyHash(
-            hash,
-            signature);
+        return VerifyHash(hash, signature);
     }
 
     /// <summary>

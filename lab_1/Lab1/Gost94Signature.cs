@@ -5,10 +5,6 @@ namespace Lab10;
 
 public sealed class Gost94Signature
 {
-    // ============================================================
-    // ОБЩИЕ ПАРАМЕТРЫ ГОСТ
-    // ============================================================
-
     // p — простое число длиной 31 бит
     // q — простое число длиной 16 бит
     // p - 1 = k * q
@@ -18,28 +14,15 @@ public sealed class Gost94Signature
     public BigInteger Q { get; }
     public BigInteger A { get; }
 
-    // ============================================================
-    // КЛЮЧИ ПОЛЬЗОВАТЕЛЯ
-    // ============================================================
-
     // x — секретный ключ
     public BigInteger PrivateKey { get; }
 
     // y = a^x mod p
     public BigInteger PublicKey { get; }
 
-    private static readonly RandomNumberGenerator Random =
-        RandomNumberGenerator.Create();
+    private static readonly RandomNumberGenerator Random = RandomNumberGenerator.Create();
 
-    // ============================================================
-    // КОНСТРУКТОР
-    // ============================================================
-
-    public Gost94Signature(
-        BigInteger p,
-        BigInteger q,
-        BigInteger a,
-        BigInteger privateKey)
+    public Gost94Signature(BigInteger p, BigInteger q, BigInteger a, BigInteger privateKey)
     {
         P = p;
         Q = q;
@@ -57,36 +40,14 @@ public sealed class Gost94Signature
         ValidateParameters();
     }
 
-    // ============================================================
-    // ГЕНЕРАЦИЯ ПАРАМЕТРОВ
-    // ============================================================
-
     public static Gost94Signature Generate()
     {
-        // По методичке:
-        //
-        // p = 31 бит
-        // q = 16 бит
-        //
-        // Старший бит должен быть равен 1.
-
         const int pBits = 31;
         const int qBits = 16;
 
         while (true)
         {
-            // ----------------------------------------------------
-            // 1. Генерируем простое q длиной 16 бит
-            // ----------------------------------------------------
-
-            BigInteger q =
-                GeneratePrime(qBits);
-
-            // ----------------------------------------------------
-            // 2. Ищем p = k*q + 1
-            //
-            // p должен быть простым и иметь ровно 31 бит.
-            // ----------------------------------------------------
+            BigInteger q = GeneratePrime(qBits);
 
             BigInteger minP =
                 BigInteger.One << (pBits - 1);
@@ -114,29 +75,8 @@ public sealed class Gost94Signature
             if (p < minP || p > maxP)
                 continue;
 
-            // p должно быть простым.
             if (!IsProbablePrime(p))
                 continue;
-
-            // ----------------------------------------------------
-            // 3. Ищем a
-            //
-            // a = g^k mod p
-            //
-            // Тогда:
-            //
-            // a^q mod p
-            // =
-            // (g^k)^q mod p
-            // =
-            // g^(kq) mod p
-            // =
-            // g^(p-1) mod p
-            // =
-            // 1
-            //
-            // по малой теореме Ферма.
-            // ----------------------------------------------------
 
             for (int i = 0; i < 100; i++)
             {
@@ -160,12 +100,6 @@ public sealed class Gost94Signature
                 if (BigInteger.ModPow(a, q, p) != 1)
                     continue;
 
-                // ------------------------------------------------
-                // 4. Генерируем секретный ключ x
-                //
-                // 1 < x < q
-                // ------------------------------------------------
-
                 BigInteger x =
                     RandomBigInteger(
                         1,
@@ -180,10 +114,6 @@ public sealed class Gost94Signature
         }
     }
 
-    // ============================================================
-    // ПОДПИСЬ ФАЙЛА
-    // ============================================================
-
     public SignatureData SignFile(
         string filePath)
     {
@@ -194,22 +124,12 @@ public sealed class Gost94Signature
                 filePath);
         }
 
-        // Вычисляем SHA-256.
-        //
-        // Получаем 32 байта.
         byte[] hash =
             ComputeHash(filePath);
 
         var signatures =
             new List<ByteSignature>(
                 hash.Length);
-
-        // --------------------------------------------------------
-        // Согласно условию лабораторной:
-        //
-        // хеш представляется массивом байтов,
-        // каждый байт подписывается отдельно.
-        // --------------------------------------------------------
 
         foreach (byte hashByte in hash)
         {
@@ -228,22 +148,10 @@ public sealed class Gost94Signature
             signatures);
     }
 
-    // ============================================================
-    // ПОДПИСЬ ОДНОГО БАЙТА ХЕША
-    // ============================================================
 
     private ByteSignature SignByte(
         byte hashByte)
     {
-        // В ГОСТ:
-        //
-        // 0 < h < q
-        //
-        // Поскольку q имеет 16 бит,
-        // любой байт 1..255 автоматически меньше q.
-        //
-        // Особый случай:
-        // если h = 0, используем h = 1.
 
         BigInteger h = hashByte;
 
@@ -254,20 +162,11 @@ public sealed class Gost94Signature
 
         while (true)
         {
-            // ----------------------------------------------------
-            // 1. Случайное k
-            //
-            // 0 < k < q
-            // ----------------------------------------------------
 
             BigInteger k =
                 RandomBigInteger(
                     1,
                     Q - 1);
-
-            // ----------------------------------------------------
-            // 2. r = (a^k mod p) mod q
-            // ----------------------------------------------------
 
             BigInteger r =
                 BigInteger.ModPow(
@@ -275,14 +174,8 @@ public sealed class Gost94Signature
                     k,
                     P) % Q;
 
-            // По алгоритму ГОСТ:
-            // если r == 0, выбираем новое k.
             if (r == 0)
                 continue;
-
-            // ----------------------------------------------------
-            // 3. s = (x*r + k*h) mod q
-            // ----------------------------------------------------
 
             BigInteger s =
                 (
@@ -290,8 +183,6 @@ public sealed class Gost94Signature
                     k * h
                 ) % Q;
 
-            // По алгоритму ГОСТ:
-            // если s == 0, выбираем новое k.
             if (s == 0)
                 continue;
 
@@ -301,10 +192,6 @@ public sealed class Gost94Signature
         }
     }
 
-    // ============================================================
-    // ПРОВЕРКА ФАЙЛА
-    // ============================================================
-
     public bool VerifyFile(
         string filePath,
         SignatureData signature)
@@ -312,7 +199,6 @@ public sealed class Gost94Signature
         if (!File.Exists(filePath))
             return false;
 
-        // Проверяем параметры.
         if (signature.P != P)
             return false;
 
@@ -325,20 +211,11 @@ public sealed class Gost94Signature
         if (signature.PublicKey != PublicKey)
             return false;
 
-        // --------------------------------------------------------
-        // Вычисляем хеш заново.
-        // --------------------------------------------------------
-
         byte[] hash =
             ComputeHash(filePath);
 
-        // SHA-256 = 32 байта.
         if (signature.Signatures.Count != hash.Length)
             return false;
-
-        // --------------------------------------------------------
-        // Проверяем каждый байт.
-        // --------------------------------------------------------
 
         for (int i = 0; i < hash.Length; i++)
         {
@@ -353,10 +230,6 @@ public sealed class Gost94Signature
         return true;
     }
 
-    // ============================================================
-    // ПРОВЕРКА ОДНОГО БАЙТА
-    // ============================================================
-
     private bool VerifyByte(
         byte hashByte,
         ByteSignature signature)
@@ -367,22 +240,11 @@ public sealed class Gost94Signature
         BigInteger s =
             signature.S;
 
-        // --------------------------------------------------------
-        // 1. Проверяем:
-        //
-        // 0 < r < q
-        // 0 < s < q
-        // --------------------------------------------------------
-
         if (r <= 0 || r >= Q)
             return false;
 
         if (s <= 0 || s >= Q)
             return false;
-
-        // --------------------------------------------------------
-        // 2. Получаем h
-        // --------------------------------------------------------
 
         BigInteger h =
             hashByte;
@@ -449,10 +311,6 @@ public sealed class Gost94Signature
         return u == r;
     }
 
-    // ============================================================
-    // SHA-256
-    // ============================================================
-
     public static byte[] ComputeHash(
         string filePath)
     {
@@ -464,10 +322,6 @@ public sealed class Gost94Signature
 
         return sha256.ComputeHash(stream);
     }
-
-    // ============================================================
-    // ОБРАТНЫЙ ЭЛЕМЕНТ ПО МОДУЛЮ
-    // ============================================================
 
     private static BigInteger ModInverse(
         BigInteger value,
@@ -511,10 +365,6 @@ public sealed class Gost94Signature
         return (oldS % modulus + modulus) % modulus;
     }
 
-    // ============================================================
-    // ГЕНЕРАЦИЯ СЛУЧАЙНОГО ЧИСЛА
-    // ============================================================
-
     private static BigInteger RandomBigInteger(
         BigInteger min,
         BigInteger max)
@@ -547,10 +397,6 @@ public sealed class Gost94Signature
         return min + result;
     }
 
-    // ============================================================
-    // ГЕНЕРАЦИЯ ПРОСТОГО ЧИСЛА
-    // ============================================================
-
     private static BigInteger GeneratePrime(
         int bits)
     {
@@ -564,24 +410,20 @@ public sealed class Gost94Signature
 
             Random.GetBytes(bytes);
 
-            // Работаем как с unsigned.
             BigInteger candidate =
                 new BigInteger(
                     bytes,
                     isUnsigned: true,
                     isBigEndian: false);
 
-            // Оставляем ровно bits бит.
             BigInteger mask =
                 (BigInteger.One << bits) - 1;
 
             candidate &= mask;
 
-            // Старший бит = 1.
             candidate |=
                 BigInteger.One << (bits - 1);
 
-            // Число должно быть нечётным.
             candidate |= 1;
 
             if (BitLength(candidate) != bits)
@@ -591,10 +433,6 @@ public sealed class Gost94Signature
                 return candidate;
         }
     }
-
-    // ============================================================
-    // ТЕСТ ПРОСТОТЫ MILLER-RABIN
-    // ============================================================
 
     private static bool IsProbablePrime(
         BigInteger n,
@@ -670,10 +508,6 @@ public sealed class Gost94Signature
         return true;
     }
 
-    // ============================================================
-    // ДЛИНА ЧИСЛА В БИТАХ
-    // ============================================================
-
     private static int BitLength(
         BigInteger value)
     {
@@ -691,10 +525,6 @@ public sealed class Gost94Signature
         return result;
     }
 
-    // ============================================================
-    // ПРОВЕРКА ПАРАМЕТРОВ
-    // ============================================================
-
     private void ValidateParameters()
     {
         // p должен иметь 31 бит.
@@ -704,14 +534,12 @@ public sealed class Gost94Signature
                 "p должен иметь длину 31 бит.");
         }
 
-        // q должен иметь 16 бит.
         if (BitLength(Q) != 16)
         {
             throw new ArgumentException(
                 "q должен иметь длину 16 бит.");
         }
 
-        // p и q должны быть простыми.
         if (!IsProbablePrime(P))
         {
             throw new ArgumentException(
@@ -724,28 +552,24 @@ public sealed class Gost94Signature
                 "q не является простым.");
         }
 
-        // q должно делить p - 1.
         if ((P - 1) % Q != 0)
         {
             throw new ArgumentException(
                 "q не делит p - 1.");
         }
 
-        // 1 < a < p.
         if (A <= 1 || A >= P)
         {
             throw new ArgumentException(
                 "Некорректное значение a.");
         }
 
-        // a^q mod p = 1.
         if (BigInteger.ModPow(A, Q, P) != 1)
         {
             throw new ArgumentException(
                 "a^q mod p должно быть равно 1.");
         }
 
-        // 0 < x < q.
         if (PrivateKey <= 0 ||
             PrivateKey >= Q)
         {
@@ -765,25 +589,19 @@ public sealed class Gost94Signature
 
         using BinaryWriter writer = new(stream);
 
-        // Версия формата подписи
         writer.Write(1);
 
-        // Общие параметры
         WriteBigInteger(writer, signature.P);
         WriteBigInteger(writer, signature.Q);
         WriteBigInteger(writer, signature.A);
 
-        // Открытый ключ
         WriteBigInteger(writer, signature.PublicKey);
 
-        // SHA-256 исходного файла
         writer.Write(signature.Hash.Length);
         writer.Write(signature.Hash);
 
-        // Количество подписанных байтов хеша
         writer.Write(signature.Signatures.Count);
 
-        // Пары r, s
         foreach (ByteSignature item in signature.Signatures)
         {
             WriteBigInteger(writer, item.R);
@@ -856,8 +674,6 @@ public sealed class Gost94Signature
     {
         byte hashByte = signature.Hash[i];
 
-        // В нашей реализации h=0 заменяется на 1,
-        // поскольку по алгоритму должно выполняться 0 < h < q.
         BigInteger h =
             hashByte == 0
                 ? BigInteger.One
@@ -1048,17 +864,9 @@ public sealed class Gost94Signature
     }
 }
 
-// ================================================================
-// ПОДПИСЬ ОДНОГО БАЙТА
-// ================================================================
-
 public sealed record ByteSignature(
     BigInteger R,
     BigInteger S);
-
-// ================================================================
-// ПОДПИСЬ ФАЙЛА
-// ================================================================
 
 public sealed class SignatureData
 {

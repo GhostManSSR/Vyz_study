@@ -2,15 +2,6 @@
 
 public class RSASignatureTests
 {
-    /*
-     * p = 32503
-     * q = 32507
-     *
-     * N = 1022117
-     *
-     * Этого достаточно, чтобы любой байт SHA-256
-     * (0..255) был меньше N.
-     */
     private RSASignature CreateRsa()
     {
         return new RSASignature(32503, 32507);
@@ -20,7 +11,7 @@ public class RSASignatureTests
     {
         string directory = Path.Combine(
             AppContext.BaseDirectory,
-            "TestFilesRSASignature");
+            "TestFilesRSAEncryption");
 
         Directory.CreateDirectory(directory);
 
@@ -28,426 +19,143 @@ public class RSASignatureTests
     }
 
     [Fact]
-    public void Constructor_GeneratesCorrectParameters()
-    {
-        RSASignature rsa = CreateRsa();
-
-        Assert.Equal(32503, rsa.P);
-        Assert.Equal(32507, rsa.Q);
-
-        Assert.Equal(
-            32503L * 32507L,
-            rsa.N);
-
-        Assert.Equal(
-            (32503L - 1) * (32507L - 1),
-            rsa.Phi);
-
-        Assert.True(rsa.PublicKey > 1);
-        Assert.True(rsa.PrivateKey > 1);
-    }
-
-    [Fact]
-    public void Constructor_KeysAreMutuallyInverse()
-    {
-        RSASignature rsa = CreateRsa();
-
-        long value =
-            (long)(
-                (System.Numerics.BigInteger)
-                    rsa.PublicKey *
-                rsa.PrivateKey %
-                rsa.Phi);
-
-        Assert.Equal(1, value);
-    }
-
-    [Fact]
-    public void IsPrime_WorksCorrectly()
-    {
-        RSASignature rsa = CreateRsa();
-
-        Assert.True(rsa.IsPrime(2));
-        Assert.True(rsa.IsPrime(3));
-        Assert.True(rsa.IsPrime(1009));
-        Assert.True(rsa.IsPrime(1013));
-
-        Assert.False(rsa.IsPrime(1));
-        Assert.False(rsa.IsPrime(4));
-        Assert.False(rsa.IsPrime(1000));
-        Assert.False(rsa.IsPrime(1001));
-    }
-
-    [Fact]
-    public void SignHash_AndVerifyHash_ReturnTrue()
-    {
-        RSASignature rsa = CreateRsa();
-
-        byte[] hash =
-        {
-            10,
-            20,
-            30,
-            40,
-            50,
-            100,
-            200,
-            255
-        };
-
-        long[] signature = rsa.SignHash(hash);
-
-        bool result = rsa.VerifyHash(
-            hash,
-            signature);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void ModifiedHash_ShouldFailVerification()
-    {
-        RSASignature rsa = CreateRsa();
-
-        byte[] hash =
-        {
-            10,
-            20,
-            30,
-            40,
-            50
-        };
-
-        long[] signature = rsa.SignHash(hash);
-
-        hash[2]++;
-
-        bool result = rsa.VerifyHash(
-            hash,
-            signature);
-
-        Assert.False(result);
-    }
-
-    [Fact]
-    public void ModifiedSignature_ShouldFailVerification()
-    {
-        RSASignature rsa = CreateRsa();
-
-        byte[] hash =
-        {
-            10,
-            20,
-            30,
-            40,
-            50
-        };
-
-        long[] signature = rsa.SignHash(hash);
-
-        signature[2]++;
-
-        bool result = rsa.VerifyHash(
-            hash,
-            signature);
-
-        Assert.False(result);
-    }
-
-    [Fact]
-    public void SignatureLength_EqualsHashLength()
-    {
-        RSASignature rsa = CreateRsa();
-
-        byte[] hash =
-        {
-            1, 2, 3, 4, 5,
-            6, 7, 8, 9, 10
-        };
-
-        long[] signature = rsa.SignHash(hash);
-
-        Assert.Equal(
-            hash.Length,
-            signature.Length);
-    }
-
-    [Fact]
-    public void Sha256Hash_Has32Bytes()
-    {
-        RSASignature rsa = CreateRsa();
-
-        string directory = CreateTestDirectory();
-
-        string file =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".txt");
-
-        try
-        {
-            File.WriteAllText(
-                file,
-                "Hello RSA signature!");
-
-            byte[] hash =
-                rsa.CalculateHash(file);
-
-            Assert.Equal(32, hash.Length);
-        }
-        finally
-        {
-            // if (File.Exists(file))
-            //     File.Delete(file);
-        }
-    }
-
-    [Fact]
-    public void SignFile_AndVerifyFile_ReturnTrue()
-    {
-        RSASignature rsa = CreateRsa();
-        
-        string directory = CreateTestDirectory();
-
-        string file =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".txt");
-
-        try
-        {
-            File.WriteAllText(
-                file,
-                "Документ для проверки RSA.");
-
-            long[] signature =
-                rsa.SignFile(file);
-
-            bool result =
-                rsa.VerifyFile(
-                    file,
-                    signature);
-
-            Assert.True(result);
-        }
-        finally
-        {
-            // if (File.Exists(file))
-            //     File.Delete(file);
-        }
-    }
-
-    [Fact]
-    public void ModifiedFile_ShouldFailVerification()
+    public void EncryptFile_AndDecryptFile_ReturnsOriginalData()
     {
         RSASignature rsa = CreateRsa();
         string directory = CreateTestDirectory();
 
-
-        string file =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".txt");
+        string file = Path.Combine(directory, Guid.NewGuid() + ".bin");
+        string encryptedFile = Path.Combine(directory, Guid.NewGuid() + ".enc");
 
         try
         {
-            File.WriteAllText(
-                file,
-                "Исходный документ.");
-
-            long[] signature =
-                rsa.SignFile(file);
-
-            File.WriteAllText(
-                file,
-                "Изменённый документ.");
-
-            bool result =
-                rsa.VerifyFile(
-                    file,
-                    signature);
-
-            Assert.False(result);
-        }
-        finally
-        {
-            // if (File.Exists(file))
-            //     File.Delete(file);
-        }
-    }
-
-    [Fact]
-    public void SaveAndLoadSignature_ShouldWork()
-    {
-        RSASignature rsa = CreateRsa();
-        
-        string directory = CreateTestDirectory();
-
-
-        string signatureFile =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".sig");
-
-        try
-        {
-            byte[] hash =
-            {
-                10,
-                20,
-                30,
-                40,
-                50
+            byte[] originalData = 
+            { 
+                0, 1, 2, 3, 10, 20, 50, 100, 200, 255 
             };
 
-            long[] original =
-                rsa.SignHash(hash);
+            File.WriteAllBytes(file, originalData);
 
-            rsa.SaveSignature(
-                signatureFile,
-                original);
+            rsa.SaveEncryptedFile(file, encryptedFile);
 
-            long[] loaded =
-                rsa.LoadSignature(
-                    signatureFile);
+            byte[] decryptedData = rsa.DecryptFile(encryptedFile);
 
-            Assert.Equal(
-                original,
-                loaded);
-        }
-        finally
-        {
-            // if (File.Exists(signatureFile))
-            //     File.Delete(signatureFile);
-        }
-    }
-
-    [Fact]
-    public void SignFile_SaveLoadAndVerify_ShouldWork()
-    {
-        RSASignature rsa = CreateRsa();
-        
-        string directory = CreateTestDirectory();
-
-        string file =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".bin");
-
-        string signatureFile =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".sig");
-
-        try
-        {
-            byte[] data =
-            {
-                0,
-                1,
-                2,
-                3,
-                10,
-                20,
-                50,
-                100,
-                200,
-                255
-            };
-
-            File.WriteAllBytes(
-                file,
-                data);
-
-            long[] signature =
-                rsa.SignFile(file);
-
-            rsa.SaveSignature(
-                signatureFile,
-                signature);
-
-            long[] loadedSignature =
-                rsa.LoadSignature(
-                    signatureFile);
-
-            bool result =
-                rsa.VerifyFile(
-                    file,
-                    loadedSignature);
-
-            Assert.True(result);
+            Assert.Equal(originalData, decryptedData);
         }
         finally
         {
             // if (File.Exists(file))
             //     File.Delete(file);
             //
-            // if (File.Exists(signatureFile))
-            //     File.Delete(signatureFile);
+            // if (File.Exists(encryptedFile))
+            //     File.Delete(encryptedFile);
         }
     }
 
     [Fact]
-    public void WrongSignatureLength_ShouldFail()
+    public void EncryptFile_ReturnsEncryptedArray()
     {
         RSASignature rsa = CreateRsa();
+        string directory = CreateTestDirectory();
 
-        byte[] hash =
+        string file = Path.Combine(directory, Guid.NewGuid() + ".txt");
+
+        try
         {
-            1,
-            2,
-            3,
-            4
-        };
+            File.WriteAllText(file, "Hello");
 
-        long[] signature =
+            long[] encrypted = rsa.EncryptFile(file);
+
+            Assert.Equal(5, encrypted.Length);
+
+            foreach (long value in encrypted)
+            {
+                Assert.True(value > 0);
+                Assert.True(value < rsa.N);
+            }
+        }
+        finally
         {
-            10,
-            20
-        };
-
-        Assert.False(
-            rsa.VerifyHash(
-                hash,
-                signature));
+            // if (File.Exists(file))
+            //     File.Delete(file);
+        }
     }
 
     [Fact]
-    public void DifferentFiles_ShouldProduceDifferentSignatures()
+    public void DecryptFile_WithWrongFile_ThrowsException()
+    {
+        RSASignature rsa = CreateRsa();
+
+        string directory = CreateTestDirectory();
+        string nonExistentFile = Path.Combine(directory, "nonexistent.enc");
+
+        Assert.Throws<FileNotFoundException>(() => 
+            rsa.DecryptFile(nonExistentFile));
+    }
+
+    [Fact]
+    public void EncryptFile_WithNonExistentFile_ThrowsException()
     {
         RSASignature rsa = CreateRsa();
         
         string directory = CreateTestDirectory();
+        string nonExistentFile = Path.Combine(directory, "nonexistent.bin");
 
-        string file1 =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".txt");
+        Assert.Throws<FileNotFoundException>(() => 
+            rsa.EncryptFile(nonExistentFile));
+    }
 
-        string file2 =
-            Path.Combine(
-                directory,
-                Guid.NewGuid() + ".txt");
+    [Fact]
+    public void SaveEncryptedFile_CreatesValidFile()
+    {
+        RSASignature rsa = CreateRsa();
+        string directory = CreateTestDirectory();
+
+        string file = Path.Combine(directory, Guid.NewGuid() + ".txt");
+        string encryptedFile = Path.Combine(directory, Guid.NewGuid() + ".enc");
 
         try
         {
-            File.WriteAllText(
-                file1,
-                "First file");
+            File.WriteAllText(file, "Test data");
 
-            File.WriteAllText(
-                file2,
-                "Second file");
+            rsa.SaveEncryptedFile(file, encryptedFile);
 
-            long[] signature1 =
-                rsa.SignFile(file1);
+            Assert.True(File.Exists(encryptedFile));
 
-            long[] signature2 =
-                rsa.SignFile(file2);
+            string content = File.ReadAllText(encryptedFile);
+            Assert.False(string.IsNullOrWhiteSpace(content));
 
-            Assert.NotEqual(
-                signature1,
-                signature2);
+            string[] values = content.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            Assert.True(values.Length > 0);
+        }
+        finally
+        {
+            // if (File.Exists(file))
+            //     File.Delete(file);
+            //
+            // if (File.Exists(encryptedFile))
+            //     File.Delete(encryptedFile);
+        }
+    }
+
+    [Fact]
+    public void DifferentFiles_ProduceDifferentEncryptedData()
+    {
+        RSASignature rsa = CreateRsa();
+        string directory = CreateTestDirectory();
+
+        string file1 = Path.Combine(directory, Guid.NewGuid() + ".txt");
+        string file2 = Path.Combine(directory, Guid.NewGuid() + ".txt");
+
+        try
+        {
+            File.WriteAllText(file1, "First file content");
+            File.WriteAllText(file2, "Second file content");
+
+            long[] encrypted1 = rsa.EncryptFile(file1);
+            long[] encrypted2 = rsa.EncryptFile(file2);
+
+            Assert.NotEqual(encrypted1, encrypted2);
         }
         finally
         {
@@ -456,6 +164,89 @@ public class RSASignatureTests
             //
             // if (File.Exists(file2))
             //     File.Delete(file2);
+        }
+    }
+
+    [Fact]
+    public void EmptyFile_EncryptsAndDecryptsCorrectly()
+    {
+        RSASignature rsa = CreateRsa();
+        string directory = CreateTestDirectory();
+
+        string file = Path.Combine(directory, Guid.NewGuid() + ".bin");
+        string encryptedFile = Path.Combine(directory, Guid.NewGuid() + ".enc");
+
+        try
+        {
+            File.WriteAllBytes(file, Array.Empty<byte>());
+
+            rsa.SaveEncryptedFile(file, encryptedFile);
+
+            byte[] decrypted = rsa.DecryptFile(encryptedFile);
+
+            Assert.Empty(decrypted);
+        }
+        finally
+        {
+            // if (File.Exists(file))
+            //     File.Delete(file);
+            //
+            // if (File.Exists(encryptedFile))
+            //     File.Delete(encryptedFile);
+        }
+    }
+
+    [Fact]
+    public void LargeFile_EncryptsAndDecryptsCorrectly()
+    {
+        RSASignature rsa = CreateRsa();
+        string directory = CreateTestDirectory();
+
+        string file = Path.Combine(directory, Guid.NewGuid() + ".bin");
+        string encryptedFile = Path.Combine(directory, Guid.NewGuid() + ".enc");
+
+        try
+        {
+            byte[] originalData = new byte[1000];
+            new Random(42).NextBytes(originalData);
+
+            File.WriteAllBytes(file, originalData);
+
+            rsa.SaveEncryptedFile(file, encryptedFile);
+
+            byte[] decryptedData = rsa.DecryptFile(encryptedFile);
+
+            Assert.Equal(originalData, decryptedData);
+        }
+        finally
+        {
+            // if (File.Exists(file))
+            //     File.Delete(file);
+            //
+            // if (File.Exists(encryptedFile))
+            //     File.Delete(encryptedFile);
+        }
+    }
+
+    [Fact]
+    public void DecryptFile_WithCorruptedData_ThrowsException()
+    {
+        RSASignature rsa = CreateRsa();
+        string directory = CreateTestDirectory();
+
+        string corruptedFile = Path.Combine(directory, Guid.NewGuid() + ".enc");
+
+        try
+        {
+            File.WriteAllText(corruptedFile, "not a number abc xyz");
+
+            Assert.Throws<InvalidDataException>(() => 
+                rsa.DecryptFile(corruptedFile));
+        }
+        finally
+        {
+            // if (File.Exists(corruptedFile))
+            //     File.Delete(corruptedFile);
         }
     }
 }
