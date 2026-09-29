@@ -1,11 +1,13 @@
 package BugBug.androidApp.ui.game
 
-import BugBug.androidApp.model.Insect
+import android.app.Application
+import BugBug.androidApp.BugGameApp
 import BugBug.androidApp.domain.GameEngine
 import BugBug.androidApp.model.GameSettings
+import BugBug.androidApp.model.Insect
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,18 +28,31 @@ data class GameUiState(
     val isGameOver: Boolean = false,
     val maxInsects: Int = 10,
     val gameSpeed: Float = 1.0f,
-    val bonusIntervalSec: Int = 30,
-    val bonuses: List<Bonus> = emptyList()
-)
+    val bonusIntervalSec: Int = 15,
+    val bonuses: List<Bonus> = emptyList(),
+    val gravityMode: Boolean = false,
+    val gravityTiltX: Float = 0f,
+    val gravityTiltY: Float = 0f,
+    val gravityTimeLeft: Int = 0
+) {
+    val accuracy: Float
+        get() = if (hits + misses == 0) 0f
+        else hits.toFloat() / (hits + misses) * 100f
+}
+
+enum class BonusType { POINTS, GRAVITY }
 
 data class Bonus(
     val id: Int,
     val position: Offset,
     val points: Int,
+    val type: BonusType = BonusType.POINTS,
     val spawnTime: Long
 )
 
-class GameViewModel : ViewModel() {
+class GameViewModel(app: Application) : AndroidViewModel(app) {
+
+    private val repository = (app as BugGameApp).playerRepository
 
     private val _state = MutableStateFlow(GameUiState())
     val state: StateFlow<GameUiState> = _state.asStateFlow()
@@ -46,10 +61,18 @@ class GameViewModel : ViewModel() {
     private var timerJob: Job? = null
     private var spawnJob: Job? = null
     private var bonusJob: Job? = null
+    private var gravityJob: Job? = null
 
     private var insectIdCounter: Long = 0
     private var bonusIdCounter = 0
 
+    private var sensorController: SensorController? = null
+    private var soundPlayer: SoundPlayer? = null
+    private var gravityTimerJob: Job? = null
+
+    // ─────────────────────────────────────────────────────────────
+    // Запуск игры
+    // ─────────────────────────────────────────────────────────────
     fun startGame(
         fieldSize: Size,
         difficulty: Int = 3,
@@ -66,24 +89,40 @@ class GameViewModel : ViewModel() {
             isGameOver = false,
             maxInsects = settings.maxCockroaches,
             gameSpeed = settings.speed,
-            bonusIntervalSec = settings.bonusIntervalSec,
-            bonuses = emptyList()
+            bonusIntervalSec = 15,
+            bonuses = emptyList(),
+            gravityMode = false
         )
 
         val initialInsects = spawnInsects(settings.maxCockroaches, fieldSize, difficulty)
         _state.update { it.copy(insects = initialInsects) }
 
+        // Цикл движения — 60 fps, учитывает гравитацию
         gameLoop = viewModelScope.launch {
             while (isActive && _state.value.isRunning) {
                 delay((16 / settings.speed).toLong())
                 _state.update { currentState ->
-                    currentState.copy(
-                        insects = GameEngine.moveInsects(currentState.insects, fieldSize, settings.speed)
-                    )
+                    val updated = if (currentState.gravityMode) {
+                        GameEngine.moveInsectsWithGravity(
+                            insects = currentState.insects,
+                            fieldSize = fieldSize,
+                            tiltX = currentState.gravityTiltX,
+                            tiltY = currentState.gravityTiltY,
+                            speedMultiplier = settings.speed
+                        )
+                    } else {
+                        GameEngine.moveInsects(
+                            insects = currentState.insects,
+                            fieldSize = fieldSize,
+                            speedMultiplier = settings.speed
+                        )
+                    }
+                    currentState.copy(insects = updated)
                 }
             }
         }
 
+        // Таймер
         timerJob = viewModelScope.launch {
             while (isActive && _state.value.timeLeft > 0 && _state.value.isRunning) {
                 delay(1000)
@@ -94,6 +133,7 @@ class GameViewModel : ViewModel() {
             }
         }
 
+        // Доспавн жуков
         spawnJob = viewModelScope.launch {
             while (isActive && _state.value.isRunning) {
                 delay(500)
@@ -115,7 +155,7 @@ class GameViewModel : ViewModel() {
                     val bonus = spawnBonus(fieldSize)
                     _state.update { it.copy(bonuses = it.bonuses + bonus) }
 
-                    kotlinx.coroutines.delay(10000)
+                    delay(10_000L)
                     _state.update {
                         it.copy(bonuses = it.bonuses.filter { b -> b.id != bonus.id })
                     }
@@ -124,25 +164,28 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    private fun spawnInsects(count: Int, fieldSize: Size, difficulty: Int): List<Insect> {
+    private fun spawnInsects(
+        count: Int,
+        fieldSize: Size,
+        difficulty: Int
+    ): List<Insect> {
         return GameEngine.spawnInsects(
             count = count,
             fieldSize = fieldSize,
             difficulty = difficulty,
             speedMultiplier = _state.value.gameSpeed
-        ).map { insect ->
-            insect.copy(id = ++insectIdCounter)
-        }
+        ).map { insect -> insect.copy(id = ++insectIdCounter) }
     }
 
     private fun spawnBonus(fieldSize: Size): Bonus {
-        val x = (fieldSize.width * (0.1f + Math.random().toFloat() * 0.8f))
-        val y = (fieldSize.height * (0.1f + Math.random().toFloat() * 0.8f))
+        val x = fieldSize.width * (0.1f + Math.random().toFloat() * 0.8f)
+        val y = fieldSize.height * (0.1f + Math.random().toFloat() * 0.8f)
 
         return Bonus(
             id = ++bonusIdCounter,
             position = Offset(x, y),
             points = (10..50).random(),
+            type = if (Math.random() < 0.5) BonusType.GRAVITY else BonusType.POINTS,  // ← вот эта строка
             spawnTime = System.currentTimeMillis()
         )
     }
@@ -163,19 +206,13 @@ class GameViewModel : ViewModel() {
             return
         }
 
-        val hitBonus = s.bonuses.firstOrNull {
-            val dx = it.position.x - tap.x
-            val dy = it.position.y - tap.y
-            (dx * dx + dy * dy) < 2500
+        val hitBonus = s.bonuses.firstOrNull { b ->
+            val dx = b.position.x - tap.x
+            val dy = b.position.y - tap.y
+            (dx * dx + dy * dy) < 10_000f
         }
         if (hitBonus != null) {
-            _state.update {
-                it.copy(
-                    bonuses = it.bonuses.filter { b -> b.id != hitBonus.id },
-                    score = it.score + hitBonus.points,
-                    hits = it.hits + 1
-                )
-            }
+            handleBonus(hitBonus)
             return
         }
 
@@ -183,6 +220,82 @@ class GameViewModel : ViewModel() {
             it.copy(
                 score = (it.score - 5).coerceAtLeast(0),
                 misses = it.misses + 1
+            )
+        }
+    }
+
+    private fun handleBonus(bonus: Bonus) {
+        when (bonus.type) {
+            BonusType.POINTS -> {
+                _state.update {
+                    it.copy(
+                        bonuses = it.bonuses.filter { b -> b.id != bonus.id },
+                        score = it.score + bonus.points,
+                        hits = it.hits + 1
+                    )
+                }
+            }
+            BonusType.GRAVITY -> {
+                _state.update {
+                    it.copy(bonuses = it.bonuses.filter { b -> b.id != bonus.id })
+                }
+                enableGravityMode()
+            }
+        }
+    }
+
+    fun enableGravityMode() {
+        val ctx = getApplication<Application>()
+
+        if (sensorController == null) {
+            sensorController = SensorController(ctx).also { it.start() }
+        }
+        if (soundPlayer == null) {
+            soundPlayer = SoundPlayer(ctx)
+        }
+        soundPlayer?.playScream()
+
+        _state.update {
+            it.copy(
+                gravityMode = true,
+                gravityTimeLeft = 10
+            )
+        }
+
+        gravityJob?.cancel()
+        gravityJob = viewModelScope.launch {
+            while (isActive && _state.value.gravityMode && _state.value.isRunning) {
+                val s = sensorController ?: break
+                _state.update {
+                    it.copy(gravityTiltX = s.tiltX, gravityTiltY = s.tiltY)
+                }
+                delay(50)
+            }
+        }
+
+        gravityTimerJob?.cancel()
+        gravityTimerJob = viewModelScope.launch {
+            while (isActive && _state.value.gravityTimeLeft > 0) {
+                delay(1000)
+                _state.update { it.copy(gravityTimeLeft = it.gravityTimeLeft - 1) }
+            }
+            if (_state.value.gravityTimeLeft <= 0) {
+                disableGravityMode()
+            }
+        }
+    }
+
+    fun disableGravityMode() {
+        gravityJob?.cancel()
+        gravityTimerJob?.cancel()
+        sensorController?.stop()
+        sensorController = null
+        soundPlayer?.release()
+        soundPlayer = null
+        _state.update {
+            it.copy(
+                gravityMode = false,
+                gravityTimeLeft = 0
             )
         }
     }
@@ -208,11 +321,30 @@ class GameViewModel : ViewModel() {
         timerJob?.cancel()
         spawnJob?.cancel()
         bonusJob?.cancel()
+        disableGravityMode()
         _state.update { it.copy(isRunning = false) }
     }
 
     override fun onCleared() {
         super.onCleared()
         stopGame()
+    }
+
+    fun saveResult(playerId: Long, settings: GameSettings) {
+        val s = _state.value
+        viewModelScope.launch {
+            repository.saveScore(
+                playerId = playerId,
+                score = s.score,
+                hits = s.hits,
+                misses = s.misses,
+                difficulty = settings.difficulty,
+                roundDurationSec = settings.roundDurationSec
+            )
+        }
+    }
+
+    fun setGravityTime(seconds: Int) {
+        _state.update { it.copy(gravityTimeLeft = seconds) }
     }
 }
