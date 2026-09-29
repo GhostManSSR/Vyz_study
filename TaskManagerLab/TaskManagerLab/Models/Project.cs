@@ -1,25 +1,17 @@
-namespace TaskManagerLab.Models
+namespace TaskManagerLab.Models;
+
+public class Project
 {
-    public class Project
+    public int Id { get; }
+    public string Name { get; private set; }
+
+    public Project(int id, string name)
     {
-        private int id;
-        private string name;
-
-        public Project(int id, string name)
-        {
-            this.id = id;
-            this.name = name;
-        }
-
-        public int Id
-        {
-            get { return id; }
-        }
-
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        Id = id;
+        Name = name;
     }
+
+    public void SetName(string name) => Name = name;
+
+    public override string ToString() => $"[{Id}] {Name}";
 }

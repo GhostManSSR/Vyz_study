@@ -1,66 +1,89 @@
-namespace TaskManagerLab.Models
+using System.Linq;
+namespace TaskManagerLab.Models;
+
+public class Task
 {
-    public class Task
+    private static readonly string[] AllowedStatuses = { "Todo", "In Progress", "Done" };
+    private static readonly string[] AllowedPriorities = { "Low", "Medium", "High" };
+
+    public int Id { get; }
+    public int ProjectId { get; private set; }
+    public string Title { get; private set; }
+    public string Description { get; private set; }
+    public string Status { get; private set; }
+    public string Priority { get; private set; }
+
+    private Task(int id, string title, int projectId, string description,
+                 string status, string priority)
     {
-        private int id;
-        private string title;
-        private string description;
-        private string status;
-        private string priority;
-        private int projectId;   
+        Id = id;
+        Title = title;
+        ProjectId = projectId;
+        Description = description;
+        Status = status;
+        Priority = priority;
+    }
 
-        public Task(int id, string title)
+    public void SetProjectId(int projectId) => ProjectId = projectId;
+    public void SetTitle(string title) => Title = title;
+    public void SetDescription(string description) => Description = description;
+
+    public void SetStatus(string status)
+    {
+        if (AllowedStatuses.Contains(status))
+            Status = status;
+    }
+
+    public void SetPriority(string priority)
+    {
+        if (AllowedPriorities.Contains(priority))
+            Priority = priority;
+    }
+
+    public override string ToString() =>
+        $"[{Id}] {Title} (project={ProjectId}, status={Status}, priority={Priority})";
+
+    public class Builder
+    {
+        private readonly int _id;
+        private readonly string _title;
+        private int _projectId;
+        private string _description = "";
+        private string _status = "Todo";
+        private string _priority = "Medium";
+
+        public Builder(int id, string title)
         {
-            this.id = id;
-            this.title = title;
-            this.description = string.Empty;
-            this.status = "Todo";
-            this.priority = "Medium";
-            this.projectId = 0;
+            _id = id;
+            _title = title;
         }
 
-        public int Id { get { return id; } }
-
-        public int ProjectId
+        public Builder WithProjectId(int projectId)
         {
-            get { return projectId; }
-            set { projectId = value; }
-        }
-     
-        public string Title
-        {
-            get { return title; }
-            set { title = value; }
+            _projectId = projectId;
+            return this;
         }
 
-        public string Description
+        public Builder WithDescription(string description)
         {
-            get { return description; }
-            set { description = value; }
+            _description = description;
+            return this;
         }
 
-        public string Status
+        public Builder WithStatus(string status)
         {
-            get { return status; }
-            set
-            {
-                if (value == "Todo" || value == "In Progress" || value == "Done")
-                {
-                    status = value;
-                }
-            }
+            if (AllowedStatuses.Contains(status))
+                _status = status;
+            return this;
         }
 
-        public string Priority
+        public Builder WithPriority(string priority)
         {
-            get { return priority; }
-            set
-            {
-                if (value == "Low" || value == "Medium" || value == "High")
-                {
-                    priority = value;
-                }
-            }
+            if (AllowedPriorities.Contains(priority))
+                _priority = priority;
+            return this;
         }
+
+        public Task Build() => new Task(_id, _title, _projectId, _description, _status, _priority);
     }
 }

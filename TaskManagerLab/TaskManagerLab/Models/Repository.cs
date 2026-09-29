@@ -1,45 +1,20 @@
 using System.Collections.Generic;
 
-namespace TaskManagerLab.Models
+namespace TaskManagerLab.Models;
+
+public class Repository<T>
 {
-    public class Repository<T>
-    {
-        private readonly List<T> items = new List<T>();
+    private readonly List<T> _items = new();
 
-        public void Add(T item)
-        {
-            items.Add(item);
-        }
+    public int Count => _items.Count;
 
-        public void Remove(int index)
-        {
-            if (index >= 0 && index < items.Count)
-            {
-                items.RemoveAt(index);
-            }
-        }
+    public void Add(T item) => _items.Add(item);
 
-        public void Update(int index, T item)
-        {
-            if (index >= 0 && index < items.Count)
-            {
-                items[index] = item;
-            }
-        }
+    public void Update(int index, T item) => _items[index] = item;
 
-        public int Size
-        {
-            get { return items.Count; }
-        }
+    public void Remove(int index) => _items.RemoveAt(index);
 
-        public List<T> GetAll()
-        {
-            return new List<T>(items);
-        }
+    public List<T> GetAll() => new(_items);
 
-        public void Clear()
-        {
-            items.Clear();
-        }
-    }
+    public T Get(int index) => _items[index];
 }
