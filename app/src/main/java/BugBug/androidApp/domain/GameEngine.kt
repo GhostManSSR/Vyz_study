@@ -152,4 +152,41 @@ object GameEngine {
             size = Size(insectSize, insectSize)
         )
     }
+
+    fun moveInsectsWithGravity(
+        insects: List<Insect>,
+        fieldSize: Size,
+        tiltX: Float,
+        tiltY: Float,
+        speedMultiplier: Float = 1.0f
+    ): List<Insect> {
+        val gravityStrength = 0.6f * speedMultiplier
+
+        return insects.map { insect ->
+            var vx = insect.velocity.x + tiltX * gravityStrength
+            var vy = insect.velocity.y + tiltY * gravityStrength
+
+            vx *= 0.97f
+            vy *= 0.97f
+
+            var newX = insect.position.x + vx * speedMultiplier
+            var newY = insect.position.y + vy * speedMultiplier
+
+            if (newX < 0f) { vx = -vx * 0.8f; newX = 0f }
+            if (newX + insect.size.width > fieldSize.width) {
+                vx = -vx * 0.8f
+                newX = fieldSize.width - insect.size.width
+            }
+            if (newY < 0f) { vy = -vy * 0.8f; newY = 0f }
+            if (newY + insect.size.height > fieldSize.height) {
+                vy = -vy * 0.8f
+                newY = fieldSize.height - insect.size.height
+            }
+
+            insect.copy(
+                position = Offset(newX, newY),
+                velocity = Offset(vx, vy)
+            )
+        }
+    }
 }

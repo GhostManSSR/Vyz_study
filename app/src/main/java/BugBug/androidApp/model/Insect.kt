@@ -4,9 +4,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 
 enum class InsectType(val title: String, val points: Int) {
-    BEETLE("Жук", 10),
-    FLY("Муха", 20),
-    BUG("Клоп", 5)
+    BEETLE("Божья коровка", 5),
+    FLY("Жук", 10),
+    BUG("Клоп", 20)
 }
 
 data class Insect(
