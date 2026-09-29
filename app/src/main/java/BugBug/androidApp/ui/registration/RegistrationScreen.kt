@@ -1,6 +1,11 @@
 package BugBug.androidApp.ui.registration
 
+import BugBug.androidApp.R
+import BugBug.androidApp.model.Author
+import BugBug.androidApp.model.GameSettings
 import BugBug.androidApp.model.Gender
+import BugBug.androidApp.ui.authors.AuthorCard
+import BugBug.androidApp.ui.settings.GameSettingsViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -20,9 +25,11 @@ import java.util.Calendar
 @Composable
 fun RegistrationScreen(
     onSaved: () -> Unit,
-    vm: RegistrationViewModel
+    vm: RegistrationViewModel,
+    settingsVm: GameSettingsViewModel
 ) {
     val state by vm.state.collectAsState()
+    val settings by settingsVm.settings.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val tabs = listOf("Регистрация", "Правила", "Авторы", "Настройки")
@@ -46,7 +53,6 @@ fun RegistrationScreen(
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            // Панель вкладок
             TabRow(selectedTabIndex = selectedTab) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -61,7 +67,6 @@ fun RegistrationScreen(
                 }
             }
 
-            // Свайпаемый контент
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize(),
@@ -75,10 +80,18 @@ fun RegistrationScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     when (pageIndex) {
-                        0 -> RegistrationTabContent(state, vm, onSaved)
+                        0 -> RegistrationTabContent(
+                            state = state,
+                            vm = vm,
+                            difficulty = settings.difficulty,
+                            onSaved = onSaved
+                        )
                         1 -> RulesTabContent()
                         2 -> AuthorsTabContent()
-                        3 -> SettingsTabContent(state, vm)
+                        3 -> SettingsTabContent(
+                            settings = settings,
+                            onSettingsChange = { settingsVm.updateSettings(it) }
+                        )
                     }
                 }
             }
@@ -92,6 +105,7 @@ fun RegistrationScreen(
 private fun RegistrationTabContent(
     state: RegistrationUiState,
     vm: RegistrationViewModel,
+    difficulty: Int,
     onSaved: () -> Unit
 ) {
     Card(Modifier.fillMaxWidth()) {
@@ -129,7 +143,7 @@ private fun RegistrationTabContent(
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             Text(
-                "Игровые настройки",
+                "Курс",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -146,7 +160,7 @@ private fun RegistrationTabContent(
                     readOnly = true,
                     label = { Text("Курс") },
                     modifier = Modifier
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                        .menuAnchor()
                         .fillMaxWidth()
                 )
                 ExposedDropdownMenu(
@@ -164,15 +178,6 @@ private fun RegistrationTabContent(
                     }
                 }
             }
-
-            Spacer(Modifier.height(12.dp))
-            Text("Сложность: ${state.difficulty} / 10")
-            Slider(
-                value = state.difficulty.toFloat(),
-                onValueChange = { vm.onDifficultyChange(it.toInt()) },
-                valueRange = 0f..10f,
-                steps = 9
-            )
         }
     }
 
@@ -239,7 +244,7 @@ private fun RegistrationTabContent(
     }
 
     Button(
-        onClick = { if (vm.onRegister()) onSaved() },
+        onClick = { vm.onRegister(difficulty, onSaved) },
         enabled = state.isFormValid,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -247,6 +252,7 @@ private fun RegistrationTabContent(
     }
 }
 
+// ==================== Вкладка 2: Правила ====================
 @Composable
 private fun RulesTabContent() {
     Card(Modifier.fillMaxWidth()) {
@@ -271,42 +277,130 @@ private fun RulesTabContent() {
     }
 }
 
+// ==================== Вкладка 3: Авторы ====================
 @Composable
 private fun AuthorsTabContent() {
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(
-                "Авторы проекта",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.height(8.dp))
-            Text("Лямин Т. — ИП-316 — Fullstack", style = MaterialTheme.typography.bodyLarge)
-            Text("Иванов А. — ИП-316 — Fullstack", style = MaterialTheme.typography.bodyLarge)
+    val authors = listOf(
+        Author("Лямин Т.", "ИП-316", "Fullstack", R.drawable.timofey),
+        Author("Иванов А.", "ИП-316", "Fullstack", R.drawable.artem),
+    )
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            "Авторы проекта",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        authors.forEach { a ->
+            AuthorCard(author = a)
         }
     }
 }
 
+// ==================== Вкладка 4: Настройки игры ====================
 @Composable
 private fun SettingsTabContent(
-    state: RegistrationUiState,
-    vm: RegistrationViewModel
+    settings: GameSettings,
+    onSettingsChange: (GameSettings) -> Unit
 ) {
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(
-                "Настройки",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.height(8.dp))
-            Text("Сложность: ${state.difficulty} / 10")
-            Slider(
-                value = state.difficulty.toFloat(),
-                onValueChange = { vm.onDifficultyChange(it.toInt()) },
-                valueRange = 0f..10f,
-                steps = 9
-            )
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            "Настройки игры",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    "Сложность: ${settings.difficulty} / 10",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.height(8.dp))
+                Slider(
+                    value = settings.difficulty.toFloat(),
+                    onValueChange = {
+                        onSettingsChange(settings.copy(difficulty = it.toInt()))
+                    },
+                    valueRange = 0f..10f,
+                    steps = 9
+                )
+            }
+        }
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    "Скорость игры: ${String.format("%.1f", settings.speed)}x",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.height(8.dp))
+                Slider(
+                    value = settings.speed,
+                    onValueChange = { onSettingsChange(settings.copy(speed = it)) },
+                    valueRange = 0.5f..2.0f,
+                    steps = 6
+                )
+            }
+        }
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    "Макс. насекомых: ${settings.maxCockroaches}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.height(8.dp))
+                Slider(
+                    value = settings.maxCockroaches.toFloat(),
+                    onValueChange = {
+                        onSettingsChange(settings.copy(maxCockroaches = it.toInt()))
+                    },
+                    valueRange = 5f..30f,
+                    steps = 24
+                )
+            }
+        }
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    "Бонусы каждые: ${settings.bonusIntervalSec} сек",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.height(8.dp))
+                Slider(
+                    value = settings.bonusIntervalSec.toFloat(),
+                    onValueChange = {
+                        onSettingsChange(settings.copy(bonusIntervalSec = it.toInt()))
+                    },
+                    valueRange = 10f..60f,
+                    steps = 10
+                )
+            }
+        }
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    "Длительность раунда: ${settings.roundDurationSec} сек",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.height(8.dp))
+                Slider(
+                    value = settings.roundDurationSec.toFloat(),
+                    onValueChange = {
+                        onSettingsChange(settings.copy(roundDurationSec = it.toInt()))
+                    },
+                    valueRange = 30f..180f,
+                    steps = 15
+                )
+            }
         }
     }
 }
