@@ -1,9 +1,11 @@
 package BugBug.androidApp.ui.game
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -11,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -19,16 +22,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import BugBug.androidApp.model.InsectType
 import BugBug.androidApp.R
-import androidx.compose.ui.layout.ContentScale
 import BugBug.androidApp.model.GameSettings
+import BugBug.androidApp.model.InsectType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameScreen(
     onExit: () -> Unit,
     difficulty: Int = 3,
+    currentPlayerId: Long = 0,
     settings: GameSettings = GameSettings(),
     vm: GameViewModel = viewModel()
 ) {
@@ -37,20 +40,34 @@ fun GameScreen(
     val density = LocalDensity.current
     val configuration = LocalConfiguration.current
 
-    // Отслеживаем ориентацию экрана
-    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
-    val screenWidth = configuration.screenWidthDp.dp
-    val screenHeight = configuration.screenHeightDp.dp
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Очки: ${state.score} | Насекомых: ${state.insects.size}/${state.maxInsects} | ${state.timeLeft} сек",
-                        fontSize = 14.sp,
-                        maxLines = 1
-                    )
+                    Column {
+                        if (isLandscape) {
+                            Text(
+                                "Очки: ${state.score} | ${state.timeLeft} сек",
+                                fontSize = 14.sp,
+                                maxLines = 1
+                            )
+                        } else {
+                            Text(
+                                "Очки: ${state.score} | Жуков: ${state.insects.size}/${state.maxInsects} | ${state.timeLeft} сек",
+                                fontSize = 14.sp,
+                                maxLines = 1
+                            )
+                        }
+                        if (state.gravityMode) {
+                            Text(
+                                "🌀 НАКЛОН: ${state.gravityTimeLeft} сек",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                    }
                 },
                 navigationIcon = {
                     TextButton(onClick = {
@@ -67,7 +84,6 @@ fun GameScreen(
                 .fillMaxSize()
                 .onSizeChanged { size ->
                     val newSize = Size(size.width.toFloat(), size.height.toFloat())
-                    // Пересоздаём игру только если размер значительно изменился
                     if (fieldSize == Size.Zero ||
                         kotlin.math.abs(fieldSize.width - newSize.width) > 10f ||
                         kotlin.math.abs(fieldSize.height - newSize.height) > 10f) {
@@ -78,7 +94,6 @@ fun GameScreen(
                     detectTapGestures { offset -> vm.onTap(offset) }
                 }
         ) {
-            // Фон
             Image(
                 painter = painterResource(R.drawable.stol),
                 contentDescription = null,
@@ -86,7 +101,6 @@ fun GameScreen(
                 contentScale = ContentScale.Crop
             )
 
-            // Запуск игры при известном размере поля
             LaunchedEffect(fieldSize, difficulty, settings) {
                 if (fieldSize.width > 0f && !state.isRunning && !state.isGameOver) {
                     vm.startGame(
@@ -97,34 +111,26 @@ fun GameScreen(
                 }
             }
 
-            // Перезапуск игры при изменении ориентации
             LaunchedEffect(isLandscape) {
                 if (state.isRunning && fieldSize.width > 0f) {
-                    // Сохраняем текущее состояние
-                    val currentScore = state.score
-                    val currentHits = state.hits
-                    val currentMisses = state.misses
-                    val currentTime = state.timeLeft
+                    val savedScore = state.score
+                    val savedHits = state.hits
+                    val savedMisses = state.misses
+                    val savedTime = state.timeLeft
+                    val savedGravity = state.gravityMode
+                    val savedGravityTime = state.gravityTimeLeft
 
-                    // Пересоздаём игру с новыми размерами
                     vm.stopGame()
-                    vm.startGame(
-                        fieldSize = fieldSize,
-                        difficulty = difficulty,
-                        settings = settings
-                    )
+                    vm.startGame(fieldSize, difficulty, settings)
+                    vm.restoreGameState(savedScore, savedHits, savedMisses, savedTime)
 
-                    // Восстанавливаем счёт и время
-                    vm.restoreGameState(
-                        score = currentScore,
-                        hits = currentHits,
-                        misses = currentMisses,
-                        timeLeft = currentTime
-                    )
+                    if (savedGravity && savedGravityTime > 0) {
+                        vm.enableGravityMode()
+                        vm.setGravityTime(savedGravityTime)
+                    }
                 }
             }
 
-            // Рендеринг насекомых
             state.insects.forEach { insect ->
                 val drawableRes = when (insect.type) {
                     InsectType.BEETLE -> R.drawable.ic_insect
@@ -145,35 +151,55 @@ fun GameScreen(
                 )
             }
 
-            // Рендеринг бонусов
             state.bonuses.forEach { bonus ->
                 val xDp = with(density) { bonus.position.x.toDp() }
                 val yDp = with(density) { bonus.position.y.toDp() }
 
+                val isGravity = bonus.type == BonusType.GRAVITY
+                val emoji = if (isGravity) "🌀" else "⭐"
+                val bgColor = if (isGravity) MaterialTheme.colorScheme.tertiary else Color.Yellow
+
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(56.dp)
                         .offset(x = xDp, y = yDp)
-                        .background(Color.Yellow, shape = MaterialTheme.shapes.small),
+                        .background(color = bgColor, shape = CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        "+${bonus.points}",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
+                    Text(emoji, fontSize = 28.sp)
                 }
             }
 
-            // Экран окончания игры
+            /*
+            if (state.gravityMode) {
+                Text(
+                    "tilt X=${"%.1f".format(state.gravityTiltX)}, Y=${"%.1f".format(state.gravityTiltY)}",
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(8.dp),
+                    fontSize = 12.sp,
+                    color = Color.Red
+                )
+            }
+            */
+
             if (state.isGameOver) {
+                LaunchedEffect(state.isGameOver) {
+                    if (state.isGameOver && currentPlayerId > 0) {
+                        vm.saveResult(currentPlayerId, settings)
+                    }
+                }
+
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
                 ) {
+                    val padding = if (isLandscape) 16.dp else 24.dp
+
                     Column(
-                        Modifier.fillMaxSize().padding(24.dp),
+                        Modifier
+                            .fillMaxSize()
+                            .padding(padding),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -190,13 +216,13 @@ fun GameScreen(
                         )
                         Text("Попаданий: ${state.hits}")
                         Text("Промахов: ${state.misses}")
-                        Text("Макс. насекомых: ${state.maxInsects}")
-                        Text("Длительность: ${settings.roundDurationSec} сек")
-                        Text(
-                            "Ориентация: ${if (isLandscape) "Альбомная" else "Портретная"}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Text("Точность: ${"%.1f".format(state.accuracy)}%")
+
+                        if (!isLandscape) {
+                            Text("Макс. насекомых: ${state.maxInsects}")
+                            Text("Длительность: ${settings.roundDurationSec} сек")
+                        }
+
                         Spacer(Modifier.height(24.dp))
                         Button(
                             onClick = {
