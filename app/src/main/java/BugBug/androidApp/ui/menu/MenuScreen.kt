@@ -15,6 +15,9 @@ import androidx.compose.foundation.Image
 fun MenuScreen(
     playerName: String,
     onPlay: () -> Unit,
+    onRecords: () -> Unit,
+    onChangePlayer: () -> Unit,
+    onNewPlayer: () -> Unit,
     onAuthors: () -> Unit,
     onRules: () -> Unit,
     onSettings: () -> Unit
@@ -55,6 +58,27 @@ fun MenuScreen(
                 modifier = Modifier.fillMaxWidth().height(56.dp)
             ) {
                 Text("▶  Играть", style = MaterialTheme.typography.titleMedium)
+            }
+            Spacer(Modifier.height(12.dp))
+            OutlinedButton(
+                onClick = onChangePlayer,
+                modifier = Modifier.fillMaxWidth().height(56.dp)
+            ) {
+                Text("👤  Сменить игрока", style = MaterialTheme.typography.titleMedium)
+            }
+            Spacer(Modifier.height(12.dp))
+            OutlinedButton(
+                onClick = onNewPlayer,
+                modifier = Modifier.fillMaxWidth().height(56.dp)
+            ) {
+                Text("➕  Новый игрок", style = MaterialTheme.typography.titleMedium)
+            }
+            Spacer(Modifier.height(12.dp))
+            OutlinedButton(
+                onClick = onRecords,
+                modifier = Modifier.fillMaxWidth().height(56.dp)
+            ) {
+                Text("🏆  Рекорды", style = MaterialTheme.typography.titleMedium)
             }
             Spacer(Modifier.height(12.dp))
             OutlinedButton(
