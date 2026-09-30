@@ -1,6 +1,8 @@
 package BugBug.androidApp.ui.menu
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,7 +31,8 @@ fun MenuScreen(
             modifier = Modifier
                 .padding(padding)
                 .padding(24.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -64,21 +67,36 @@ fun MenuScreen(
                 onClick = onChangePlayer,
                 modifier = Modifier.fillMaxWidth().height(56.dp)
             ) {
-                Text("👤  Сменить игрока", style = MaterialTheme.typography.titleMedium)
+                Image(
+                    painter = painterResource(R.drawable.swap),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text("Сменить игрока", style = MaterialTheme.typography.titleMedium)
             }
             Spacer(Modifier.height(12.dp))
             OutlinedButton(
                 onClick = onNewPlayer,
                 modifier = Modifier.fillMaxWidth().height(56.dp)
             ) {
-                Text("➕  Новый игрок", style = MaterialTheme.typography.titleMedium)
+                Image(
+                    painter = painterResource(R.drawable.add),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text("Новый игрок", style = MaterialTheme.typography.titleMedium)
             }
             Spacer(Modifier.height(12.dp))
             OutlinedButton(
                 onClick = onRecords,
                 modifier = Modifier.fillMaxWidth().height(56.dp)
             ) {
-                Text("🏆  Рекорды", style = MaterialTheme.typography.titleMedium)
+                Image(
+                    painter = painterResource(R.drawable.achivement),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text("Рекорды", style = MaterialTheme.typography.titleMedium)
             }
             Spacer(Modifier.height(12.dp))
             OutlinedButton(
@@ -131,6 +149,7 @@ fun MenuScreen(
                     Text("Настройки", style = MaterialTheme.typography.titleMedium)
                 }
             }
+            Spacer(Modifier.height(24.dp))
         }
     }
 }
