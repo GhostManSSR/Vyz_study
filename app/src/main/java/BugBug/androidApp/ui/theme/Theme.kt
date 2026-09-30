@@ -52,7 +52,6 @@ fun BugTheme(
 ) {
     val colorScheme = if (darkTheme) DarkColors else LightColors
 
-    // Красим статус-бар под тему
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

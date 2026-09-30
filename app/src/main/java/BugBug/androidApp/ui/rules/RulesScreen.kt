@@ -50,21 +50,21 @@ fun RulesScreen(onBack: () -> Unit) {
             RulesSection(title = "Стоимость жуков") {
                 InsectRow(
                     iconRes = R.drawable.ic_insect3,
-                    name = "Жук",
+                    name = "Божья коровка",
                     note = "обычный",
-                    points = 10
+                    points = 5
                 )
                 InsectRow(
                     iconRes = R.drawable.ic_insect,
-                    name = "Муха",
+                    name = "Жук",
                     note = "быстрая",
-                    points = 20
+                    points = 10
                 )
                 InsectRow(
                     iconRes = R.drawable.ic_insect1,
                     name = "Клоп",
                     note = "медленный",
-                    points = 5
+                    points = 20
                 )
             }
 

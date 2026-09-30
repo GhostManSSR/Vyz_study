@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlayerDao {
 
-    // ── Игроки ──
     @Insert
     suspend fun insertPlayer(player: PlayerEntity): Long
 
@@ -22,7 +21,6 @@ interface PlayerDao {
     @Delete
     suspend fun deletePlayer(player: PlayerEntity)
 
-    // ── Очки ──
     @Insert
     suspend fun insertScore(score: ScoreEntity): Long
 

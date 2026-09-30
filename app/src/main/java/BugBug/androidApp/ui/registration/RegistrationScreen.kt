@@ -99,7 +99,6 @@ fun RegistrationScreen(
     }
 }
 
-// ==================== Вкладка 1: Регистрация ====================
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RegistrationTabContent(
@@ -252,7 +251,6 @@ private fun RegistrationTabContent(
     }
 }
 
-// ==================== Вкладка 2: Правила ====================
 @Composable
 private fun RulesTabContent() {
     Card(Modifier.fillMaxWidth()) {
@@ -277,7 +275,6 @@ private fun RulesTabContent() {
     }
 }
 
-// ==================== Вкладка 3: Авторы ====================
 @Composable
 private fun AuthorsTabContent() {
     val authors = listOf(
@@ -299,7 +296,6 @@ private fun AuthorsTabContent() {
     }
 }
 
-// ==================== Вкладка 4: Настройки игры ====================
 @Composable
 private fun SettingsTabContent(
     settings: GameSettings,
