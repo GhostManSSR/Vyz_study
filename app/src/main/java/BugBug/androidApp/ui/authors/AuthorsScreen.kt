@@ -69,7 +69,6 @@ fun AuthorCard(author: Author, modifier: Modifier = Modifier) {
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            // Верхняя «шапка» с градиентом
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -84,7 +83,6 @@ fun AuthorCard(author: Author, modifier: Modifier = Modifier) {
                     )
             )
 
-            // Контент карточки, приподнят над шапкой
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,7 +93,6 @@ fun AuthorCard(author: Author, modifier: Modifier = Modifier) {
                     verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    // Круглый аватар с рамкой
                     Box(
                         modifier = Modifier
                             .size(84.dp)
@@ -114,7 +111,6 @@ fun AuthorCard(author: Author, modifier: Modifier = Modifier) {
                         )
                     }
 
-                    // Имя и роль — выравниваем по низу аватара
                     Column(
                         modifier = Modifier
                             .weight(1f)

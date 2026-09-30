@@ -17,7 +17,7 @@ object GameEngine {
     ): List<Insect> {
         val baseSpeed = 2f + difficulty * 0.8f
         val insectSize = 120f
-        val margin = 50f // Отступ от краёв
+        val margin = 50f
 
         return List(count) { index ->
             val type = InsectType.values().random()
@@ -100,7 +100,6 @@ object GameEngine {
     ): List<Insect> {
         if (insects.size <= maxInsects) return insects
 
-        // Сортируем: приоритетные в конце (не удалятся), остальные по ID (старые первыми на удаление)
         return insects
             .sortedWith(
                 compareBy<Insect> { it.id }
@@ -117,7 +116,7 @@ object GameEngine {
 
         val toRemove = insects.size - maxInsects
         return insects
-            .sortedBy { it.id } // Удаляем самых старых
+            .sortedBy { it.id }
             .take(toRemove)
     }
 
