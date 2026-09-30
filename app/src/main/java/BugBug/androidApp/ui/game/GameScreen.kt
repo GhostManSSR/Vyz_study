@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import BugBug.androidApp.R
 import BugBug.androidApp.model.GameSettings
 import BugBug.androidApp.model.InsectType
+import androidx.compose.ui.unit.Dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,11 +62,19 @@ fun GameScreen(
                             )
                         }
                         if (state.gravityMode) {
-                            Text(
-                                "🌀 НАКЛОН: ${state.gravityTimeLeft} сек",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.tertiary
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Image(
+                                    painter = painterResource(R.drawable.siclon),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)   // ← не 32
+                                )
+                                Spacer(Modifier.width(4.dp))
+                                Text(
+                                    "НАКЛОН: ${state.gravityTimeLeft} сек",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.tertiary
+                                )
+                            }
                         }
                     }
                 },
@@ -150,24 +159,28 @@ fun GameScreen(
                         .offset(x = xDp, y = yDp)
                 )
             }
+            val bonusSize = 40.dp
+            val bonusHalf = bonusSize / 2
 
             state.bonuses.forEach { bonus ->
                 val xDp = with(density) { bonus.position.x.toDp() }
                 val yDp = with(density) { bonus.position.y.toDp() }
 
-                val isGravity = bonus.type == BonusType.GRAVITY
-                val emoji = if (isGravity) "🌀" else "⭐"
-                val bgColor = if (isGravity) MaterialTheme.colorScheme.tertiary else Color.Yellow
-
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .offset(x = xDp, y = yDp)
-                        .background(color = bgColor, shape = CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(emoji, fontSize = 28.sp)
+                val drawableRes = when (bonus.type) {
+                    BonusType.GRAVITY -> R.drawable.siclon
+                    BonusType.POINTS  -> R.drawable.star
                 }
+
+                Image(
+                    painter = painterResource(id = drawableRes),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(bonusSize)
+                        .offset(
+                            x = xDp - bonusHalf,
+                            y = yDp - bonusHalf
+                        )
+                )
             }
 
             /*

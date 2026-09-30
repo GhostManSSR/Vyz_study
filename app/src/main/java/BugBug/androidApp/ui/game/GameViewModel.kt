@@ -56,7 +56,9 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _state = MutableStateFlow(GameUiState())
     val state: StateFlow<GameUiState> = _state.asStateFlow()
-
+    private val bonusRadiusDp = 28f
+    private val bonusRadiusPx: Float
+        get() = bonusRadiusDp * getApplication<Application>().resources.displayMetrics.density
     private var gameLoop: Job? = null
     private var timerJob: Job? = null
     private var spawnJob: Job? = null
@@ -70,9 +72,6 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     private var soundPlayer: SoundPlayer? = null
     private var gravityTimerJob: Job? = null
 
-    // ─────────────────────────────────────────────────────────────
-    // Запуск игры
-    // ─────────────────────────────────────────────────────────────
     fun startGame(
         fieldSize: Size,
         difficulty: Int = 3,
@@ -81,6 +80,11 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         if (fieldSize.width <= 0f) return
 
         stopGame()
+
+        if (soundPlayer == null) {
+            soundPlayer = SoundPlayer(getApplication())
+        }
+        soundPlayer?.startBackgroundMusic()
 
         _state.value = GameUiState(
             insects = emptyList(),
@@ -97,7 +101,6 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         val initialInsects = spawnInsects(settings.maxCockroaches, fieldSize, difficulty)
         _state.update { it.copy(insects = initialInsects) }
 
-        // Цикл движения — 60 fps, учитывает гравитацию
         gameLoop = viewModelScope.launch {
             while (isActive && _state.value.isRunning) {
                 delay((16 / settings.speed).toLong())
@@ -122,7 +125,6 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Таймер
         timerJob = viewModelScope.launch {
             while (isActive && _state.value.timeLeft > 0 && _state.value.isRunning) {
                 delay(1000)
@@ -133,7 +135,6 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
 
-        // Доспавн жуков
         spawnJob = viewModelScope.launch {
             while (isActive && _state.value.isRunning) {
                 delay(500)
@@ -185,7 +186,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             id = ++bonusIdCounter,
             position = Offset(x, y),
             points = (10..50).random(),
-            type = if (Math.random() < 0.5) BonusType.GRAVITY else BonusType.POINTS,  // ← вот эта строка
+            type = if (Math.random() < 0.5) BonusType.GRAVITY else BonusType.POINTS,
             spawnTime = System.currentTimeMillis()
         )
     }
@@ -211,6 +212,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
             val dy = b.position.y - tap.y
             (dx * dx + dy * dy) < 10_000f
         }
+
         if (hitBonus != null) {
             handleBonus(hitBonus)
             return
@@ -322,6 +324,11 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         spawnJob?.cancel()
         bonusJob?.cancel()
         disableGravityMode()
+
+        soundPlayer?.stopBackgroundMusic()
+        soundPlayer?.release()
+        soundPlayer = null
+
         _state.update { it.copy(isRunning = false) }
     }
 

@@ -26,8 +26,6 @@ class GameSettingsViewModel : ViewModel() {
         val current = _settings.value
         if (newSettings == current) return
 
-        // 1. Изменили сложность -> подтягиваем связанные настройки,
-        //    кроме тех, что игрок выставил вручную.
         if (newSettings.difficulty != current.difficulty) {
             _settings.value = GameSettingsCalculator.applyDifficulty(
                 base = newSettings,
@@ -36,9 +34,6 @@ class GameSettingsViewModel : ViewModel() {
             return
         }
 
-        // 2. Изменили что-то другое -> помечаем поле как ручное.
-        //    Если игрок вручную вернул значение к рекомендованному —
-        //    снова считаем поле автоматическим.
         _manualFields.value = resolveManualFields(current, newSettings)
         _settings.value = newSettings
     }
