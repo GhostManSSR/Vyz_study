@@ -49,14 +49,12 @@ FROM my_schema.ord o
          JOIN my_schema.sal s
               ON s.snum = o.snum
 
-         JOIN average_order ao
-              ON TRUE
+         CROSS JOIN average_order ao
 
          JOIN seller_orders so
               ON so.snum = s.snum
 
-         JOIN moscow_rating mr
-              ON TRUE
+         CROSS JOIN moscow_rating mr
 
 WHERE o.amt > ao.avg_amt
   AND p.city <> 'Saint Petersburg'

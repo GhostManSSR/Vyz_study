@@ -1,3 +1,5 @@
+DROP VIEW IF EXISTS my_schema.lab6_orders_view;
+
 CREATE VIEW my_schema.lab6_orders_view AS
 SELECT
     o.onum AS order_number,
