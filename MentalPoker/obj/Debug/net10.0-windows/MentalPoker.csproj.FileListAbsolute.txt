@@ -1,0 +1,15 @@
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.GeneratedMSBuildEditorConfig.editorconfig
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.AssemblyInfoInputs.cache
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.AssemblyInfo.cs
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.csproj.CoreCompileInputs.cache
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.sourcelink.json
+D:\My self\Vyz\Vyz_study\MentalPoker\bin\Debug\net10.0-windows\MentalPoker.exe
+D:\My self\Vyz\Vyz_study\MentalPoker\bin\Debug\net10.0-windows\MentalPoker.deps.json
+D:\My self\Vyz\Vyz_study\MentalPoker\bin\Debug\net10.0-windows\MentalPoker.runtimeconfig.json
+D:\My self\Vyz\Vyz_study\MentalPoker\bin\Debug\net10.0-windows\MentalPoker.dll
+D:\My self\Vyz\Vyz_study\MentalPoker\bin\Debug\net10.0-windows\MentalPoker.pdb
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.dll
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\refint\MentalPoker.dll
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.pdb
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\MentalPoker.genruntimeconfig.cache
+D:\My self\Vyz\Vyz_study\MentalPoker\obj\Debug\net10.0-windows\ref\MentalPoker.dll
