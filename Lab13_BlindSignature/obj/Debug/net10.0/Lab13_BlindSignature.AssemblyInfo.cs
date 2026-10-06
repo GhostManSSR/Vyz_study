@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lab13_BlindSignature")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+86422b675001b98a5acd68fdec7276cc4800b4d4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+72bf6f93707656c0fc6eac24684893381e92be3d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Lab13_BlindSignature")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lab13_BlindSignature")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

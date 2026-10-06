@@ -132,7 +132,7 @@ public partial class MainForm : Form
                 Font =
                     new Font(
                         "Segoe UI",
-                        19,
+                        14,
                         FontStyle.Bold),
                 ForeColor =
                     Color.White,
@@ -164,7 +164,7 @@ public partial class MainForm : Form
                 Location =
                     new Point(
                         27,
-                        44)
+                        64)
             };
 
         _topPanel.Controls.Add(subtitle);
@@ -1237,6 +1237,14 @@ public partial class MainForm : Form
 
 
         text.AppendText(
+            Environment.NewLine + 
+            Environment.NewLine +
+            Environment.NewLine + 
+            Environment.NewLine +
+            Environment.NewLine +
+            Environment.NewLine +
+            Environment.NewLine +
+            Environment.NewLine +
             "════════════════════════════════════════════"
             + Environment.NewLine);
 

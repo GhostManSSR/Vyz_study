@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MentalPoker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9717ab322c37372bcdee4239f0145b18c6f32040")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+72bf6f93707656c0fc6eac24684893381e92be3d")]
 [assembly: System.Reflection.AssemblyProductAttribute("MentalPoker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MentalPoker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
