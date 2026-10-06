@@ -11,6 +11,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import BugBug.androidApp.data.local.PlayerEntity
 import BugBug.androidApp.data.local.ScoreRecord
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,12 +70,40 @@ private fun RecordsList(scores: List<ScoreRecord>) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(scores) { r ->
+        itemsIndexed(scores) { index, r ->
+            val position = index + 1
+            val medalEmoji = when (position) {
+                1 -> "  "
+                2 -> "  "
+                3 -> "  "
+                else -> "  "
+            }
+            val positionColor = when (position) {
+                1 -> Color(0xFFFFD700)
+                2 -> Color(0xFFC0C0C0)
+                3 -> Color(0xFFCD7F32)
+                else -> MaterialTheme.colorScheme.onSurfaceVariant
+            }
+
             Card(Modifier.fillMaxWidth()) {
                 Row(
                     Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Номер места + медаль
+                    Text(
+                        text = "$position",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = positionColor,
+                        modifier = Modifier.width(36.dp)
+                    )
+                    Text(
+                        text = medalEmoji,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+
                     Column(Modifier.weight(1f)) {
                         Text(r.fullName, style = MaterialTheme.typography.titleMedium)
                         Text(
@@ -81,6 +112,7 @@ private fun RecordsList(scores: List<ScoreRecord>) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+
                     Text(
                         "${r.score}",
                         style = MaterialTheme.typography.headlineSmall,

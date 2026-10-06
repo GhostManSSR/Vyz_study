@@ -6,13 +6,15 @@ import androidx.lifecycle.viewModelScope
 import BugBug.androidApp.BugGameApp
 import BugBug.androidApp.data.local.PlayerEntity
 import BugBug.androidApp.data.local.ScoreRecord
+import BugBug.androidApp.data.repository.PlayerRepository
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
-class RecordsViewModel(app: Application) : AndroidViewModel(app) {
-
-    private val repository = (app as BugGameApp).playerRepository
+class RecordsViewModel(
+    private val repository: PlayerRepository
+) : ViewModel() {
 
     val scores: StateFlow<List<ScoreRecord>> =
         repository.getTopScores()
