@@ -8,7 +8,7 @@ import org.simpleframework.xml.Root
 @Root(name = "Metall", strict = false)
 data class GoldResponse(
     @field:ElementList(name = "Record", inline = true, required = false)
-    var records: MutableList<Record> = mutableListOf()      // ← было List = emptyList()
+    var records: MutableList<Record> = mutableListOf()
 )
 
 @Root(name = "Record", strict = false)
