@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.ui.unit)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.glance)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
@@ -66,4 +67,12 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.simplexml) {
+        exclude(group = "xpp3", module = "xpp3")
+    }
+    implementation("org.simpleframework:simple-xml:2.7.1")
+    implementation(libs.glance.appwidget)
 }
