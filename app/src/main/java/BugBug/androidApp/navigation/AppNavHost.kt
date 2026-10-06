@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
 
 object Routes {
     const val REGISTRATION = "registration"
@@ -33,8 +34,8 @@ object Routes {
 
 @Composable
 fun AppNavHost(
-    regVm: RegistrationViewModel = viewModel(),
-    settingsVm: GameSettingsViewModel = viewModel()
+    regVm: RegistrationViewModel = koinViewModel(),
+    settingsVm: GameSettingsViewModel = koinViewModel()
 ) {
     val nav = rememberNavController()
     val gameSettings by settingsVm.settings.collectAsState()
@@ -88,12 +89,12 @@ fun AppNavHost(
                 difficulty = difficulty,
                 settings = gameSettings,
                 currentPlayerId = playerId,
-                vm = viewModel()
+                vm = koinViewModel()
             )
         }
 
         composable(Routes.RECORDS) {
-            val recordsVm: RecordsViewModel = viewModel()
+            val recordsVm: RecordsViewModel = koinViewModel()
             val scores by recordsVm.scores.collectAsState()
             val players by recordsVm.players.collectAsState()
 
