@@ -1,11 +1,16 @@
 package BugBug.androidApp
 
 import android.app.Application
-import BugBug.androidApp.data.local.GameDatabase
-import BugBug.androidApp.data.repository.PlayerRepository
+import BugBug.androidApp.di.appModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class BugGameApp : Application() {
-
-    val database by lazy { GameDatabase.get(this) }
-    val playerRepository by lazy { PlayerRepository(database.playerDao()) }
+    override fun onCreate() {
+        super.onCreate()
+        startKoin {
+            androidContext(this@BugGameApp)
+            modules(appModule)
+        }
+    }
 }
