@@ -58,27 +58,26 @@ public class Database : IDisposable
     public List<Order> ListOrders(string filter = "")
     {
         var result = new List<Order>();
-        using var tx  = _conn.BeginTransaction();
-        using var cmd = new NpgsqlCommand { Connection = _conn, Transaction = tx };
+        using var cmd = new NpgsqlCommand { Connection = _conn };
 
         string sql = """
-            SELECT id,
-                   order_code,
-                   COALESCE(phone, '')          AS phone,
-                   COALESCE(parcel_article, '') AS parcel_article,
-                   COALESCE(cell, '')           AS cell,
-                   status,
-                   TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI') AS created_at
-            FROM orders
-            """;
+                     SELECT id,
+                            order_code,
+                            COALESCE(phone, '')          AS phone,
+                            COALESCE(parcel_article, '') AS parcel_article,
+                            COALESCE(cell, '')           AS cell,
+                            status,
+                            TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI') AS created_at
+                     FROM orders
+                     """;
 
         if (!string.IsNullOrEmpty(filter))
         {
             sql += """
-                 WHERE order_code ILIKE @p
-                    OR COALESCE(phone, '')          ILIKE @p
-                    OR COALESCE(parcel_article, '') ILIKE @p
-                """;
+                    WHERE order_code ILIKE @p
+                       OR COALESCE(phone, '')          ILIKE @p
+                       OR COALESCE(parcel_article, '') ILIKE @p
+                   """;
             cmd.Parameters.AddWithValue("p", "%" + filter + "%");
         }
 
@@ -99,27 +98,24 @@ public class Database : IDisposable
                 CreatedAt = reader.GetString(6)
             });
         }
-
-        tx.Commit();
         return result;
     }
 
     public List<Order> ListByStatus(string status)
     {
         var result = new List<Order>();
-        using var tx  = _conn.BeginTransaction();
-        using var cmd = new NpgsqlCommand { Connection = _conn, Transaction = tx };
+        using var cmd = new NpgsqlCommand { Connection = _conn };
 
         string sql = """
-            SELECT id,
-                   order_code,
-                   COALESCE(phone, '')          AS phone,
-                   COALESCE(parcel_article, '') AS parcel_article,
-                   COALESCE(cell, '')           AS cell,
-                   status,
-                   TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI') AS created_at
-            FROM orders
-            """;
+                     SELECT id,
+                            order_code,
+                            COALESCE(phone, '')          AS phone,
+                            COALESCE(parcel_article, '') AS parcel_article,
+                            COALESCE(cell, '')           AS cell,
+                            status,
+                            TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI') AS created_at
+                     FROM orders
+                     """;
 
         if (!string.IsNullOrEmpty(status))
         {
@@ -145,7 +141,6 @@ public class Database : IDisposable
             });
         }
 
-        tx.Commit();
         return result;
     }
 
@@ -256,10 +251,9 @@ public class Database : IDisposable
     public Report BuildReport()
     {
         var report = new Report();
-        using var tx  = _conn.BeginTransaction();
         using var cmd = new NpgsqlCommand(
             "SELECT status, COUNT(*) FROM orders GROUP BY status",
-            _conn, tx);
+            _conn);
 
         using var reader = cmd.ExecuteReader();
         while (reader.Read())
@@ -274,7 +268,6 @@ public class Database : IDisposable
             }
         }
 
-        tx.Commit();
         return report;
     }
 
