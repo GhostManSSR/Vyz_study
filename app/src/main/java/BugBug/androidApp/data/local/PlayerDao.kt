@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlayerDao {
 
+    @Query("SELECT * FROM players WHERE fullName = :name LIMIT 1")
+    suspend fun getPlayerByName(name: String): PlayerEntity?
+
     @Insert
     suspend fun insertPlayer(player: PlayerEntity): Long
 
@@ -25,16 +28,22 @@ interface PlayerDao {
     suspend fun insertScore(score: ScoreEntity): Long
 
     @Query("""
-        SELECT p.fullName AS fullName,
-               s.score AS score,
-               s.difficulty AS difficulty,
-               s.playedAt AS playedAt
-        FROM scores s
-        INNER JOIN players p ON p.id = s.playerId
-        ORDER BY s.score DESC
-        LIMIT :limit
-    """)
-    fun getTopScores(limit: Int = 20): Flow<List<ScoreRecord>>
+    SELECT p.fullName AS fullName,
+           s.score AS score,
+           s.difficulty AS difficulty,
+           s.playedAt AS playedAt
+    FROM scores s
+    INNER JOIN players p ON p.id = s.playerId
+    WHERE s.id = (
+        SELECT s2.id FROM scores s2
+        WHERE s2.playerId = s.playerId
+        ORDER BY s2.score DESC, s2.playedAt ASC
+        LIMIT 1
+    )
+    ORDER BY s.score DESC
+    LIMIT :limit
+""")
+    fun getTopScores(limit: Int = 5): Flow<List<ScoreRecord>>
 
     @Query("""
         SELECT * FROM scores
