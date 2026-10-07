@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -109,145 +112,201 @@ private fun RegistrationTabContent(
 ) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            Text(
-                "Личные данные",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.height(8.dp))
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    if (state.isLoginMode) "Вход" else "Регистрация",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                TextButton(onClick = { vm.toggleLoginMode() }) {
+                    Text(
+                        if (state.isLoginMode)
+                            "Нет аккаунта? Регистрация"
+                        else
+                            "Есть аккаунт? Войти"
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
             OutlinedTextField(
                 value = state.fullName,
                 onValueChange = vm::onNameChange,
                 label = { Text("ФИО") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    autoCorrectEnabled = false
+                )
             )
+
             Spacer(Modifier.height(12.dp))
-            Text("Пол")
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = state.gender == Gender.MALE,
-                    onClick = { vm.onGenderChange(Gender.MALE) }
-                )
-                Text("Мужской", modifier = Modifier.padding(end = 16.dp))
-                RadioButton(
-                    selected = state.gender == Gender.FEMALE,
-                    onClick = { vm.onGenderChange(Gender.FEMALE) }
-                )
-                Text("Женский")
-            }
+
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = vm::onPasswordChange,
+                label = { Text("Пароль") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions.Default.copy(autoCorrectEnabled = false),
+                isError = !state.isLoginMode && state.passwordError != null,
+                supportingText = {
+                    if (!state.isLoginMode && state.passwordError != null) {
+                        Text(state.passwordError!!)
+                    }
+                }
+            )
         }
     }
 
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(
-                "Курс",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.height(8.dp))
-
-            var expanded by remember { mutableStateOf(false) }
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it }
-            ) {
-                OutlinedTextField(
-                    value = "${state.course} курс",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Курс") },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth()
+    if (!state.isLoginMode) {
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    "Пол",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
-                ExposedDropdownMenu(
+                Spacer(Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(
+                        selected = state.gender == Gender.MALE,
+                        onClick = { vm.onGenderChange(Gender.MALE) }
+                    )
+                    Text("Мужской", modifier = Modifier.padding(end = 16.dp))
+                    RadioButton(
+                        selected = state.gender == Gender.FEMALE,
+                        onClick = { vm.onGenderChange(Gender.FEMALE) }
+                    )
+                    Text("Женский")
+                }
+            }
+        }
+
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    "Курс",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(Modifier.height(8.dp))
+
+                var expanded by remember { mutableStateOf(false) }
+                ExposedDropdownMenuBox(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    onExpandedChange = { expanded = it }
                 ) {
-                    (1..4).forEach { c ->
-                        DropdownMenuItem(
-                            text = { Text("$c курс") },
-                            onClick = {
-                                vm.onCourseChange(c)
-                                expanded = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp)) {
-            Text(
-                "Дата рождения",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.height(8.dp))
-
-            var showPicker by remember { mutableStateOf(false) }
-            val datePickerState = rememberDatePickerState()
-
-            OutlinedButton(
-                onClick = { showPicker = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val c = state.birthDate
-                Text(
-                    "${c.get(Calendar.DAY_OF_MONTH)}." +
-                            "${c.get(Calendar.MONTH) + 1}." +
-                            "${c.get(Calendar.YEAR)}"
-                )
-            }
-
-            if (showPicker) {
-                DatePickerDialog(
-                    onDismissRequest = { showPicker = false },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            datePickerState.selectedDateMillis?.let { millis ->
-                                val cal = Calendar.getInstance().apply {
-                                    timeInMillis = millis
+                    OutlinedTextField(
+                        value = "${state.course} курс",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Курс") },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        (1..4).forEach { c ->
+                            DropdownMenuItem(
+                                text = { Text("$c курс") },
+                                onClick = {
+                                    vm.onCourseChange(c)
+                                    expanded = false
                                 }
-                                vm.onDateChange(cal)
-                            }
-                            showPicker = false
-                        }) { Text("ОК") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showPicker = false }) { Text("Отмена") }
+                            )
+                        }
                     }
-                ) {
-                    DatePicker(state = datePickerState)
                 }
             }
+        }
 
-            Spacer(Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painterResource(state.zodiac.iconRes),
-                    contentDescription = state.zodiac.title,
-                    modifier = Modifier.size(64.dp)
-                )
-                Spacer(Modifier.width(16.dp))
+        Card(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
                 Text(
-                    "Знак зодиака: ${state.zodiac.title}",
-                    style = MaterialTheme.typography.titleMedium
+                    "Дата рождения",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
+                Spacer(Modifier.height(8.dp))
+
+                var showPicker by remember { mutableStateOf(false) }
+                val datePickerState = rememberDatePickerState()
+
+                OutlinedButton(
+                    onClick = { showPicker = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val c = state.birthDate
+                    Text(
+                        "${c.get(Calendar.DAY_OF_MONTH)}." +
+                                "${c.get(Calendar.MONTH) + 1}." +
+                                "${c.get(Calendar.YEAR)}"
+                    )
+                }
+
+                if (showPicker) {
+                    DatePickerDialog(
+                        onDismissRequest = { showPicker = false },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                datePickerState.selectedDateMillis?.let { millis ->
+                                    val cal = Calendar.getInstance().apply {
+                                        timeInMillis = millis
+                                    }
+                                    vm.onDateChange(cal)
+                                }
+                                showPicker = false
+                            }) { Text("ОК") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showPicker = false }) { Text("Отмена") }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
+
+                Spacer(Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(state.zodiac.iconRes),
+                        contentDescription = state.zodiac.title,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        "Знак зодиака: ${state.zodiac.title}",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
             }
         }
     }
+
+    Spacer(Modifier.height(8.dp))
 
     Button(
-        onClick = { vm.onRegister(difficulty, onSaved) },
+        onClick = {
+            if (state.isLoginMode) {
+                vm.onLogin { onSaved() }
+            } else {
+                vm.onRegister(difficulty, onSaved)
+            }
+        },
         enabled = state.isFormValid,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text("Зарегистрировать")
+        Text(if (state.isLoginMode) "Войти" else "Зарегистрировать")
     }
 }
 
