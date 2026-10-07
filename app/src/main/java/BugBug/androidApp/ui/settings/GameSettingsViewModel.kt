@@ -1,4 +1,3 @@
-// ui/settings/GameSettingsViewModel.kt
 package BugBug.androidApp.ui.settings
 
 import androidx.lifecycle.ViewModel
@@ -14,14 +13,9 @@ class GameSettingsViewModel : ViewModel() {
     private val _settings = MutableStateFlow(GameSettings())
     val settings: StateFlow<GameSettings> = _settings.asStateFlow()
 
-    /** Поля, которые игрок выставил сам и которые больше не зависят от сложности. */
     private val _manualFields = MutableStateFlow<Set<SettingField>>(emptySet())
     val manualFields: StateFlow<Set<SettingField>> = _manualFields.asStateFlow()
 
-    /**
-     * Единая точка входа для UI: сюда приходит уже готовый GameSettings.
-     * Метод сам понимает, что именно изменилось.
-     */
     fun updateSettings(newSettings: GameSettings) {
         val current = _settings.value
         if (newSettings == current) return
@@ -43,7 +37,6 @@ class GameSettingsViewModel : ViewModel() {
         _settings.value = GameSettings()
     }
 
-    /** Позволяет вернуть конкретное поле в «авто»-режим (например, по кнопке в UI). */
     fun unlinkField(field: SettingField) {
         _manualFields.value = _manualFields.value - field
         _settings.value = GameSettingsCalculator.applyDifficulty(

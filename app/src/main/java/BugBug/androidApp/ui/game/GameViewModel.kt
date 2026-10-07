@@ -1,5 +1,7 @@
 package BugBug.androidApp.ui.game
 
+import BugBug.androidApp.data.remote.GoldApiService
+import BugBug.androidApp.data.remote.RetrofitClient
 import BugBug.androidApp.data.repository.GoldRepository
 import BugBug.androidApp.data.repository.PlayerRepository
 import android.app.Application
@@ -43,7 +45,7 @@ data class GameUiState(
         else hits.toFloat() / (hits + misses) * 100f
 }
 
-enum class BonusType { POINTS, GRAVITY }
+enum class BonusType { POINTS, GRAVITY, TIME }
 
 data class Bonus(
     val id: Int,
@@ -83,7 +85,7 @@ class GameViewModel(
     init {
         viewModelScope.launch {
             val rate = goldRepository.getGoldRate()
-            _state.update { it.copy(goldRate = rate) }
+            _state.update { it.copy(goldRate = rate.value) }
         }
     }
     fun startGame(
@@ -212,11 +214,17 @@ class GameViewModel(
         val x = fieldSize.width * (0.1f + Math.random().toFloat() * 0.8f)
         val y = fieldSize.height * (0.1f + Math.random().toFloat() * 0.8f)
 
+        val type = when {
+            Math.random() < 0.33 -> BonusType.GRAVITY
+            Math.random() < 0.5  -> BonusType.TIME
+            else                 -> BonusType.POINTS
+        }
+
         return Bonus(
             id = ++bonusIdCounter,
             position = Offset(x, y),
             points = (10..50).random(),
-            type = if (Math.random() < 0.5) BonusType.GRAVITY else BonusType.POINTS,
+            type = type,
             spawnTime = System.currentTimeMillis()
         )
     }
@@ -278,6 +286,15 @@ class GameViewModel(
                     it.copy(bonuses = it.bonuses.filter { b -> b.id != bonus.id })
                 }
                 enableGravityMode()
+            }
+            BonusType.TIME -> {
+                _state.update {
+                    it.copy(
+                        bonuses = it.bonuses.filter { b -> b.id != bonus.id },
+                        timeLeft = it.timeLeft + 10,
+                        hits = it.hits + 1
+                    )
+                }
             }
         }
     }

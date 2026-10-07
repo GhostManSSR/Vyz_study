@@ -184,6 +184,7 @@ fun GameScreen(
 
                 val drawableRes = when (bonus.type) {
                     BonusType.GRAVITY -> R.drawable.siclon
+                    BonusType.TIME    -> R.drawable.clock
                     BonusType.POINTS  -> R.drawable.star
                 }
 
