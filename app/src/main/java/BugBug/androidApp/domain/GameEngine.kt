@@ -20,7 +20,7 @@ object GameEngine {
         val margin = 50f
 
         return List(count) { index ->
-            val type = InsectType.values().random()
+            val type = randomType()
             Insect(
                 id = System.currentTimeMillis() + index,
                 type = type,
@@ -136,7 +136,7 @@ object GameEngine {
         difficulty: Int,
         speedMultiplier: Float = 1.0f
     ): Insect {
-        val type = InsectType.values().random()
+        val type = randomType()
         val baseSpeed = 2f + difficulty * 0.8f
         val insectSize = 120f
 
@@ -152,6 +152,38 @@ object GameEngine {
         )
     }
 
+    fun spawnGoldenInsect(fieldSize: Size, difficulty: Int): Insect {
+        val baseSpeed = 2f + difficulty * 0.8f
+        val insectSize = 110f
+        val margin = 50f
+
+        return Insect(
+            id = System.currentTimeMillis() + 999,
+            type = InsectType.GOLDEN,
+            position = Offset(
+                x = Random.nextFloat() * (fieldSize.width - insectSize - margin * 2) + margin,
+                y = Random.nextFloat() * (fieldSize.height - insectSize - margin * 2) + margin
+            ),
+            velocity = Offset(
+                x = (Random.nextFloat() - 0.5f) * baseSpeed * 3f,
+                y = (Random.nextFloat() - 0.5f) * baseSpeed * 3f
+            ),
+            size = Size(insectSize, insectSize)
+        )
+    }
+
+    private fun randomType(): InsectType {
+        val weighted = InsectType.values().filter { it.spawnWeight > 0 }
+        if (weighted.isEmpty()) return InsectType.BEETLE
+
+        val total = weighted.sumOf { it.spawnWeight }
+        var r = Random.nextInt(total)
+        for (type in weighted) {
+            r -= type.spawnWeight
+            if (r < 0) return type
+        }
+        return InsectType.BEETLE
+    }
     fun moveInsectsWithGravity(
         insects: List<Insect>,
         fieldSize: Size,
