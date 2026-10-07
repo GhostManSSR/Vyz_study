@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="PickupPoint.App/PickupPoint.App.csproj" />
+  <Project Path="PickupPoint.Db.Tests/PickupPoint.Db.Tests.csproj" />
+  <Project Path="PickupPoint.Db/PickupPoint.Db.csproj" />
+</Solution>
