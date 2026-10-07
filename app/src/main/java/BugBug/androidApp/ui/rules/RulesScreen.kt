@@ -1,6 +1,7 @@
 package BugBug.androidApp.ui.rules
 
 import BugBug.androidApp.R
+import BugBug.androidApp.data.repository.GoldRate
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,17 +11,27 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RulesScreen(onBack: () -> Unit) {
+fun RulesScreen(
+    onBack: () -> Unit,
+    vm: RulesViewModel = viewModel()
+) {
+    val goldRate by vm.goldRate.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -45,6 +56,7 @@ fun RulesScreen(onBack: () -> Unit) {
                 NumberedRule(3, "Промахнулся — минус 5 очков.")
                 NumberedRule(4, "Игра длится 60 секунд.")
                 NumberedRule(5, "Цель — набрать как можно больше очков.")
+                NumberedRule(6, "Иногда появляется золотой жук. Его цена = курс грамма золота ЦБ РФ на момент запуска раунда.")
             }
 
             RulesSection(title = "Стоимость жуков") {
@@ -66,6 +78,7 @@ fun RulesScreen(onBack: () -> Unit) {
                     note = "медленный",
                     points = 20
                 )
+                GoldBugRow(goldRate = goldRate)
             }
 
             RulesSection(title = "Уровни сложности") {
@@ -95,6 +108,8 @@ fun RulesScreen(onBack: () -> Unit) {
     }
 }
 
+/* ---------- Секция ---------- */
+
 @Composable
 private fun RulesSection(
     title: String,
@@ -122,6 +137,8 @@ private fun RulesSection(
     }
 }
 
+/* ---------- Нумерованное правило ---------- */
+
 @Composable
 private fun NumberedRule(number: Int, text: String) {
     Row(
@@ -148,6 +165,8 @@ private fun NumberedRule(number: Int, text: String) {
         )
     }
 }
+
+/* ---------- Строка обычного жука ---------- */
 
 @Composable
 private fun InsectRow(
@@ -208,13 +227,92 @@ private fun InsectRow(
     }
 }
 
+/* ---------- Строка золотого жука (динамическая цена ЦБ) ---------- */
+
+@Composable
+private fun GoldBugRow(goldRate: GoldRate?) {
+    val priceText = when {
+        goldRate == null -> "загрузка…"
+        goldRate.value <= 0.0 -> "нет данных"
+        else -> String.format(
+            Locale.getDefault(),
+            "%,.0f очков",
+            goldRate.value / 100
+        ).replace('\u00A0', ' ')
+    }
+
+    val note = when {
+        goldRate == null -> "цена ЦБ загружается…"
+        goldRate.value <= 0.0 -> "проверьте подключение к интернету"
+        else -> String.format(
+            Locale.getDefault(),
+            "бонус · %.2f ₽/г ЦБ РФ",
+            goldRate.value / 100
+        ).replace('\u00A0', ' ')
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color(0xFFFFF8E1))
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFFFECB3)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_insect4),
+                contentDescription = "Золотой жук",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(30.dp)
+            )
+        }
+
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = "Золотой жук",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF8D6E00)
+            )
+            Text(
+                text = note,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Surface(
+            shape = RoundedCornerShape(50),
+            color = Color(0xFFFFE082)
+        ) {
+            Text(
+                text = priceText,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF5D4037),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+            )
+        }
+    }
+}
+
+/* ---------- Строка сложности ---------- */
+
 @Composable
 private fun DifficultyRow(
     label: String,
     range: String,
     detail: String,
-    container: androidx.compose.ui.graphics.Color,
-    content: androidx.compose.ui.graphics.Color
+    container: Color,
+    content: Color
 ) {
     Row(
         modifier = Modifier

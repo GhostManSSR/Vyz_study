@@ -10,7 +10,6 @@ class SoundPlayer(context: Context) {
 
     private val appContext = context.applicationContext
 
-    // --- SFX ---
     private val soundPool = SoundPool.Builder()
         .setMaxStreams(4)
         .setAudioAttributes(
