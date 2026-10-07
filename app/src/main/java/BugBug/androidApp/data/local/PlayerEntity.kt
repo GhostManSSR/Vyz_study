@@ -14,5 +14,6 @@ data class PlayerEntity(
     val difficulty: Int,
     val birthDate: Calendar,
     val zodiacName: String,
+    val password: String = "",
     val createdAt: Long = System.currentTimeMillis()
 )

@@ -25,20 +25,21 @@ class PlayerRepository(private val dao: PlayerDao) {
     suspend fun getPlayerById(id: Long): PlayerEntity? = dao.getPlayerById(id)
 
     suspend fun savePlayer(player: Player): Long {
-        val existing = dao.getPlayerByName(player.fullName)
-        if (existing != null) {
-            return existing.id
-        }
-        return dao.insertPlayer(
-            PlayerEntity(
-                fullName = player.fullName,
-                gender = player.gender,
-                course = player.course,
-                difficulty = player.difficulty,
-                birthDate = player.birthDate,
-                zodiacName = player.zodiac.title
-            )
+        val entity = PlayerEntity(
+            fullName = player.fullName,
+            gender = player.gender,
+            course = player.course,
+            difficulty = player.difficulty,
+            birthDate = player.birthDate,
+            zodiacName = player.zodiac.title,
+            password = player.password
         )
+        return dao.insertPlayer(entity)
+    }
+
+    suspend fun getPlayerByCredentials(name: String, password: String): PlayerEntity? {
+        val player = dao.getPlayerByName(name)
+        return if (player != null && player.password == password) player else null
     }
 
     suspend fun saveScore(

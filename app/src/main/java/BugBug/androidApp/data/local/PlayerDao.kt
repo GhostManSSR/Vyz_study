@@ -34,16 +34,11 @@ interface PlayerDao {
            s.playedAt AS playedAt
     FROM scores s
     INNER JOIN players p ON p.id = s.playerId
-    WHERE s.id = (
-        SELECT s2.id FROM scores s2
-        WHERE s2.playerId = s.playerId
-        ORDER BY s2.score DESC, s2.playedAt ASC
-        LIMIT 1
-    )
-    ORDER BY s.score DESC
+    ORDER BY s.score DESC, s.playedAt ASC
     LIMIT :limit
 """)
     fun getTopScores(limit: Int = 5): Flow<List<ScoreRecord>>
+
 
     @Query("""
         SELECT * FROM scores
