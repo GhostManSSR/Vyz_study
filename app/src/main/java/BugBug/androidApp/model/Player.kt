@@ -8,5 +8,6 @@ data class Player(
     val course: Int,
     val difficulty: Int,
     val birthDate: Calendar,
+    val password: String = "",
     val zodiac: ZodiacSign
 )
