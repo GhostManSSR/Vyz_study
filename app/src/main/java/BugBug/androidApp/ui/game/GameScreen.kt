@@ -145,19 +145,35 @@ fun GameScreen(
                     InsectType.BEETLE -> R.drawable.ic_insect
                     InsectType.FLY -> R.drawable.ic_insect3
                     InsectType.BUG -> R.drawable.ic_insect1
+                    InsectType.GOLDEN -> R.drawable.ic_insect4
                 }
 
                 val xDp = with(density) { insect.position.x.toDp() }
                 val yDp = with(density) { insect.position.y.toDp() }
                 val sizeDp = with(density) { insect.size.width.toDp() }
 
-                Image(
-                    painter = painterResource(id = drawableRes),
-                    contentDescription = null,
+                Box(
                     modifier = Modifier
                         .size(sizeDp)
-                        .offset(x = xDp, y = yDp)
-                )
+                        .offset(x = xDp, y = yDp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (insect.type == InsectType.GOLDEN) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = Color(0xFFFFD700).copy(alpha = 0.5f),
+                                    shape = CircleShape
+                                )
+                        )
+                    }
+                    Image(
+                        painter = painterResource(id = drawableRes),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
             val bonusSize = 40.dp
             val bonusHalf = bonusSize / 2
