@@ -1,13 +1,15 @@
 package BugBug.androidApp.ui.game
 
+import BugBug.androidApp.data.repository.GoldRepository
+import BugBug.androidApp.data.repository.PlayerRepository
 import android.app.Application
-import BugBug.androidApp.BugGameApp
 import BugBug.androidApp.domain.GameEngine
 import BugBug.androidApp.model.GameSettings
 import BugBug.androidApp.model.Insect
+import BugBug.androidApp.model.InsectType
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,7 +35,8 @@ data class GameUiState(
     val gravityMode: Boolean = false,
     val gravityTiltX: Float = 0f,
     val gravityTiltY: Float = 0f,
-    val gravityTimeLeft: Int = 0
+    val gravityTimeLeft: Int = 0,
+    val goldRate: Double = 0.0
 ) {
     val accuracy: Float
         get() = if (hits + misses == 0) 0f
@@ -50,15 +53,20 @@ data class Bonus(
     val spawnTime: Long
 )
 
-class GameViewModel(app: Application) : AndroidViewModel(app) {
+class GameViewModel(
+    private val repository: PlayerRepository,
+    private val app: Application,
+) : ViewModel() {
 
-    private val repository = (app as BugGameApp).playerRepository
 
+
+    private var goldenSpawnJob: Job? = null
+    private val goldRepository = GoldRepository()
     private val _state = MutableStateFlow(GameUiState())
     val state: StateFlow<GameUiState> = _state.asStateFlow()
     private val bonusRadiusDp = 28f
     private val bonusRadiusPx: Float
-        get() = bonusRadiusDp * getApplication<Application>().resources.displayMetrics.density
+        get() = bonusRadiusDp * app.resources.displayMetrics.density
     private var gameLoop: Job? = null
     private var timerJob: Job? = null
     private var spawnJob: Job? = null
@@ -72,17 +80,24 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     private var soundPlayer: SoundPlayer? = null
     private var gravityTimerJob: Job? = null
 
+    init {
+        viewModelScope.launch {
+            val rate = goldRepository.getGoldRate()
+            _state.update { it.copy(goldRate = rate) }
+        }
+    }
     fun startGame(
         fieldSize: Size,
         difficulty: Int = 3,
         settings: GameSettings
     ) {
+
         if (fieldSize.width <= 0f) return
 
         stopGame()
 
         if (soundPlayer == null) {
-            soundPlayer = SoundPlayer(getApplication())
+            soundPlayer =  SoundPlayer(app)
         }
         soundPlayer?.startBackgroundMusic()
 
@@ -163,6 +178,21 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
                 }
             }
         }
+
+
+        goldenSpawnJob?.cancel()
+        goldenSpawnJob = viewModelScope.launch {
+            while (isActive && _state.value.isRunning) {
+                delay(10_000L)
+                if (_state.value.isRunning &&
+                    _state.value.insects.size < _state.value.maxInsects &&
+                    Math.random() < 0.6
+                ) {
+                    val golden = GameEngine.spawnGoldenInsect(fieldSize, difficulty)
+                    _state.update { it.copy(insects = it.insects + golden) }
+                }
+            }
+        }
     }
 
     private fun spawnInsects(
@@ -197,10 +227,16 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
 
         val hitInsect = s.insects.firstOrNull { GameEngine.isHit(it, tap) }
         if (hitInsect != null) {
+            val gained = if (hitInsect.type == InsectType.GOLDEN) {
+                (s.goldRate / 100.0).coerceAtLeast(10.0).toInt()
+            } else {
+                hitInsect.type.points
+            }
+            android.util.Log.d("TAP_DEBUG", "gained=$gained")
             _state.update {
                 it.copy(
                     insects = it.insects.filter { i -> i.id != hitInsect.id },
-                    score = it.score + hitInsect.type.points,
+                    score = it.score + gained,
                     hits = it.hits + 1
                 )
             }
@@ -247,7 +283,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun enableGravityMode() {
-        val ctx = getApplication<Application>()
+        val ctx = app
 
         if (sensorController == null) {
             sensorController = SensorController(ctx).also { it.start() }
@@ -322,6 +358,7 @@ class GameViewModel(app: Application) : AndroidViewModel(app) {
         gameLoop?.cancel()
         timerJob?.cancel()
         spawnJob?.cancel()
+        goldenSpawnJob?.cancel()
         bonusJob?.cancel()
         disableGravityMode()
 
