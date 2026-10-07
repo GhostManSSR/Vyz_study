@@ -90,7 +90,6 @@ private fun RecordsList(scores: List<ScoreRecord>) {
                     Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Номер места + медаль
                     Text(
                         text = "$position",
                         style = MaterialTheme.typography.headlineMedium,
