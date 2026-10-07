@@ -3,11 +3,13 @@ package BugBug.androidApp.ui.registration
 import android.app.Application
 import BugBug.androidApp.BugGameApp
 import BugBug.androidApp.data.local.PlayerEntity
+import BugBug.androidApp.data.repository.PlayerRepository
 import BugBug.androidApp.domain.ZodiacCalculator
 import BugBug.androidApp.model.Gender
 import BugBug.androidApp.model.Player
 import BugBug.androidApp.model.ZodiacSign
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,9 +19,10 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 
 
-class RegistrationViewModel(app: Application) : AndroidViewModel(app) {
+class RegistrationViewModel(
+    private val repository: PlayerRepository
+) : ViewModel() {
 
-    private val repository = (app as BugGameApp).playerRepository
 
     private val _state = MutableStateFlow(RegistrationUiState())
     val state: StateFlow<RegistrationUiState> = _state.asStateFlow()
@@ -51,6 +54,10 @@ class RegistrationViewModel(app: Application) : AndroidViewModel(app) {
         )
         _savedPlayer.value = player
         viewModelScope.launch {
+            val existing = repository.getPlayerByName(s.fullName)
+            if (existing != null) {
+                _state.update { it.copy(error = "Игрок с таким именем уже существует — используем его профиль") }
+            }
             val id = repository.savePlayer(player)
             _savedPlayerId.value = id
             onSaved()
