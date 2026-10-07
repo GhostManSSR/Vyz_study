@@ -5,13 +5,18 @@ import BugBug.androidApp.data.local.PlayerEntity
 import BugBug.androidApp.data.local.ScoreEntity
 import BugBug.androidApp.data.local.ScoreRecord
 import BugBug.androidApp.model.Player
+import android.R
 import kotlinx.coroutines.flow.Flow
 
 class PlayerRepository(private val dao: PlayerDao) {
 
     fun getAllPlayers(): Flow<List<PlayerEntity>> = dao.getAllPlayers()
 
-    fun getTopScores(limit: Int = 20): Flow<List<ScoreRecord>> =
+    suspend fun getPlayerByName(name : String) : PlayerEntity? =
+        dao.getPlayerByName(name)
+
+
+    fun getTopScores(limit: Int = 5): Flow<List<ScoreRecord>> =
         dao.getTopScores(limit)
 
     fun getScoresForPlayer(playerId: Long): Flow<List<ScoreEntity>> =
@@ -19,8 +24,12 @@ class PlayerRepository(private val dao: PlayerDao) {
 
     suspend fun getPlayerById(id: Long): PlayerEntity? = dao.getPlayerById(id)
 
-    suspend fun savePlayer(player: Player): Long =
-        dao.insertPlayer(
+    suspend fun savePlayer(player: Player): Long {
+        val existing = dao.getPlayerByName(player.fullName)
+        if (existing != null) {
+            return existing.id
+        }
+        return dao.insertPlayer(
             PlayerEntity(
                 fullName = player.fullName,
                 gender = player.gender,
@@ -30,6 +39,7 @@ class PlayerRepository(private val dao: PlayerDao) {
                 zodiacName = player.zodiac.title
             )
         )
+    }
 
     suspend fun saveScore(
         playerId: Long,
@@ -38,17 +48,17 @@ class PlayerRepository(private val dao: PlayerDao) {
         misses: Int,
         difficulty: Int,
         roundDurationSec: Int
-    ): Long =
-        dao.insertScore(
-            ScoreEntity(
-                playerId = playerId,
-                score = score,
-                hits = hits,
-                misses = misses,
-                difficulty = difficulty,
-                roundDurationSec = roundDurationSec
-            )
+    ): Long = dao.insertScore(
+        ScoreEntity(
+            playerId = playerId,
+            score = score,
+            hits = hits,
+            misses = misses,
+            difficulty = difficulty,
+            roundDurationSec = roundDurationSec
         )
+    )
 
     suspend fun deletePlayer(player: PlayerEntity) = dao.deletePlayer(player)
+
 }
