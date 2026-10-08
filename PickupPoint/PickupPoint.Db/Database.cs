@@ -6,7 +6,7 @@ using System.Globalization;
 
 namespace PickupPoint.Db;
 
-public class Database : IDisposable
+public class Database : IDatabase
 {
     private readonly NpgsqlConnection _conn;
 
