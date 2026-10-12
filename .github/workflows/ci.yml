@@ -7,7 +7,7 @@ on:
     branches: [modern-programming-technologies]
 
 env:
-  PROJECT_DIR: modern-programming-technologies/dataconverter
+  PROJECT_DIR: DataConverter
 
 jobs:
   build-and-test:
