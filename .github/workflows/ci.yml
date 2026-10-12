@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [modern-programming-technologies]
+  pull_request:
+    branches: [modern-programming-technologies]
+
+env:
+  PROJECT_DIR: modern-programming-technologies/dataconverter
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false         
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache FetchContent deps
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PROJECT_DIR }}/build/_deps
+          key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}/CMakeLists.txt', env.PROJECT_DIR)) }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Configure
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: cmake --build build --config Release
+
+      - name: Test
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: ctest --test-dir build --build-config Release --output-on-failure
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs-${{ matrix.os }}
+          path: ${{ env.PROJECT_DIR }}/build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+      - name: Upload binary (Linux/macOS)
+        if: success() && runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataconv-${{ matrix.os }}
+          path: ${{ env.PROJECT_DIR }}/build/dataconv
+          if-no-files-found: ignore
+
+      - name: Upload binary (Windows)
+        if: success() && runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dataconv-${{ matrix.os }}
+          path: ${{ env.PROJECT_DIR }}/build/Release/dataconv.exe
+          if-no-files-found: ignore

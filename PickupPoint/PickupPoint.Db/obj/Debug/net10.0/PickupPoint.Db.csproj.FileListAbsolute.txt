@@ -1,0 +1,13 @@
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\bin\Debug\net10.0\PickupPoint.Db.deps.json
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\bin\Debug\net10.0\PickupPoint.Db.dll
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\bin\Debug\net10.0\PickupPoint.Db.pdb
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.csproj.AssemblyReference.cache
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.AssemblyInfoInputs.cache
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.AssemblyInfo.cs
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.csproj.CoreCompileInputs.cache
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.sourcelink.json
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.dll
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\refint\PickupPoint.Db.dll
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\PickupPoint.Db.pdb
+C:\Users\Timofey\Desktop\git\Vyz_study\PickupPoint\PickupPoint.Db\obj\Debug\net10.0\ref\PickupPoint.Db.dll

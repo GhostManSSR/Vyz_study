@@ -1,0 +1,234 @@
+[
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\raw_scream.mp3.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\raw\\scream.mp3"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_rules.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\rules.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-hdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_aquarius_symbol.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\aquarius_symbol.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_aries_symbol.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\aries_symbol.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_stol.jpg.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\stol.jpg"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_pisces_astrological_sign_symbol.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\pisces_astrological_sign_symbol.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_siclon.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\siclon.png"
+    },
+    {
+        "merged": "BugBug.androidApp.app-debug-71:/drawable_ic_insect4.png.flat",
+        "source": "BugBug.androidApp.app-main-73:/drawable/ic_insect4.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-mdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-hdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_authorization.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\authorization.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\xml_widget_loading.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\xml\\widget_loading.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-mdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_ic_insect1.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\ic_insect1.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_ic_insect.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\ic_insect.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_taurus_zodiac_symbol_of_bull_head_front.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\taurus_zodiac_symbol_of_bull_head_front.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_achivement.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\achivement.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_timofey.jpg.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\timofey.jpg"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_swap.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\swap.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_scorpion_shape_of_zodiac_sign.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\scorpion_shape_of_zodiac_sign.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\raw_fight.mp3.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\raw\\fight.mp3"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xxxhdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_maintenance.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\maintenance.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_document.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\document.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_sagittarius_arch_and_arrow_symbol.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\sagittarius_arch_and_arrow_symbol.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_virgo_female_silhouette.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\virgo_female_silhouette.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_gemini_zodiac_symbol_of_two_twins_faces.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\gemini_zodiac_symbol_of_two_twins_faces.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_ic_insect2.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\ic_insect2.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\xml_backup_rules.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\xml\\backup_rules.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_libra_scale_balance_symbol.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\libra_scale_balance_symbol.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_artem.jpg.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\artem.jpg"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\xml_gold_widget_info.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\xml\\gold_widget_info.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\layout_widget_loading.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\layout\\widget_loading.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_leo_astrological_sign.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\leo_astrological_sign.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_crab_cancer_symbol.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\crab_cancer_symbol.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\raw_scream2.mp3.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\raw\\scream2.mp3"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xhdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_ava.jpg.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\ava.jpg"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-hdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\xml_data_extraction_rules.xml.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\xml\\data_extraction_rules.xml"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xxhdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_capricorn_symbol.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\capricorn_symbol.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xxhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_star.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\star.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_ic_insect3.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\ic_insect3.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-mdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\mipmap-xxxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\drawable_add.png.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\drawable\\add.png"
+    },
+    {
+        "merged": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-debug-71:\\raw_scream3.mp3.flat",
+        "source": "C:\\Users\\Timofey\\.gradle\\daemon\\9.6.0\\BugBug.androidApp.app-main-73:\\raw\\scream3.mp3"
+    }
+]
