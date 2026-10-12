@@ -13,27 +13,50 @@ public class App {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\nВведите арифметическое выражение:");
-        if (!scanner.hasNextLine()) {
-            System.out.println("Ввод не получен.");
-            return;
+        while (true) {
+            System.out.println("\nВведите арифметическое выражение (или exit для выхода):");
+
+            if (!scanner.hasNextLine()) {
+                System.out.println("Ввод завершён.");
+                break;
+            }
+
+            String expression = scanner.nextLine().trim();
+
+            if (expression.equalsIgnoreCase("exit")) {
+                System.out.println("Завершение программы.");
+                break;
+            }
+
+            if (expression.isEmpty()) {
+                System.out.println("Выражение не введено.");
+                continue;
+            }
+
+            try {
+                Lexer lexer = new Lexer(expression);
+                List<Token> tokens = lexer.tokenize();
+
+                Parser parser = new Parser(tokens);
+                Node tree = parser.parseS();
+
+                System.out.println("\n=== Дерево разбора ===");
+                tree.printTree();
+
+                if (parser.hasError()) {
+                    System.out.println("\nВыражение некорректно.");
+                    System.out.println(parser.getErrorMessage());
+                } else {
+                    System.out.println("\nВыражение корректно.");
+                }
+
+            } catch (RuntimeException e) {
+                System.out.println("\nВыражение некорректно.");
+                System.out.println(e.getMessage());
+            }
         }
 
-        String expression = scanner.nextLine();
-
-        try {
-            Lexer lexer = new Lexer(expression);
-            List<Token> tokens = lexer.tokenize();
-
-            Parser parser = new Parser(tokens);
-            Node tree = parser.parseS();
-
-            System.out.println("\n=== Дерево разбора ===");
-            tree.printTree();
-
-        } catch (RuntimeException e) {
-            System.out.println("\n" + e.getMessage());
-        }
+        scanner.close();
     }
 
     private static void printGrammar() {
@@ -71,11 +94,6 @@ public class App {
         System.out.println("number — целое число");
         System.out.println("id     — идентификатор, например x или value_1");
         System.out.println("ε      — пустая последовательность");
-
-        System.out.println("\nПриоритет операций:");
-        System.out.println("1. Скобки");
-        System.out.println("2. Умножение и деление");
-        System.out.println("3. Сложение и вычитание");
 
         System.out.println("\n========================================");
     }

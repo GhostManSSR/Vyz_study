@@ -39,12 +39,13 @@ class ParserTest {
         return exception;
     }
 
-    // Корректные выражения
-
     @Test
     void shouldParseSimpleAddition() {
         assertValid("2 + 3");
     }
+
+    @Test
+    void shouldMinus(){ assertValid("--2+(-56*5)-(2-(32+5))");}
 
     @Test
     void shouldParseOperatorPrecedence() {
@@ -71,7 +72,17 @@ class ParserTest {
         assertValid("value1 + x_2");
     }
 
-    // Некорректные выражения
+    @Test
+    void t1() {
+        assertValid("(-(-5)*(-8))");
+    }
+
+    @Test
+    void t2(){assertValid("(0-(-5)*(-8))");}
+
+    @Test
+    void t3(){assertValid("((-5)*(-8))");}
+    void t4(){assertValid("5*(-8)");}
 
     @Test
     void shouldRejectTwoOperatorsInARow() {

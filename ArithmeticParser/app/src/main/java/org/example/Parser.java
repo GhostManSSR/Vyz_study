@@ -1,6 +1,5 @@
 package org.example;
 
-
 import java.util.List;
 
 public class Parser {
@@ -8,9 +7,22 @@ public class Parser {
     private final List<Token> tokens;
     private int position;
 
+    private boolean hasError;
+    private String errorMessage;
+
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.position = 0;
+        this.hasError = false;
+        this.errorMessage = null;
+    }
+
+    public boolean hasError() {
+        return hasError;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     private Token currentToken() {
@@ -20,8 +32,13 @@ public class Parser {
     private Token match(Type expected) {
         Token token = currentToken();
 
+        if (hasError) {
+            return token;
+        }
+
         if (token.getType() != expected) {
-            throw error("Ожидалось: " + getExpectedName(expected));
+            fail("Ожидалось: " + getExpectedName(expected));
+            return token;
         }
 
         position++;
@@ -53,14 +70,32 @@ public class Parser {
         }
     }
 
+    private void fail(String message) {
+        if (hasError) {
+            return;
+        }
+
+        hasError = true;
+
+        Token token = currentToken();
+
+        errorMessage = "Ошибка! " + message
+                + ". Текущий токен: "
+                + (token.getType() == Type.EOF
+                ? "EOF (конец ввода)"
+                : "'" + token.getValue() + "'")
+                + ". Позиция: "
+                + (token.getPosition() + 1);
+    }
+
     // S -> E
     public Node parseS() {
         Node node = new Node("S");
 
         node.addChild(parseE());
 
-        if (currentToken().getType() != Type.EOF) {
-            throw error("Ожидался конец выражения");
+        if (!hasError && currentToken().getType() != Type.EOF) {
+            fail("Ожидался конец выражения");
         }
 
         return node;
@@ -70,29 +105,33 @@ public class Parser {
     private Node parseE() {
         Node node = new Node("E");
 
+        if (hasError) {
+            node.addChild(new Node("?"));
+            return node;
+        }
+
         node.addChild(parseT());
         node.addChild(parseEPrime());
 
         return node;
     }
 
-    // E' -> + T E' | - T E' | epsilon
+    // E' -> + T E' | - T E' | ε
     private Node parseEPrime() {
         Node node = new Node("E'");
 
-        if (currentToken().getType() == Type.PLUS) {
-            node.addChild(new Node(
-                    match(Type.PLUS).getValue()
-            ));
+        if (hasError) {
+            node.addChild(new Node("?"));
+            return node;
+        }
 
+        if (currentToken().getType() == Type.PLUS) {
+            node.addChild(new Node(match(Type.PLUS).getValue()));
             node.addChild(parseT());
             node.addChild(parseEPrime());
 
         } else if (currentToken().getType() == Type.MINUS) {
-            node.addChild(new Node(
-                    match(Type.MINUS).getValue()
-            ));
-
+            node.addChild(new Node(match(Type.MINUS).getValue()));
             node.addChild(parseT());
             node.addChild(parseEPrime());
 
@@ -107,29 +146,33 @@ public class Parser {
     private Node parseT() {
         Node node = new Node("T");
 
+        if (hasError) {
+            node.addChild(new Node("?"));
+            return node;
+        }
+
         node.addChild(parseF());
         node.addChild(parseTPrime());
 
         return node;
     }
 
-    // T' -> * F T' | / F T' | epsilon
+    // T' -> * F T' | / F T' | ε
     private Node parseTPrime() {
         Node node = new Node("T'");
 
-        if (currentToken().getType() == Type.MULTIPLY) {
-            node.addChild(new Node(
-                    match(Type.MULTIPLY).getValue()
-            ));
+        if (hasError) {
+            node.addChild(new Node("?"));
+            return node;
+        }
 
+        if (currentToken().getType() == Type.MULTIPLY) {
+            node.addChild(new Node(match(Type.MULTIPLY).getValue()));
             node.addChild(parseF());
             node.addChild(parseTPrime());
 
         } else if (currentToken().getType() == Type.DIVIDE) {
-            node.addChild(new Node(
-                    match(Type.DIVIDE).getValue()
-            ));
-
+            node.addChild(new Node(match(Type.DIVIDE).getValue()));
             node.addChild(parseF());
             node.addChild(parseTPrime());
 
@@ -140,54 +183,69 @@ public class Parser {
         return node;
     }
 
-    // F -> ( E ) | number | id
+    // F -> - G | ( E ) | number | id
     private Node parseF() {
         Node node = new Node("F");
 
+        if (hasError) {
+            node.addChild(new Node("?"));
+            return node;
+        }
+
         Token token = currentToken();
 
-        if (token.getType() == Type.NUMBER) {
-            node.addChild(new Node(
-                    match(Type.NUMBER).getValue()
-            ));
+        if (token.getType() == Type.MINUS) {
+            node.addChild(new Node(match(Type.MINUS).getValue()));
+            node.addChild(parseG());
+            return node;
+        }
+
+        if (token.getType() == Type.LPAREN) {
+            node.addChild(new Node(match(Type.LPAREN).getValue()));
+            node.addChild(parseE());
+            node.addChild(new Node(match(Type.RPAREN).getValue()));
+
+        } else if (token.getType() == Type.NUMBER) {
+            node.addChild(new Node(match(Type.NUMBER).getValue()));
 
         } else if (token.getType() == Type.ID) {
-            node.addChild(new Node(
-                    match(Type.ID).getValue()
-            ));
-
-        } else if (token.getType() == Type.LPAREN) {
-            node.addChild(new Node(
-                    match(Type.LPAREN).getValue()
-            ));
-
-            node.addChild(parseE());
-
-            node.addChild(new Node(
-                    match(Type.RPAREN).getValue()
-            ));
+            node.addChild(new Node(match(Type.ID).getValue()));
 
         } else {
-            throw error(
-                    "Ожидалось: number, id или '('"
-            );
+            fail("Ожидалось: '-', '(', number или id");
+            node.addChild(new Node("?"));
         }
 
         return node;
     }
 
-    private RuntimeException error(String message) {
+    // G -> ( E ) | number | id
+    private Node parseG() {
+        Node node = new Node("G");
+
+        if (hasError) {
+            node.addChild(new Node("?"));
+            return node;
+        }
+
         Token token = currentToken();
 
-        return new RuntimeException(
-                "Ошибка! " + message
-                        + ". Текущий токен: "
-                        + (token.getType() == Type.EOF
-                        ? "EOF (конец ввода)"
-                        : "'" + token.getValue() + "'")
-                        + ". Позиция: "
-                        + (token.getPosition() + 1)
-        );
+        if (token.getType() == Type.LPAREN) {
+            node.addChild(new Node(match(Type.LPAREN).getValue()));
+            node.addChild(parseE());
+            node.addChild(new Node(match(Type.RPAREN).getValue()));
+
+        } else if (token.getType() == Type.NUMBER) {
+            node.addChild(new Node(match(Type.NUMBER).getValue()));
+
+        } else if (token.getType() == Type.ID) {
+            node.addChild(new Node(match(Type.ID).getValue()));
+
+        } else {
+            fail("После '-' ожидалось '(', number или id");
+            node.addChild(new Node("?"));
+        }
+
+        return node;
     }
 }
-
