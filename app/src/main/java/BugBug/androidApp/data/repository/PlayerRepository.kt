@@ -60,6 +60,9 @@ class PlayerRepository(private val dao: PlayerDao) {
         )
     )
 
+    suspend fun getRecentScores(playerId: Long, limit: Int = 5): List<ScoreEntity> =
+        dao.getRecentScoresOnce(playerId, limit)
+
     suspend fun deletePlayer(player: PlayerEntity) = dao.deletePlayer(player)
 
 }
