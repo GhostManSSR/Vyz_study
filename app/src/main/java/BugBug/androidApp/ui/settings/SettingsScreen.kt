@@ -15,7 +15,8 @@ import androidx.compose.foundation.verticalScroll
 fun SettingsScreen(
     onBack: () -> Unit,
     settings: GameSettings,
-    onSettingsChange: (GameSettings) -> Unit
+    onSettingsChange: (GameSettings) -> Unit,
+    onAdaptiveModeChange: (Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -36,6 +37,29 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Card(Modifier.fillMaxWidth()) {
+                Row(
+                    Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Адаптивная сложность",
+                            style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            if (settings.adaptiveModeEnabled)
+                                "Настройки меняются автоматически по результатам игр"
+                            else
+                                "Вы управляете настройками вручную",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = settings.adaptiveModeEnabled,
+                        onCheckedChange = { onAdaptiveModeChange(it) }
+                    )
+                }
+            }
+            Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
                     Text(
                         "Сложность: ${settings.difficulty} / 10",
@@ -53,7 +77,8 @@ fun SettingsScreen(
                             onSettingsChange(settings.copy(difficulty = newValue.toInt()))
                         },
                         valueRange = 0f..10f,
-                        steps = 9
+                        steps = 9,
+                        enabled = !settings.adaptiveModeEnabled
                     )
                     Row(
                         Modifier.fillMaxWidth(),
@@ -83,7 +108,9 @@ fun SettingsScreen(
                             onSettingsChange(settings.copy(speed = newSpeed))
                         },
                         valueRange = 0.5f..2.0f,
-                        steps = 6
+                        steps = 6,
+                        enabled = !settings.adaptiveModeEnabled
+
                     )
                     Row(
                         Modifier.fillMaxWidth(),
@@ -113,7 +140,8 @@ fun SettingsScreen(
                             onSettingsChange(settings.copy(maxCockroaches = newValue.toInt()))
                         },
                         valueRange = 5f..30f,
-                        steps = 24
+                        steps = 24,
+                        enabled = !settings.adaptiveModeEnabled
                     )
                     Row(
                         Modifier.fillMaxWidth(),
@@ -143,7 +171,8 @@ fun SettingsScreen(
                             onSettingsChange(settings.copy(bonusIntervalSec = newValue.toInt()))
                         },
                         valueRange = 10f..60f,
-                        steps = 10
+                        steps = 10,
+                        enabled = !settings.adaptiveModeEnabled
                     )
                     Row(
                         Modifier.fillMaxWidth(),
