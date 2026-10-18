@@ -26,4 +26,10 @@ data class ScoreEntity(
     val difficulty: Int,
     val roundDurationSec: Int,
     val playedAt: Long = System.currentTimeMillis()
-)
+) {
+    val accuracyPercent: Float
+        get() {
+            val total = hits + misses
+            return if (total == 0) 0f else hits.toFloat() / total * 100f
+        }
+}
