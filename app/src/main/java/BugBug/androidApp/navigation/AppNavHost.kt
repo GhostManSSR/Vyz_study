@@ -126,7 +126,8 @@ fun AppNavHost(
             SettingsScreen(
                 onBack = { nav.popBackStack() },
                 settings = gameSettings,
-                onSettingsChange = { settingsVm.updateSettings(it) }
+                onSettingsChange = { settingsVm.updateSettings(it) },
+                onAdaptiveModeChange = { settingsVm.setAdaptiveMode(it) }
             )
         }
     }
