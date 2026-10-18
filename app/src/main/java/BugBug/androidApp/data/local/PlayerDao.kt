@@ -46,7 +46,17 @@ interface PlayerDao {
         ORDER BY playedAt DESC
     """)
     fun getScoresForPlayer(playerId: Long): Flow<List<ScoreEntity>>
+
+    @Query("""
+    SELECT * FROM scores
+    WHERE playerId = :playerId
+    ORDER BY playedAt DESC
+    LIMIT :limit
+""")
+    suspend fun getRecentScoresOnce(playerId: Long, limit: Int): List<ScoreEntity>
 }
+
+
 
 data class ScoreRecord(
     val fullName: String,
