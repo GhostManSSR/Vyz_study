@@ -78,6 +78,11 @@ fun RulesScreen(
                     note = "медленный",
                     points = 20
                 )
+                Text(
+                    "Новые виды: оса — 15 очков, жук-носорог — 25 очков, " +
+                            "гусеница — 10 очков. На высокой сложности появляются сороконожки — 30 очков.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 GoldBugRow(goldRate = goldRate)
             }
 
