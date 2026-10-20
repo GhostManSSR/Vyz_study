@@ -3,10 +3,14 @@ package BugBug.androidApp.model
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 
-enum class InsectType(val title: String, val points: Int, val spawnWeight: Int ) {
-    BEETLE("Божья коровка", 5, 50),
-    FLY("Жук", 10, 30),
+enum class InsectType(val title: String, val points: Int, val spawnWeight: Int) {
+    BEETLE("Божья коровка", 5, 35),
+    FLY("Муха", 10, 20),
     BUG("Клоп", 20, 20),
+    WASP("Оса", 15, 10),
+    RHINO("Жук-носорог", 25, 8),
+    CATERPILLAR("Гусеница", 10, 7),
+    CENTIPEDE("Сороконожка", 30, 0),
     GOLDEN("Золотой жук", 0, 0)
 }
 
