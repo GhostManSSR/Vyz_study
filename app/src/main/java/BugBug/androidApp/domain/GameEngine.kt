@@ -16,23 +16,19 @@ object GameEngine {
         speedMultiplier: Float = 1.0f
     ): List<Insect> {
         val baseSpeed = 2f + difficulty * 0.8f
-        val insectSize = 120f
-        val margin = 50f
 
         return List(count) { index ->
-            val type = randomType()
+            val type = randomType(difficulty)
+            val insectSize = sizeFor(type, fieldSize)
             Insect(
                 id = System.currentTimeMillis() + index,
                 type = type,
-                position = Offset(
-                    x = Random.nextFloat() * (fieldSize.width - insectSize - margin * 2) + margin,
-                    y = Random.nextFloat() * (fieldSize.height - insectSize - margin * 2) + margin
-                ),
+                position = randomPosition(fieldSize, insectSize),
                 velocity = Offset(
                     x = (Random.nextFloat() - 0.5f) * baseSpeed * speedMultiplier * 3f,
                     y = (Random.nextFloat() - 0.5f) * baseSpeed * speedMultiplier * 3f
                 ),
-                size = Size(insectSize, insectSize)
+                size = insectSize
             )
         }
     }
@@ -75,7 +71,23 @@ object GameEngine {
     }
 
     fun isHit(insect: Insect, tap: Offset, hitRadius: Float? = null): Boolean {
-        val radius = hitRadius ?: insect.size.width / 2f
+        if (insect.type == InsectType.CENTIPEDE && hitRadius == null) {
+            val drawnHeight = insect.size.height * 0.72f
+            val drawnTop = (insect.size.height - drawnHeight) / 2f
+            val centerY = insect.position.y + drawnTop + drawnHeight / 2f
+            val segments = 9
+
+            return (0 until segments).any { segment ->
+                val x = insect.position.x +
+                    insect.size.width * (0.1f + 0.8f * segment / (segments - 1f))
+                val radius = maxOf(drawnHeight * if (segment == segments - 1) 0.18f else 0.16f, 30f)
+                val dx = tap.x - x
+                val dy = tap.y - centerY
+                dx * dx + dy * dy <= radius * radius
+            }
+        }
+
+        val radius = hitRadius ?: minOf(insect.size.width, insect.size.height) / 2f
         val centerX = insect.position.x + insect.size.width / 2f
         val centerY = insect.position.y + insect.size.height / 2f
 
@@ -84,6 +96,42 @@ object GameEngine {
         val distance = sqrt(dx * dx + dy * dy)
 
         return distance <= radius
+    }
+
+    fun splitInsect(insect: Insect, fieldSize: Size, firstId: Long): List<Insect> =
+        when (insect.type) {
+            InsectType.CENTIPEDE -> splitIntoTwo(insect, fieldSize, firstId, InsectType.CATERPILLAR)
+            InsectType.ARMORED_BEETLE -> splitIntoTwo(insect, fieldSize, firstId, InsectType.BUG)
+            InsectType.SPIDER -> splitIntoTwo(insect, fieldSize, firstId, InsectType.FLY)
+            else -> emptyList()
+        }
+
+    private fun splitIntoTwo(
+        insect: Insect,
+        fieldSize: Size,
+        firstId: Long,
+        childType: InsectType
+    ): List<Insect> {
+        val childSize = sizeFor(childType, fieldSize)
+        val centerY = insect.position.y + insect.size.height / 2f
+        val maxX = (fieldSize.width - childSize.width).coerceAtLeast(0f)
+        val maxY = (fieldSize.height - childSize.height).coerceAtLeast(0f)
+        val childY = (centerY - childSize.height / 2f).coerceIn(0f, maxY)
+        val speed = kotlin.math.abs(insect.velocity.x).coerceAtLeast(2f)
+
+        return listOf(-1f, 1f).mapIndexed { index, direction ->
+            val centerX = insect.position.x + insect.size.width * (0.25f + index * 0.5f)
+            Insect(
+                id = firstId + index,
+                type = childType,
+                position = Offset(
+                    x = (centerX - childSize.width / 2f).coerceIn(0f, maxX),
+                    y = childY
+                ),
+                velocity = Offset(direction * speed, insect.velocity.y),
+                size = childSize
+            )
+        }
     }
 
     fun isHitCircle(position: Offset, tap: Offset, radius: Float): Boolean {
@@ -125,9 +173,13 @@ object GameEngine {
         insectSize: Size,
         margin: Float = 50f
     ): Offset {
+        val minX = minOf(margin, (fieldSize.width - insectSize.width).coerceAtLeast(0f))
+        val minY = minOf(margin, (fieldSize.height - insectSize.height).coerceAtLeast(0f))
+        val maxX = (fieldSize.width - insectSize.width - margin).coerceAtLeast(minX)
+        val maxY = (fieldSize.height - insectSize.height - margin).coerceAtLeast(minY)
         return Offset(
-            x = Random.nextFloat() * (fieldSize.width - insectSize.width - margin * 2) + margin,
-            y = Random.nextFloat() * (fieldSize.height - insectSize.height - margin * 2) + margin
+            x = minX + Random.nextFloat() * (maxX - minX),
+            y = minY + Random.nextFloat() * (maxY - minY)
         )
     }
 
@@ -136,34 +188,30 @@ object GameEngine {
         difficulty: Int,
         speedMultiplier: Float = 1.0f
     ): Insect {
-        val type = randomType()
+        val type = randomType(difficulty)
         val baseSpeed = 2f + difficulty * 0.8f
-        val insectSize = 120f
+        val insectSize = sizeFor(type, fieldSize)
 
         return Insect(
             id = System.currentTimeMillis(),
             type = type,
-            position = randomPosition(fieldSize, Size(insectSize, insectSize)),
+            position = randomPosition(fieldSize, insectSize),
             velocity = Offset(
                 x = (Random.nextFloat() - 0.5f) * baseSpeed * speedMultiplier * 3f,
                 y = (Random.nextFloat() - 0.5f) * baseSpeed * speedMultiplier * 3f
             ),
-            size = Size(insectSize, insectSize)
+            size = insectSize
         )
     }
 
     fun spawnGoldenInsect(fieldSize: Size, difficulty: Int): Insect {
         val baseSpeed = 2f + difficulty * 0.8f
         val insectSize = 110f
-        val margin = 50f
 
         return Insect(
             id = System.currentTimeMillis() + 999,
             type = InsectType.GOLDEN,
-            position = Offset(
-                x = Random.nextFloat() * (fieldSize.width - insectSize - margin * 2) + margin,
-                y = Random.nextFloat() * (fieldSize.height - insectSize - margin * 2) + margin
-            ),
+            position = randomPosition(fieldSize, Size(insectSize, insectSize)),
             velocity = Offset(
                 x = (Random.nextFloat() - 0.5f) * baseSpeed * 3f,
                 y = (Random.nextFloat() - 0.5f) * baseSpeed * 3f
@@ -172,7 +220,19 @@ object GameEngine {
         )
     }
 
-    private fun randomType(): InsectType {
+    private fun randomType(difficulty: Int): InsectType {
+        val centipedeChance = ((difficulty - 6) * 0.16f).coerceIn(0f, 0.64f)
+        if (Random.nextFloat() < centipedeChance) return InsectType.CENTIPEDE
+
+        val splitterChance = ((difficulty - 6) * 0.1f).coerceIn(0f, 0.36f)
+        if (difficulty >= 7 && Random.nextFloat() < splitterChance) {
+            return if (difficulty >= 9 && Random.nextFloat() < 0.35f) {
+                InsectType.SPIDER
+            } else {
+                InsectType.ARMORED_BEETLE
+            }
+        }
+
         val weighted = InsectType.values().filter { it.spawnWeight > 0 }
         if (weighted.isEmpty()) return InsectType.BEETLE
 
@@ -184,6 +244,17 @@ object GameEngine {
         }
         return InsectType.BEETLE
     }
+
+    private fun sizeFor(type: InsectType, fieldSize: Size): Size =
+        if (type == InsectType.CENTIPEDE) {
+            Size(
+                width = fieldSize.width.coerceAtLeast(1f).coerceAtMost(560f),
+                height = fieldSize.height.coerceAtLeast(1f).coerceAtMost(180f)
+            )
+        } else {
+            Size(width = 120f, height = 120f)
+        }
+
     fun moveInsectsWithGravity(
         insects: List<Insect>,
         fieldSize: Size,
