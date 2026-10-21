@@ -10,7 +10,9 @@ enum class InsectType(val title: String, val points: Int, val spawnWeight: Int) 
     WASP("Оса", 15, 10),
     RHINO("Жук-носорог", 25, 8),
     CATERPILLAR("Гусеница", 10, 7),
-    CENTIPEDE("Сороконожка", 30, 0),
+    CENTIPEDE("Сороконожка", 0, 0),
+    ARMORED_BEETLE("Жук-щит", 0, 0),
+    SPIDER("Паук", 0, 0),
     GOLDEN("Золотой жук", 0, 0)
 }
 
