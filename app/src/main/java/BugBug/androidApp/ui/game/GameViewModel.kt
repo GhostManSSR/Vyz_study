@@ -4,6 +4,10 @@ import BugBug.androidApp.data.remote.GoldApiService
 import BugBug.androidApp.data.remote.RetrofitClient
 import BugBug.androidApp.data.repository.GoldRepository
 import BugBug.androidApp.data.repository.PlayerRepository
+import BugBug.androidApp.data.repository.SettingsRepository
+import BugBug.androidApp.domain.AdaptiveDecision
+import BugBug.androidApp.domain.AdaptiveRoundDecision
+import BugBug.androidApp.domain.AdaptiveDifficultyEngine
 import android.app.Application
 import BugBug.androidApp.domain.GameEngine
 import BugBug.androidApp.model.GameSettings
@@ -34,11 +38,19 @@ data class GameUiState(
     val gameSpeed: Float = 1.0f,
     val bonusIntervalSec: Int = 15,
     val bonuses: List<Bonus> = emptyList(),
+    val bonusPickup: BonusPickup? = null,
+    val insectHitEffects: List<InsectHitEffect> = emptyList(),
     val gravityMode: Boolean = false,
     val gravityTiltX: Float = 0f,
     val gravityTiltY: Float = 0f,
     val gravityTimeLeft: Int = 0,
-    val goldRate: Double = 0.0
+    val goldRate: Double = 0.0,
+    val currentDifficulty: Int = 5,
+    val lastAdaptiveMessage: String? = null,
+    val adaptiveModeEnabled: Boolean = false,
+    val adaptiveWindowHits: Int = 0,
+    val adaptiveWindowMisses: Int = 0,
+    val hasAdaptedThisRound: Boolean = false
 ) {
     val accuracy: Float
         get() = if (hits + misses == 0) 0f
@@ -55,8 +67,22 @@ data class Bonus(
     val spawnTime: Long
 )
 
+data class BonusPickup(
+    val id: Int,
+    val position: Offset,
+    val type: BonusType,
+    val points: Int
+)
+
+data class InsectHitEffect(
+    val id: Long,
+    val position: Offset,
+    val type: InsectType
+)
+
 class GameViewModel(
     private val repository: PlayerRepository,
+    private val settingsRepository: SettingsRepository,
     private val app: Application,
 ) : ViewModel() {
 
@@ -66,6 +92,7 @@ class GameViewModel(
     private val goldRepository = GoldRepository()
     private val _state = MutableStateFlow(GameUiState())
     val state: StateFlow<GameUiState> = _state.asStateFlow()
+    private var gameFieldSize = Size.Zero
     private val bonusRadiusDp = 28f
     private val bonusRadiusPx: Float
         get() = bonusRadiusDp * app.resources.displayMetrics.density
@@ -77,6 +104,7 @@ class GameViewModel(
 
     private var insectIdCounter: Long = 0
     private var bonusIdCounter = 0
+    private var hitEffectIdCounter = 0L
 
     private var sensorController: SensorController? = null
     private var soundPlayer: SoundPlayer? = null
@@ -97,6 +125,8 @@ class GameViewModel(
         if (fieldSize.width <= 0f) return
 
         stopGame()
+        gameFieldSize = fieldSize
+        val startingDifficulty = difficulty.coerceIn(0, 10)
 
         if (soundPlayer == null) {
             soundPlayer =  SoundPlayer(app)
@@ -110,17 +140,21 @@ class GameViewModel(
             isGameOver = false,
             maxInsects = settings.maxCockroaches,
             gameSpeed = settings.speed,
-            bonusIntervalSec = 15,
+            bonusIntervalSec = settings.bonusIntervalSec,
             bonuses = emptyList(),
-            gravityMode = false
+            gravityMode = false,
+            currentDifficulty = startingDifficulty,
+            lastAdaptiveMessage = null,
+            adaptiveModeEnabled = settings.adaptiveModeEnabled
         )
 
-        val initialInsects = spawnInsects(settings.maxCockroaches, fieldSize, difficulty)
+        val initialInsects = spawnInsects(settings.maxCockroaches, fieldSize, startingDifficulty)
         _state.update { it.copy(insects = initialInsects) }
 
         gameLoop = viewModelScope.launch {
             while (isActive && _state.value.isRunning) {
-                delay((16 / settings.speed).toLong())
+                val speed = _state.value.gameSpeed
+                delay((16 / speed).toLong())
                 _state.update { currentState ->
                     val updated = if (currentState.gravityMode) {
                         GameEngine.moveInsectsWithGravity(
@@ -128,13 +162,13 @@ class GameViewModel(
                             fieldSize = fieldSize,
                             tiltX = currentState.gravityTiltX,
                             tiltY = currentState.gravityTiltY,
-                            speedMultiplier = settings.speed
+                            speedMultiplier = currentState.gameSpeed
                         )
                     } else {
                         GameEngine.moveInsects(
                             insects = currentState.insects,
                             fieldSize = fieldSize,
-                            speedMultiplier = settings.speed
+                            speedMultiplier = currentState.gameSpeed
                         )
                     }
                     currentState.copy(insects = updated)
@@ -160,23 +194,33 @@ class GameViewModel(
 
                 if (currentCount < currentState.maxInsects) {
                     val toSpawn = (currentState.maxInsects - currentCount).coerceAtMost(3)
-                    val newInsects = spawnInsects(toSpawn, fieldSize, difficulty)
+                    val newInsects = spawnInsects(
+                        toSpawn,
+                        fieldSize,
+                        currentState.currentDifficulty
+                    )
                     _state.update { it.copy(insects = it.insects + newInsects) }
                 }
             }
         }
 
         bonusJob = viewModelScope.launch {
+            var elapsedSec = 0
             while (isActive && _state.value.isRunning) {
-                delay(settings.bonusIntervalSec * 1000L)
+                delay(1000L)
+                elapsedSec++
+                val currentState = _state.value
+                val now = System.currentTimeMillis()
+                _state.update {
+                    it.copy(bonuses = it.bonuses.filter { bonus ->
+                        now - bonus.spawnTime < 10_000L
+                    })
+                }
+                if (elapsedSec < currentState.bonusIntervalSec) continue
+                elapsedSec = 0
                 if (_state.value.isRunning) {
                     val bonus = spawnBonus(fieldSize)
                     _state.update { it.copy(bonuses = it.bonuses + bonus) }
-
-                    delay(10_000L)
-                    _state.update {
-                        it.copy(bonuses = it.bonuses.filter { b -> b.id != bonus.id })
-                    }
                 }
             }
         }
@@ -190,7 +234,10 @@ class GameViewModel(
                     _state.value.insects.size < _state.value.maxInsects &&
                     Math.random() < 0.6
                 ) {
-                    val golden = GameEngine.spawnGoldenInsect(fieldSize, difficulty)
+                    val golden = GameEngine.spawnGoldenInsect(
+                        fieldSize,
+                        _state.value.currentDifficulty
+                    )
                     _state.update { it.copy(insects = it.insects + golden) }
                 }
             }
@@ -235,19 +282,40 @@ class GameViewModel(
 
         val hitInsect = s.insects.firstOrNull { GameEngine.isHit(it, tap) }
         if (hitInsect != null) {
-            val gained = if (hitInsect.type == InsectType.GOLDEN) {
+            val firstSplitId = insectIdCounter + 1
+            val replacementInsects = GameEngine.splitInsect(
+                insect = hitInsect,
+                fieldSize = gameFieldSize,
+                firstId = firstSplitId
+            )
+            insectIdCounter += replacementInsects.size
+            val gained = if (replacementInsects.isNotEmpty()) {
+                0
+            } else if (hitInsect.type == InsectType.GOLDEN) {
                 (s.goldRate / 100.0).coerceAtLeast(10.0).toInt()
             } else {
                 hitInsect.type.points
             }
-            android.util.Log.d("TAP_DEBUG", "gained=$gained")
+            val hitEffect = InsectHitEffect(
+                id = ++hitEffectIdCounter,
+                position = tap,
+                type = hitInsect.type
+            )
             _state.update {
                 it.copy(
-                    insects = it.insects.filter { i -> i.id != hitInsect.id },
+                    insects = it.insects.filter { i -> i.id != hitInsect.id } + replacementInsects,
                     score = it.score + gained,
-                    hits = it.hits + 1
+                    hits = it.hits + 1,
+                    insectHitEffects = it.insectHitEffects + hitEffect
                 )
             }
+            viewModelScope.launch {
+                delay(900L)
+                _state.update { state ->
+                    state.copy(insectHitEffects = state.insectHitEffects.filterNot { it.id == hitEffect.id })
+                }
+            }
+            recordAdaptiveAttempt(hit = true)
             return
         }
 
@@ -268,6 +336,7 @@ class GameViewModel(
                 misses = it.misses + 1
             )
         }
+        recordAdaptiveAttempt(hit = false)
     }
 
     private fun handleBonus(bonus: Bonus) {
@@ -277,13 +346,16 @@ class GameViewModel(
                     it.copy(
                         bonuses = it.bonuses.filter { b -> b.id != bonus.id },
                         score = it.score + bonus.points,
-                        hits = it.hits + 1
+                        bonusPickup = bonus.toPickup()
                     )
                 }
             }
             BonusType.GRAVITY -> {
                 _state.update {
-                    it.copy(bonuses = it.bonuses.filter { b -> b.id != bonus.id })
+                    it.copy(
+                        bonuses = it.bonuses.filter { b -> b.id != bonus.id },
+                        bonusPickup = bonus.toPickup()
+                    )
                 }
                 enableGravityMode()
             }
@@ -292,12 +364,81 @@ class GameViewModel(
                     it.copy(
                         bonuses = it.bonuses.filter { b -> b.id != bonus.id },
                         timeLeft = it.timeLeft + 10,
-                        hits = it.hits + 1
+                        bonusPickup = bonus.toPickup()
                     )
                 }
             }
         }
     }
+
+    private fun Bonus.toPickup() = BonusPickup(
+        id = id,
+        position = position,
+        type = type,
+        points = points
+    )
+
+    private fun recordAdaptiveAttempt(hit: Boolean) {
+        val current = _state.value
+        if (!current.adaptiveModeEnabled) return
+
+        val windowHits = current.adaptiveWindowHits + if (hit) 1 else 0
+        val windowMisses = current.adaptiveWindowMisses + if (hit) 0 else 1
+        if (windowHits + windowMisses < AdaptiveDifficultyEngine.ROUND_WINDOW_SIZE) {
+            _state.value = current.copy(
+                adaptiveWindowHits = windowHits,
+                adaptiveWindowMisses = windowMisses
+            )
+            return
+        }
+
+        val currentSettings = settingsRepository.settings.value.copy(
+            speed = current.gameSpeed,
+            maxCockroaches = current.maxInsects,
+            bonusIntervalSec = current.bonusIntervalSec,
+            difficulty = current.currentDifficulty,
+            adaptiveModeEnabled = true
+        )
+        when (
+            val decision = AdaptiveDifficultyEngine.adjustDuringRound(
+                current = currentSettings,
+                hits = windowHits,
+                misses = windowMisses
+            )
+        ) {
+            is AdaptiveRoundDecision.Changed -> {
+                settingsRepository.update(decision.newSettings)
+                val message = buildRoundChangeMessage(
+                    old = currentSettings,
+                    new = decision.newSettings,
+                    increased = decision.increased
+                )
+                _state.value = current.copy(
+                    currentDifficulty = decision.newSettings.difficulty,
+                    gameSpeed = decision.newSettings.speed,
+                    maxInsects = decision.newSettings.maxCockroaches,
+                    bonusIntervalSec = decision.newSettings.bonusIntervalSec,
+                    insects = current.insects.take(decision.newSettings.maxCockroaches),
+                    adaptiveWindowHits = 0,
+                    adaptiveWindowMisses = 0,
+                    hasAdaptedThisRound = true,
+                    lastAdaptiveMessage = message
+                )
+            }
+            is AdaptiveRoundDecision.NoChange -> {
+                _state.value = current.copy(
+                    adaptiveWindowHits = 0,
+                    adaptiveWindowMisses = 0
+                )
+            }
+        }
+    }
+
+    private fun buildRoundChangeMessage(
+        old: GameSettings,
+        new: GameSettings,
+        increased: Boolean
+    ): String = buildAdaptiveMessage(old, new, increased)
 
     fun enableGravityMode() {
         val ctx = app
@@ -359,14 +500,20 @@ class GameViewModel(
         score: Int,
         hits: Int,
         misses: Int,
-        timeLeft: Int
+        timeLeft: Int,
+        adaptiveWindowHits: Int = 0,
+        adaptiveWindowMisses: Int = 0,
+        hasAdaptedThisRound: Boolean = false
     ) {
         _state.update {
             it.copy(
                 score = score,
                 hits = hits,
                 misses = misses,
-                timeLeft = timeLeft
+                timeLeft = timeLeft,
+                adaptiveWindowHits = adaptiveWindowHits,
+                adaptiveWindowMisses = adaptiveWindowMisses,
+                hasAdaptedThisRound = hasAdaptedThisRound
             )
         }
     }
@@ -393,17 +540,74 @@ class GameViewModel(
 
     fun saveResult(playerId: Long, settings: GameSettings) {
         val s = _state.value
+        val finalSettings = settings.copy(
+            speed = s.gameSpeed,
+            maxCockroaches = s.maxInsects,
+            bonusIntervalSec = s.bonusIntervalSec,
+            difficulty = s.currentDifficulty,
+            adaptiveModeEnabled = s.adaptiveModeEnabled
+        )
         viewModelScope.launch {
             repository.saveScore(
                 playerId = playerId,
                 score = s.score,
                 hits = s.hits,
                 misses = s.misses,
-                difficulty = settings.difficulty,
-                roundDurationSec = settings.roundDurationSec
+                difficulty = finalSettings.difficulty,
+                roundDurationSec = finalSettings.roundDurationSec
             )
+
+            if (finalSettings.adaptiveModeEnabled && !s.hasAdaptedThisRound) {
+                val recent = repository.getRecentScores(playerId, limit = 5)
+                val decision = AdaptiveDifficultyEngine.analyze(recent, finalSettings)
+
+                when (decision) {
+                    is AdaptiveDecision.Increase -> {
+                        settingsRepository.update(decision.newSettings)
+                        val msg = buildChangeMessage(
+                            old = finalSettings,
+                            new = decision.newSettings,
+                            isIncrease = true
+                        )
+                        _state.update { it.copy(lastAdaptiveMessage = msg) }
+                        android.util.Log.d("ADAPTIVE", msg)
+                    }
+                    is AdaptiveDecision.Decrease -> {
+                        settingsRepository.update(decision.newSettings)
+                        val msg = buildChangeMessage(
+                            old = finalSettings,
+                            new = decision.newSettings,
+                            isIncrease = false
+                        )
+                        _state.update { it.copy(lastAdaptiveMessage = msg) }
+                        android.util.Log.d("ADAPTIVE", msg)
+                    }
+                    is AdaptiveDecision.NoChange -> {
+                        _state.update { it.copy(lastAdaptiveMessage = null) }
+                        android.util.Log.d("ADAPTIVE", "➡ ${decision.reason}")
+                    }
+                }
+            }
         }
     }
+
+    private fun buildChangeMessage(
+        old: GameSettings,
+        new: GameSettings,
+        isIncrease: Boolean
+    ): String = buildAdaptiveMessage(old, new, isIncrease)
+
+    private fun buildAdaptiveMessage(
+        old: GameSettings,
+        new: GameSettings,
+        isIncrease: Boolean
+    ): String {
+        val arrow = if (isIncrease) "↑" else "↓"
+        return "Сложность $arrow · скорость ${"%.1f".format(new.speed)}x · " +
+                "жуки ${old.maxCockroaches}→${new.maxCockroaches}"
+    }
+
+
 
     fun setGravityTime(seconds: Int) {
         _state.update { it.copy(gravityTimeLeft = seconds) }
