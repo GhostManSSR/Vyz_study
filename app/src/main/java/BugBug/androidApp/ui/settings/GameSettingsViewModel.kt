@@ -1,48 +1,70 @@
 package BugBug.androidApp.ui.settings
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import BugBug.androidApp.data.repository.SettingsRepository
 import BugBug.androidApp.domain.GameSettingsCalculator
 import BugBug.androidApp.domain.SettingField
 import BugBug.androidApp.model.GameSettings
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 
-class GameSettingsViewModel : ViewModel() {
+class GameSettingsViewModel(
+    private val settingsRepository: SettingsRepository
+) : ViewModel() {
 
-    private val _settings = MutableStateFlow(GameSettings())
-    val settings: StateFlow<GameSettings> = _settings.asStateFlow()
+    val settings: StateFlow<GameSettings> = settingsRepository.settings
+        .stateIn(viewModelScope, SharingStarted.Eagerly, GameSettings())
 
     private val _manualFields = MutableStateFlow<Set<SettingField>>(emptySet())
     val manualFields: StateFlow<Set<SettingField>> = _manualFields.asStateFlow()
 
     fun updateSettings(newSettings: GameSettings) {
-        val current = _settings.value
+        val current = settings.value
+        if (current.adaptiveModeEnabled) return
         if (newSettings == current) return
 
         if (newSettings.difficulty != current.difficulty) {
-            _settings.value = GameSettingsCalculator.applyDifficulty(
-                base = newSettings,
-                manualFields = _manualFields.value
+            settingsRepository.update(
+                GameSettingsCalculator.applyDifficulty(
+                    base = newSettings,
+                    manualFields = _manualFields.value
+                )
             )
             return
         }
 
         _manualFields.value = resolveManualFields(current, newSettings)
-        _settings.value = newSettings
+        settingsRepository.update(newSettings)
+    }
+
+    fun setAdaptiveMode(enabled: Boolean) {
+        val current = settings.value
+
+        if (enabled) {
+            _manualFields.value = emptySet()
+            val base = GameSettingsCalculator.applyDifficulty(
+                base = current.copy(adaptiveModeEnabled = true, difficulty = 5),
+                manualFields = emptySet()
+            )
+            settingsRepository.update(base)
+        } else {
+            settingsRepository.update(current.copy(adaptiveModeEnabled = false))
+        }
+    }
+
+    fun applyAdaptiveResult(newSettings: GameSettings) {
+        if (!settings.value.adaptiveModeEnabled) return
+        _manualFields.value = emptySet()
+        settingsRepository.update(newSettings.copy(adaptiveModeEnabled = true))
     }
 
     fun resetSettings() {
         _manualFields.value = emptySet()
-        _settings.value = GameSettings()
-    }
-
-    fun unlinkField(field: SettingField) {
-        _manualFields.value = _manualFields.value - field
-        _settings.value = GameSettingsCalculator.applyDifficulty(
-            base = _settings.value,
-            manualFields = _manualFields.value
-        )
+        settingsRepository.reset()
     }
 
     private fun resolveManualFields(

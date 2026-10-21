@@ -6,4 +6,5 @@ data class GameSettings(
     val bonusIntervalSec: Int = 15,
     val roundDurationSec: Int = 60,
     val difficulty: Int = 5,
+    val adaptiveModeEnabled: Boolean = false
 )
