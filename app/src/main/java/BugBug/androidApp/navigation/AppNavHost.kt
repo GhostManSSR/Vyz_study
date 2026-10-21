@@ -102,10 +102,12 @@ fun AppNavHost(
                 onBack = { nav.popBackStack() },
                 scores = scores,
                 players = players,
-                onSelectPlayer = { p ->
-                    regVm.loadExistingPlayer(p)
-                    nav.navigate(Routes.MENU) {
-                        popUpTo(Routes.REGISTRATION) { inclusive = true }
+                onAuthenticatePlayer = { playerId, name, password, onResult ->
+                    regVm.authenticatePlayerForSwitch(playerId, name, password) { authenticated ->
+                        onResult(authenticated)
+                        if (authenticated) {
+                            nav.popBackStack(Routes.MENU, inclusive = false)
+                        }
                     }
                 },
                 onNewPlayer = {

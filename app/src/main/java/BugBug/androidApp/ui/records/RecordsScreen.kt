@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import BugBug.androidApp.data.local.PlayerEntity
 import BugBug.androidApp.data.local.ScoreRecord
@@ -24,10 +25,20 @@ fun RecordsScreen(
     onBack: () -> Unit,
     scores: List<ScoreRecord>,
     players: List<PlayerEntity>,
-    onSelectPlayer: (PlayerEntity) -> Unit,
+    onAuthenticatePlayer: (
+        playerId: Long,
+        name: String,
+        password: String,
+        onResult: (Boolean) -> Unit
+    ) -> Unit,
     onNewPlayer: () -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(0) }
+    var playerToAuthenticate by remember { mutableStateOf<PlayerEntity?>(null) }
+    var login by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var authenticationError by remember { mutableStateOf(false) }
+    var isAuthenticating by remember { mutableStateOf(false) }
     val tabs = listOf("Рекорды", "Игроки")
 
     Scaffold(
@@ -52,9 +63,87 @@ fun RecordsScreen(
             }
             when (selectedTab) {
                 0 -> RecordsList(scores)
-                1 -> PlayersList(players, onSelectPlayer, onNewPlayer)
+                1 -> PlayersList(
+                    players = players,
+                    onSelect = { player ->
+                        playerToAuthenticate = player
+                        login = ""
+                        password = ""
+                        authenticationError = false
+                    },
+                    onNewPlayer = onNewPlayer
+                )
             }
         }
+    }
+
+    playerToAuthenticate?.let { player ->
+        AlertDialog(
+            onDismissRequest = {
+                if (!isAuthenticating) playerToAuthenticate = null
+            },
+            title = { Text("Подтвердите вход") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("Введите логин и пароль профиля ${player.fullName}.")
+                    OutlinedTextField(
+                        value = login,
+                        onValueChange = {
+                            login = it
+                            authenticationError = false
+                        },
+                        label = { Text("Логин") },
+                        singleLine = true,
+                        enabled = !isAuthenticating
+                    )
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = {
+                            password = it
+                            authenticationError = false
+                        },
+                        label = { Text("Пароль") },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        enabled = !isAuthenticating
+                    )
+                    if (authenticationError) {
+                        Text(
+                            "Неверный логин или пароль для этого профиля",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = login.isNotBlank() && password.isNotBlank() && !isAuthenticating,
+                    onClick = {
+                        isAuthenticating = true
+                        onAuthenticatePlayer(player.id, login.trim(), password) { success ->
+                            isAuthenticating = false
+                            if (success) {
+                                playerToAuthenticate = null
+                                password = ""
+                            } else {
+                                authenticationError = true
+                            }
+                        }
+                    }
+                ) {
+                    Text(if (isAuthenticating) "Проверка…" else "Войти")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    enabled = !isAuthenticating,
+                    onClick = { playerToAuthenticate = null }
+                ) {
+                    Text("Отмена")
+                }
+            }
+        )
     }
 }
 

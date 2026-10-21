@@ -62,7 +62,7 @@ class RegistrationViewModel(
             zodiac = ZodiacCalculator.calculate(s.birthDate),
             password = s.password
         )
-        _savedPlayer.value = player
+        _savedPlayer.value = player.copy(password = "")
 
         viewModelScope.launch {
             val existing = repository.getPlayerByName(s.fullName)
@@ -99,6 +99,24 @@ class RegistrationViewModel(
         }
     }
 
+    fun authenticatePlayerForSwitch(
+        playerId: Long,
+        name: String,
+        password: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val playerEntity = repository.getPlayerByCredentials(name, password)
+            if (playerEntity == null || playerEntity.id != playerId) {
+                onResult(false)
+                return@launch
+            }
+
+            loadExistingPlayer(playerEntity)
+            onResult(true)
+        }
+    }
+
     fun onErrorShown() = _state.update { it.copy(error = null) }
 
     fun loadExistingPlayer(entity: PlayerEntity) {
@@ -111,14 +129,16 @@ class RegistrationViewModel(
             birthDate = entity.birthDate,
             zodiac = ZodiacSign.entries.firstOrNull { it.title == entity.zodiacName }
                 ?: ZodiacSign.ARIES,
-            password = entity.password
+            password = ""
         )
         _state.update {
             it.copy(
                 fullName = entity.fullName,
                 gender = entity.gender,
                 course = entity.course,
-                birthDate = entity.birthDate
+                birthDate = entity.birthDate,
+                password = "",
+                error = null
             )
         }
     }
