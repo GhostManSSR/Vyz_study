@@ -81,7 +81,7 @@ object AdaptiveDifficultyEngine {
 
         val played = recentGames
             .filter { it.hits + it.misses >= MIN_TAPS_PER_GAME }
-            .take(MAX_GAMES_TO_ANALYZE)   // самые свежие (DAO отдаёт DESC)
+            .take(MAX_GAMES_TO_ANALYZE)
 
         if (played.size < MIN_GAMES_FOR_ANALYSIS) {
             return AdaptiveDecision.NoChange(

@@ -515,7 +515,6 @@ fun GameScreen(
             TopAppBar(
                 title = {
                     Column {
-                        // Строка 1: очки / жуки / время
                         if (isLandscape) {
                             Text(
                                 "Очки: ${state.score} | ${state.timeLeft} сек",
@@ -530,7 +529,6 @@ fun GameScreen(
                             )
                         }
 
-                        // Строка 2: сложность + точность
                         Text(
                             "Сложность: ${state.currentDifficulty}/10  ·  Точность: ${
                                 "%.0f".format(state.accuracy)
@@ -539,7 +537,6 @@ fun GameScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
-                        // Строка 3: гравитация
                         if (state.gravityMode) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(
@@ -583,7 +580,6 @@ fun GameScreen(
                     detectTapGestures { offset -> vm.onTap(offset) }
                 }
         ) {
-            // Фон
             Image(
                 painter = painterResource(R.drawable.stol),
                 contentDescription = null,
@@ -620,7 +616,6 @@ fun GameScreen(
                 }
             }
 
-            // Старт игры
             LaunchedEffect(fieldSize, difficulty, settings) {
                 if (fieldSize.width > 0f && !state.isRunning && !state.isGameOver) {
                     vm.startGame(
@@ -631,7 +626,6 @@ fun GameScreen(
                 }
             }
 
-            // Перезапуск при повороте
             LaunchedEffect(isLandscape) {
                 if (state.isRunning && fieldSize.width > 0f) {
                     val savedScore = state.score
@@ -663,7 +657,6 @@ fun GameScreen(
                 }
             }
 
-            // Насекомые
             state.insects.forEach { insect ->
                 val xDp = with(density) { insect.position.x.toDp() }
                 val yDp = with(density) { insect.position.y.toDp() }
@@ -723,7 +716,6 @@ fun GameScreen(
                 )
             }
 
-            // Бонусы
             val bonusSize = 40.dp
             val bonusHalf = bonusSize / 2
 
