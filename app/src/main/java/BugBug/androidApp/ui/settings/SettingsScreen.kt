@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import BugBug.androidApp.model.GameSettings
+import BugBug.androidApp.domain.AdaptiveDifficultyEngine
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 
@@ -57,6 +58,49 @@ fun SettingsScreen(
                         checked = settings.adaptiveModeEnabled,
                         onCheckedChange = { onAdaptiveModeChange(it) }
                     )
+                }
+            }
+            if (settings.adaptiveModeEnabled) {
+                Card(
+                    Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(
+                        Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            "Как работает адаптация",
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            "Во время раунда система измеряет попадания, промахи и точность по " +
+                                    "${AdaptiveDifficultyEngine.ROUND_WINDOW_SIZE} последним попыткам. " +
+                                    "При точности не ниже ${AdaptiveDifficultyEngine.ROUND_HIGH_ACCURACY_THRESHOLD}% " +
+                                    "и минимум ${AdaptiveDifficultyEngine.ROUND_MIN_HITS_FOR_INCREASE} попаданиях " +
+                                    "сложность повышается; при точности не выше " +
+                                    "${AdaptiveDifficultyEngine.ROUND_LOW_ACCURACY_THRESHOLD}% — понижается. " +
+                                            "В замер входят попадания по насекомым и промахи, нажатия на бонусы " +
+                                            "не считаются. В остальных случаях параметры не меняются.",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            "За одну оценку меняются уровень на 1, скорость на " +
+                                    "${AdaptiveDifficultyEngine.SPEED_STEP}x, число насекомых на " +
+                                    "${AdaptiveDifficultyEngine.COCKROACHES_STEP} и интервал бонусов на " +
+                                    "${AdaptiveDifficultyEngine.BONUS_INTERVAL_STEP} с. " +
+                                    "Границы: уровень ${AdaptiveDifficultyEngine.DIFFICULTY_MIN}–" +
+                                    "${AdaptiveDifficultyEngine.DIFFICULTY_MAX}, скорость " +
+                                    "${AdaptiveDifficultyEngine.SPEED_MIN}–${AdaptiveDifficultyEngine.SPEED_MAX}x, " +
+                                    "насекомые ${AdaptiveDifficultyEngine.COCKROACHES_MIN}–" +
+                                    "${AdaptiveDifficultyEngine.COCKROACHES_MAX}, бонусы " +
+                                    "${AdaptiveDifficultyEngine.BONUS_INTERVAL_MIN}–" +
+                                    "${AdaptiveDifficultyEngine.BONUS_INTERVAL_MAX} с.",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
             Card(Modifier.fillMaxWidth()) {
