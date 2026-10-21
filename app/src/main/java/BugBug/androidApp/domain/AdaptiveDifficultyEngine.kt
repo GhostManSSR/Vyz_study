@@ -9,23 +9,70 @@ object AdaptiveDifficultyEngine {
     const val MAX_GAMES_TO_ANALYZE = 3
     const val MIN_TAPS_PER_GAME = 5
     const val MIN_TOTAL_TAPS_FOR_DECREASE = 15
+    const val ROUND_WINDOW_SIZE = 10
+    const val ROUND_HIGH_ACCURACY_THRESHOLD = 70f
+    const val ROUND_MIN_HITS_FOR_INCREASE = 8
+    const val ROUND_LOW_ACCURACY_THRESHOLD = 40f
 
     const val HIGH_ACCURACY_THRESHOLD = 70f
     const val MIN_HITS_FOR_INCREASE = 8
 
     const val LOW_ACCURACY_THRESHOLD = 40f
 
-    private const val SPEED_MIN = 0.5f
-    private const val SPEED_MAX = 2.0f
-    private const val SPEED_STEP = 0.1f
-    private const val COCKROACHES_MIN = 5
-    private const val COCKROACHES_MAX = 30
-    private const val COCKROACHES_STEP = 2
-    private const val BONUS_INTERVAL_MIN = 10
-    private const val BONUS_INTERVAL_MAX = 60
-    private const val BONUS_INTERVAL_STEP = 3
-    private const val DIFFICULTY_MIN = 0
-    private const val DIFFICULTY_MAX = 10
+    const val SPEED_MIN = 0.5f
+    const val SPEED_MAX = 2.0f
+    const val SPEED_STEP = 0.1f
+    const val COCKROACHES_MIN = 5
+    const val COCKROACHES_MAX = 30
+    const val COCKROACHES_STEP = 2
+    const val BONUS_INTERVAL_MIN = 10
+    const val BONUS_INTERVAL_MAX = 60
+    const val BONUS_INTERVAL_STEP = 3
+    const val DIFFICULTY_MIN = 0
+    const val DIFFICULTY_MAX = 10
+
+    fun adjustDuringRound(
+        current: GameSettings,
+        hits: Int,
+        misses: Int
+    ): AdaptiveRoundDecision {
+        val attempts = hits + misses
+        if (attempts < ROUND_WINDOW_SIZE) {
+            return AdaptiveRoundDecision.NoChange(
+                "Для оценки нужно $ROUND_WINDOW_SIZE попаданий или промахов"
+            )
+        }
+
+        val accuracy = if (attempts == 0) 0f else hits.toFloat() / attempts * 100f
+        val shouldIncrease =
+            accuracy >= ROUND_HIGH_ACCURACY_THRESHOLD &&
+                    hits >= ROUND_MIN_HITS_FOR_INCREASE
+        val shouldDecrease = accuracy <= ROUND_LOW_ACCURACY_THRESHOLD
+
+        val updatedSettings = when {
+            shouldIncrease -> applyIncrease(current)
+            shouldDecrease -> applyDecrease(current)
+            else -> current
+        }
+
+        if (updatedSettings == current) {
+            return AdaptiveRoundDecision.NoChange(
+                when {
+                    shouldIncrease || shouldDecrease ->
+                        "Достигнута граница адаптивных настроек"
+                    else -> "Точность ${"%.0f".format(accuracy)}% — без изменений"
+                }
+            )
+        }
+
+        return AdaptiveRoundDecision.Changed(
+            newSettings = updatedSettings,
+            accuracy = accuracy,
+            hits = hits,
+            misses = misses,
+            increased = shouldIncrease
+        )
+    }
 
     fun analyze(
         recentGames: List<ScoreEntity>,
@@ -129,4 +176,16 @@ sealed class AdaptiveDecision {
     ) : AdaptiveDecision()
 
     data class NoChange(val reason: String) : AdaptiveDecision()
+}
+
+sealed class AdaptiveRoundDecision {
+    data class Changed(
+        val newSettings: GameSettings,
+        val accuracy: Float,
+        val hits: Int,
+        val misses: Int,
+        val increased: Boolean
+    ) : AdaptiveRoundDecision()
+
+    data class NoChange(val reason: String) : AdaptiveRoundDecision()
 }
