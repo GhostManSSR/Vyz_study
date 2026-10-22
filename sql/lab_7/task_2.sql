@@ -13,7 +13,7 @@ SELECT
 
 FROM ord
 
-         WINDOW w AS (
+    WINDOW w AS (
     PARTITION BY snum, cnum
     ORDER BY amt DESC
 )
