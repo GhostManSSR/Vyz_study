@@ -10,6 +10,7 @@ public:
     long assetId() const { return assetId_; }
     long employeeId() const { return employeeId_; }
     std::time_t issuedAt() const { return issuedAt_; }
+    std::time_t returnedAt() const { return returnedAt_.null() ? 0 : returnedAt_.get(); }
     bool isActive() const { return returnedAt_.null(); }
 
     void setAssetId(long v) { assetId_ = v; }

@@ -2,8 +2,10 @@
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Choice.H>
 #include <FL/Fl_Button.H>
+#include <FL/Fl_Box.H>
 #include "ui/data_table.h"
 #include "service.h"
+#include <string>
 
 class AssetsTab : public Fl_Group {
 public:
@@ -15,8 +17,18 @@ private:
     Service& svc_;
     Fl_Choice* filter_;
     Fl_Button *addBtn_, *editBtn_, *issueBtn_, *returnBtn_;
+    Fl_Button *copyBtn_, *bulkBtn_, *searchBtn_, *historyBtn_;
+    Fl_Button *reassignBtn_, *deleteBtn_, *prevBtn_, *nextBtn_;
+    Fl_Box* pageLabel_;
     DataTable* table_;
     std::vector<AssetRow> current_;
+    std::size_t page_ = 0;
+    std::size_t total_ = 0;
+    bool hasNext_ = false;
+    bool searchMode_ = false;
+    std::string searchCategory_ = "Все";
+    std::string searchModel_;
+    bool searchFree_ = false;
 
     void layout();
     void updateButtons();
@@ -24,10 +36,25 @@ private:
     void doEdit(long id);
     void doIssue(long id);
     void doReturn(long id);
+    void doCopy(long id);
+    void doBulk();
+    void doSearch();
+    void doHistory(long id);
+    void doReassign(long id);
+    void doDelete(long id);
 
     static void filterCb(Fl_Widget*, void*);
     static void addCb(Fl_Widget*, void*);
     static void editCb(Fl_Widget*, void*);
     static void issueCb(Fl_Widget*, void*);
     static void returnCb(Fl_Widget*, void*);
+    static void copyCb(Fl_Widget*, void*);
+    static void bulkCb(Fl_Widget*, void*);
+    static void searchCb(Fl_Widget*, void*);
+    static void historyCb(Fl_Widget*, void*);
+    static void reassignCb(Fl_Widget*, void*);
+    static void deleteCb(Fl_Widget*, void*);
+    static void prevCb(Fl_Widget*, void*);
+    static void nextCb(Fl_Widget*, void*);
+    static long requireSelection(AssetsTab* t);
 };

@@ -1,0 +1,3 @@
+/mnt/c/Users/Timofey/Desktop/git/Vyz_study/Stopkadr/build/CMakeFiles/stopkadr.dir
+/mnt/c/Users/Timofey/Desktop/git/Vyz_study/Stopkadr/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Timofey/Desktop/git/Vyz_study/Stopkadr/build/CMakeFiles/rebuild_cache.dir

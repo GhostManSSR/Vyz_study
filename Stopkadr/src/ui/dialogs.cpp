@@ -102,13 +102,15 @@ void EmployeeDialog::okCb(Fl_Widget*, void* v) {
 
 // ============ AssetDialog ============
 AssetDialog::AssetDialog(OnSave cb, const std::string& inv,
-                         const std::string& model, const std::string& category)
-    : Fl_Window(440, 400, inv.empty() ? "Новая техника" : "Редактирование"),
+                         const std::string& model, const std::string& category,
+                         bool copyMode)
+    : Fl_Window(440, 400, copyMode ? "Копирование техники" : (inv.empty() ? "Новая техника" : "Редактирование")),
       onSave_(std::move(cb)) {
     set_modal();
     color(Theme::bg);
 
-    header(this, inv.empty() ? "Новая техника" : "Редактирование техники");
+    header(this, copyMode ? "Копирование техники" :
+           (inv.empty() ? "Новая техника" : "Редактирование техники"));
 
     int x = 24, w = 440 - 48, y = 84;
     Theme::fieldLabel(x, y, w, "Инвентарный номер");
@@ -130,6 +132,10 @@ AssetDialog::AssetDialog(OnSave cb, const std::string& inv,
         for (int i = 0; i < cat_->size(); ++i)
             if (category == cat_->text(i)) { cat_->value(i); break; }
 
+    if (copyMode) {
+        model_->deactivate();
+        cat_->deactivate();
+    }
     footer(this, okCb, this);
     lockSize(this);
 }

@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+8a613e9c1a448bf6e463cb85673d0e7d odb/asset-odb.cxx
+03f3e8ed42b7114d640ffadbb45d5a55 odb/assignment-odb.cxx
+396ed0ee1320823179e534e749ba980b odb/employee-odb.cxx

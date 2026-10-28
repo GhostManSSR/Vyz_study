@@ -33,7 +33,8 @@ public:
     AssetDialog(OnSave cb,
                 const std::string& inv = "",
                 const std::string& model = "",
-                const std::string& category = "");
+                const std::string& category = "",
+                bool copyMode = false);
 
 private:
     OnSave onSave_;

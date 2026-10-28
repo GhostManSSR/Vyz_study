@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
             env("EQDB_USER", "postgres"),
             env("EQDB_PASS", "postgres"),
             env("EQDB_HOST", "localhost"),
-            5432);
+            5433);
 
         Service svc(db);
 
