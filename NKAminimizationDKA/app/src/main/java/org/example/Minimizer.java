@@ -28,6 +28,11 @@ public class Minimizer {
                 "Недостижимые состояния: " + formatSubset(unreachable)
         );
 
+        // Дополняем только достижимую часть ДКА, чтобы отсутствие перехода
+        // было эквивалентно переходу в отвергающее поглощающее состояние.
+        dfa = complete(dfa, reachable);
+        reachable = findReachableStates(dfa);
+
         // 2. Создание R(0).
         List<Set<String>> partitions = new ArrayList<>();
 
@@ -107,6 +112,36 @@ public class Minimizer {
         return buildMinimalDfa(dfa, partitions, reachable);
     }
 
+    private static Automaton complete(Automaton dfa, Set<String> reachable) {
+        String sink = "Ошибка";
+        while (dfa.getStates().contains(sink)) sink += "_";
+        Set<String> states = new LinkedHashSet<>(reachable);
+        Map<String, Map<String, Set<String>>> transitions = new LinkedHashMap<>();
+        boolean needed = false;
+        for (String state : reachable) {
+            Map<String, Set<String>> row = new LinkedHashMap<>();
+            for (String symbol : dfa.getAlphabet()) {
+                Set<String> target = dfa.getTransitions(state, symbol);
+                if (target.isEmpty()) {
+                    target = Set.of(sink);
+                    needed = true;
+                }
+                row.put(symbol, target);
+            }
+            transitions.put(state, row);
+        }
+        if (needed) {
+            states.add(sink);
+            Map<String, Set<String>> row = new LinkedHashMap<>();
+            for (String symbol : dfa.getAlphabet()) row.put(symbol, Set.of(sink));
+            transitions.put(sink, row);
+            System.out.println("Добавлено поглощающее состояние: " + sink);
+        }
+        Set<String> finals = new LinkedHashSet<>(dfa.getFinalStates());
+        finals.retainAll(reachable);
+        return new Automaton(states, dfa.getAlphabet(), dfa.getInitialState(), finals, transitions);
+    }
+
     /**
      * Поиск достижимых состояний.
      */
@@ -178,7 +213,7 @@ public class Minimizer {
                     dfa.getTransitions(state, symbol);
 
             if (destinations.isEmpty()) {
-                signature.add(-1);
+                throw new IllegalStateException("ДКА должен быть дополнен перед разбиением");
             } else {
 
                 String destination =

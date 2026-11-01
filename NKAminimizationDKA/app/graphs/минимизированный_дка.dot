@@ -2,13 +2,15 @@ digraph Automaton {
     rankdir=LR;
     graph [label="Минимизированный ДКА", labelloc=t];
     node [shape=circle];
+    "__start" [shape=point, label=""];
+    "__start" -> "M1";
     "M0" [label="M0", shape=doublecircle];
     "M1" [label="M1"];
     "M2" [label="M2"];
-    "M0" -> "M0" [label="0"];
+    "M0" -> "M1" [label="0"];
     "M0" -> "M0" [label="1"];
-    "M1" -> "M2" [label="0"];
-    "M1" -> "M1" [label="1"];
-    "M2" -> "M0" [label="0"];
-    "M2" -> "M1" [label="1"];
+    "M1" -> "M1" [label="0"];
+    "M1" -> "M2" [label="1"];
+    "M2" -> "M1" [label="0"];
+    "M2" -> "M0" [label="1"];
 }
