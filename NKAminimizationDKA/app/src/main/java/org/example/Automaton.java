@@ -17,6 +17,14 @@ public class Automaton {
             Set<String> finalStates,
             Map<String, Map<String, Set<String>>> transitions
     ) {
+        if (states == null || alphabet == null || finalStates == null || transitions == null) {
+            throw new IllegalArgumentException("Коллекции автомата не могут быть null");
+        }
+        if (states.stream().anyMatch(Objects::isNull) || alphabet.stream().anyMatch(Objects::isNull)
+                || finalStates.stream().anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Состояния и символы не могут быть null");
+        }
+        validateTransitions(states, alphabet, transitions);
         this.states = new LinkedHashSet<>(states);
         this.alphabet = new LinkedHashSet<>(alphabet);
         this.initialState = initialState;
@@ -41,6 +49,27 @@ public class Automaton {
         }
 
         validate();
+    }
+
+    private static void validateTransitions(Set<String> states, Set<String> alphabet,
+            Map<String, Map<String, Set<String>>> transitions) {
+        for (var row : transitions.entrySet()) {
+            if (row.getKey() == null || !states.contains(row.getKey())) {
+                throw new IllegalArgumentException("Неизвестное исходное состояние: " + row.getKey());
+            }
+            if (row.getValue() == null) {
+                throw new IllegalArgumentException("Таблица переходов не может быть null: " + row.getKey());
+            }
+            for (var edge : row.getValue().entrySet()) {
+                if (edge.getKey() == null || !alphabet.contains(edge.getKey())) {
+                    throw new IllegalArgumentException("Неизвестный символ алфавита: " + edge.getKey());
+                }
+                if (edge.getValue() == null || edge.getValue().stream().anyMatch(Objects::isNull)
+                        || !states.containsAll(edge.getValue())) {
+                    throw new IllegalArgumentException("Переход ведет в неизвестное состояние: " + edge.getValue());
+                }
+            }
+        }
     }
 
     private void validate() {

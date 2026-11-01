@@ -11,12 +11,15 @@ public class GraphPrinter {
         writeDot(automaton, title);
     }
 
-    private static void writeDot(
+    static void writeDot(
             Automaton automaton,
             String title
     ) {
+        writeDot(automaton, title, Paths.get("graphs"));
+    }
+
+    static Path writeDot(Automaton automaton, String title, Path directory) {
         try {
-            Path directory = Paths.get("graphs");
             Files.createDirectories(directory);
 
             String fileName = title
@@ -33,6 +36,12 @@ public class GraphPrinter {
                     .append(escape(title))
                     .append("\", labelloc=t];\n");
             dot.append("    node [shape=circle];\n");
+
+            String startMarker = "__start";
+            while (automaton.getStates().contains(startMarker)) startMarker += "_";
+            dot.append("    \"").append(escape(startMarker)).append("\" [shape=point, label=\"\"];\n");
+            dot.append("    \"").append(escape(startMarker)).append("\" -> \"")
+                    .append(escape(automaton.getInitialState())).append("\";\n");
 
             for (String state : automaton.getStates()) {
                 dot.append("    \"")
@@ -72,18 +81,19 @@ public class GraphPrinter {
                     StandardCharsets.UTF_8
             );
 
-            // System.out.println("Файл: " + file.toAbsolutePath());
+            return file;
 
         } catch (IOException e) {
-            System.out.println(
-                    "Не удалось сохранить граф: " + e.getMessage()
-            );
+            throw new java.io.UncheckedIOException("Не удалось сохранить граф", e);
         }
     }
 
     private static String escape(String value) {
         return value
                 .replace("\\", "\\\\")
-                .replace("\"", "\\\"");
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t");
     }
 }

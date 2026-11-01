@@ -159,7 +159,7 @@ public class App {
      *
      * Распознаваемый язык: (0+1)*11
      */
-    private static Automaton createLectureExample() {
+    static Automaton createLectureExample() {
 
         Set<String> states = new LinkedHashSet<>(
                 Arrays.asList("p", "q", "r")
@@ -187,21 +187,10 @@ public class App {
                 new LinkedHashSet<>(Arrays.asList("p")));
 
         transitions.get("p").put("1",
-                new LinkedHashSet<>(Arrays.asList("q", "p")));
+                new LinkedHashSet<>(Arrays.asList("p", "q")));
 
-        // Состояние q
-        transitions.get("q").put("0",
-                new LinkedHashSet<>(Arrays.asList("p")));
-
-        transitions.get("q").put("1",
-                new LinkedHashSet<>(Arrays.asList("p", "q", "r")));
-
-        // Состояние r
-        transitions.get("r").put("0",
-                new LinkedHashSet<>(Arrays.asList("p")));
-
-        transitions.get("r").put("1",
-                new LinkedHashSet<>(Arrays.asList("p", "q", "r")));
+        // В лекционном НКА из q есть только переход по 1 в r.
+        transitions.get("q").put("1", Set.of("r"));
 
         return new Automaton(
                 states,
