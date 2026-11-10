@@ -1,0 +1,8 @@
+/build/
+/examples/output/
+/examples/output_*/
+/examples/auto/
+/examples/benchmark_*/
+__pycache__/
+*.pyc
+.DS_Store
