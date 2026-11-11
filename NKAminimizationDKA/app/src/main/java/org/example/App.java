@@ -49,6 +49,8 @@ public class App {
 
         automaton.print();
 
+        automaton.checkAcceptingStates();
+
         GraphPrinter.printGraph(
                 automaton,
                 "Исходный НКА"
@@ -159,7 +161,14 @@ public class App {
      *
      * Распознаваемый язык: (0+1)*11
      */
-    private static Automaton createLectureExample() {
+    //2
+    //s,dead
+    //0
+    //s
+    //-
+    //dead
+    //-
+    public static Automaton createLectureExample() {
 
         Set<String> states = new LinkedHashSet<>(
                 Arrays.asList("p", "q", "r")
@@ -227,7 +236,7 @@ public class App {
 
         Set<String> states = readSet(scanner.nextLine());
 
-        System.out.print("Алфавит Σ: ");
+        System.out.print("Алфавит V: ");
 
         Set<String> alphabet = readSet(scanner.nextLine());
 
@@ -235,7 +244,7 @@ public class App {
 
         String initialState = scanner.nextLine().trim();
 
-        System.out.print("Конечные состояния F (или -): ");
+        System.out.print("Конечные состояния F: ");
 
         Set<String> finalStates = readSet(scanner.nextLine());
 

@@ -23,24 +23,83 @@ public class Automaton {
         this.finalStates = new LinkedHashSet<>(finalStates);
         this.transitions = new LinkedHashMap<>();
 
-        for (String state : states) {
-            Map<String, Set<String>> stateTransitions =
-                    new LinkedHashMap<>();
+        if (this.states.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Множество состояний не может быть пустым"
+            );
+        }
 
-            for (String symbol : alphabet) {
-                Set<String> destinations = new LinkedHashSet<>(
-                        transitions
-                                .getOrDefault(state, Collections.emptyMap())
-                                .getOrDefault(symbol, Collections.emptySet())
-                );
+        if (this.alphabet.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Алфавит не может быть пустым"
+            );
+        }
 
-                stateTransitions.put(symbol, destinations);
+        if (!this.states.contains(initialState)) {
+            throw new IllegalArgumentException(
+                    "Начальное состояние отсутствует в Q"
+            );
+        }
+
+        if (!this.states.containsAll(this.finalStates)) {
+            throw new IllegalArgumentException(
+                    "Конечные состояния должны входить в Q"
+            );
+        }
+
+        for (String state : this.states) {
+            Map<String, Set<String>> stateTransitions = new LinkedHashMap<>();
+
+            for (String symbol : this.alphabet) {
+                stateTransitions.put(symbol, new LinkedHashSet<>());
             }
 
             this.transitions.put(state, stateTransitions);
         }
 
-        validate();
+        for (var stateEntry : transitions.entrySet()) {
+            String state = stateEntry.getKey();
+
+            if (!this.states.contains(state)) {
+                throw new IllegalArgumentException(
+                        "Неизвестное состояние: " + state
+                );
+            }
+
+            for (var transitionEntry : stateEntry.getValue().entrySet()) {
+                String symbol = transitionEntry.getKey();
+
+                if (!this.alphabet.contains(symbol)) {
+                    throw new IllegalArgumentException(
+                            "Неизвестный символ алфавита: " + symbol
+                    );
+                }
+
+                Set<String> destinations = new LinkedHashSet<>();
+
+                for (String destination : transitionEntry.getValue()) {
+                    if (!this.states.contains(destination)) {
+                        throw new IllegalArgumentException(
+                                "Переход из " + state
+                                        + " по символу " + symbol
+                                        + " ведет в неизвестное состояние: "
+                                        + destination
+                        );
+                    }
+
+                    destinations.add(destination);
+                }
+
+                this.transitions.get(state).put(symbol, destinations);
+            }
+        }
+
+//        if (!canReachFinalState()) {
+//            throw new IllegalArgumentException(
+//                    "Из начального состояния " + initialState
+//                            + " невозможно достичь ни одного конечного состояния"
+//            );
+//        }
     }
 
     private void validate() {
@@ -90,6 +149,18 @@ public class Automaton {
                 }
             }
         }
+    }
+
+    public boolean isComplete() {
+        for (String state : getStates()) {
+            for (String symbol : getAlphabet()) {
+                if (getTransitions(state, symbol).size() != 1) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public Set<String> getStates() {
@@ -181,5 +252,56 @@ public class Automaton {
 
             System.out.println();
         }
+    }
+
+    public boolean canReachFinalState() {
+        Set<String> visited = new HashSet<>();
+        Queue<String> queue = new ArrayDeque<>();
+
+        visited.add(initialState);
+        queue.add(initialState);
+
+        while (!queue.isEmpty()) {
+            String state = queue.remove();
+
+            if (finalStates.contains(state)) {
+                return true;
+            }
+
+            for (Set<String> destinations
+                    : transitions.get(state).values()) {
+
+                for (String destination : destinations) {
+                    if (visited.add(destination)) {
+                        queue.add(destination);
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public void checkAcceptingStates() {
+
+        // Проверяем, достижимо ли хотя бы одно конечное состояние.
+        if (!canReachFinalState()) {
+
+            System.out.println(
+                    "Внимание: ни одно конечное состояние "
+                            + "недостижимо из начального состояния."
+            );
+
+            System.out.println(
+                    "Автомат не принимает ни одного слова."
+            );
+
+            return;
+        }
+
+        System.out.println(
+                "Из начального состояния достижимо хотя бы одно "
+                        + "конечное состояние."
+        );
     }
 }
