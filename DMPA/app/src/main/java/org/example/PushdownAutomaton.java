@@ -117,11 +117,11 @@ public class PushdownAutomaton {
             // Проверяем достижение конечного состояния
             // после полного прочтения входной цепочки.
             if (position == input.length()
-                    && finalStates.contains(currentState)) {
+                    && finalStates.contains(currentState)
+                    && stack.isEmpty()) {
 
                 System.out.println("Конфигурация: ("
-                        + currentState + ", lambda, "
-                        + (stack.isEmpty() ? "lambda" : stack) + ")");
+                        + currentState + ", lambda, lambda)");
 
                 System.out.println("ЦЕПОЧКА ПРИНЯТА.");
                 return true;
@@ -189,7 +189,16 @@ public class PushdownAutomaton {
             // Если переход не найден, автомат останавливается
             if (transition == null) {
 
-                if (position < input.length()) {
+                if (position == input.length()
+                        && finalStates.contains(currentState)
+                        && !stack.isEmpty()) {
+
+                    System.out.println(
+                            "ОТКЛОНЕНА: достигнуто конечное состояние, "
+                                    + "но стек не очищен. "
+                                    + "Отсутствует lambda-переход для удаления символа.");
+                } else if (position < input.length()) {
+
                     System.out.println(
                             "ОТКЛОНЕНА: отсутствует переход "
                                     + "для состояния "
@@ -199,10 +208,10 @@ public class PushdownAutomaton {
                                     + "' и вершины стека '"
                                     + stackTop + "'.");
                 } else {
+
                     System.out.println(
                             "ОТКЛОНЕНА: входная цепочка прочитана, "
-                                    + "но автомат не находится "
-                                    + "в конечном состоянии.");
+                                    + "но автомат не достиг конечного состояния.");
                 }
 
                 return false;
