@@ -167,7 +167,15 @@ public class Main {
                     );
 
             // 3. Ввод функции переходов
-
+            System.out.println("\nP = ("
+                    + formatSet(states) + ", "
+                    + formatCharSet(inputAlphabet) + ", "
+                    + formatCharSet(stackAlphabet) + ", "
+                    + "δ, "
+                    + initialState + ", "
+                    + initialStackSymbol + ", "
+                    + formatSet(finalStates)
+                    + ")");
             System.out.println("\nФункция переходов");
             System.out.println("Формат: q,a,Z -> q',gamma");
             System.out.println("Обозначения пустой строки:");
@@ -214,5 +222,26 @@ public class Main {
             System.err.println("\nОшибка: " + e.getMessage());
 
         }
+    }
+
+    private static String formatSet(Set<String> values) {
+        return "{" + String.join(", ", values) + "}";
+    }
+
+    private static String formatCharSet(Set<Character> values) {
+        StringBuilder result = new StringBuilder("{");
+
+        boolean first = true;
+
+        for (Character value : values) {
+            if (!first) {
+                result.append(", ");
+            }
+
+            result.append(value);
+            first = false;
+        }
+
+        return result.append("}").toString();
     }
 }

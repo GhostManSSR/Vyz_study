@@ -80,42 +80,9 @@ public class PushdownAutomaton {
         if (transitions.containsKey(key)) {
             throw new IllegalArgumentException(
                     "Нарушена детерминированность: "
-                            + "для одной конфигурации задано несколько переходов");
-        }
-
-        // Для ДМПА lambda-переход не может сосуществовать
-        // с обычными переходами при том же состоянии и вершине стека.
-        for (Transition existing : transitions.values()) {
-
-            if (!existing.currentState().equals(
-                    transition.currentState())) {
-                continue;
-            }
-
-            if (existing.stackSymbol() != transition.stackSymbol()) {
-                continue;
-            }
-
-            if (existing.inputSymbol() == null
-                    || transition.inputSymbol() == null) {
-
-                throw new IllegalArgumentException(
-                        "Нарушена детерминированность!\n"
-                                + "Конфликтующие переходы:\n"
-                                + existing + "\n"
-                                + transition
-                );
-            }
-
-            if (existing.inputSymbol().equals(
-                    transition.inputSymbol())) {
-
-                throw new IllegalArgumentException(
-                        "Для одной конфигурации задано несколько переходов:\n"
-                                + existing + "\n"
-                                + transition
-                );
-            }
+                            + "для одной конфигурации задано несколько переходов:\n"
+                            + transitions.get(key) + "\n"
+                            + transition);
         }
 
         transitions.put(key, transition);
