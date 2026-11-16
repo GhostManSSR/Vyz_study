@@ -150,7 +150,7 @@ public class PushdownAutomaton {
             System.out.println(
                     "Конфигурация: ("
                             + currentState + ", "
-                            + input.substring(position)
+                            + (input.substring(position).isEmpty() ? "lambda" : input.substring(position))
                             + ", "
                             + (stack.isEmpty() ? "lambda" : stack)
                             + ")");
