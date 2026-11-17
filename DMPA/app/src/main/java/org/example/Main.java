@@ -26,7 +26,6 @@ public class Main {
         return line.trim();
     }
 
-    // Чтение множества элементов через запятую
     private static Set<String> readSet(String message)
             throws IOException {
 
@@ -45,7 +44,6 @@ public class Main {
         return result;
     }
 
-    // Чтение алфавита
     private static Set<Character> readAlphabet(String message)
             throws IOException {
 
@@ -65,7 +63,6 @@ public class Main {
         return result;
     }
 
-    // Чтение перехода
     private static Transition readTransition(String line) {
 
         String[] sides = line.split("->", -1);
@@ -134,8 +131,6 @@ public class Main {
 
         try {
 
-            // 1. Ввод параметров автомата
-
             Set<String> states =
                     readSet("Состояния: ");
 
@@ -154,8 +149,6 @@ public class Main {
             Set<String> finalStates =
                     readSet("Множество конечных состояний: ");
 
-            // 2. Создание автомата
-
             PushdownAutomaton automaton =
                     new PushdownAutomaton(
                             states,
@@ -166,7 +159,6 @@ public class Main {
                             finalStates
                     );
 
-            // 3. Ввод функции переходов
             System.out.println("\nP = ("
                     + formatSet(states) + ", "
                     + formatCharSet(inputAlphabet) + ", "
@@ -195,8 +187,6 @@ public class Main {
 
                 automaton.addTransition(transition);
             }
-
-            // 4. Проверка цепочек
 
             System.out.println("\nПроверка цепочек");
 
