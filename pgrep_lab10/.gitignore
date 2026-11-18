@@ -1,0 +1,7 @@
+build/
+__pycache__/
+*.o
+*.obj
+*.exe
+pgrep
+.DS_Store

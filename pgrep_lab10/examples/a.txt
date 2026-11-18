@@ -1,0 +1,6 @@
+foo bar
+baz
+foo
+Error: cannot open file
+cat
+concatenate

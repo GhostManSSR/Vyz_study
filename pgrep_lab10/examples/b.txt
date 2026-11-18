@@ -1,0 +1,4 @@
+error at line 1
+cat sat
+cat
+foo foo foo
