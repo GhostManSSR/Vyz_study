@@ -20,15 +20,13 @@
 
 namespace fs = std::filesystem;
 
-// The Image class is supplied by the assignment and must not be changed.
-// Synchronization belongs here, outside Image.
 namespace {
 
 struct Options {
     fs::path inputDir;
     fs::path outputDir;
     std::string filter;
-    unsigned int threads = 0; // 0 means automatically select a reasonable count.
+    unsigned int threads = 0; 
     bool verbose = true;
 };
 
@@ -145,7 +143,7 @@ std::queue<Task> collectTasks(const fs::path& inputDir,
         const fs::path current = entry.path();
         if (entry.is_directory(error)) {
             if (error) throw fs::filesystem_error("Cannot inspect directory", current, error);
-            // Avoid processing previously generated images when output lies inside input.
+
             if (isInside(outputDir, fs::weakly_canonical(current))) it.disable_recursion_pending();
             continue;
         }
@@ -176,8 +174,6 @@ public:
         : tasks_(std::move(tasks)), filter_(std::move(filter)), verbose_(verbose) {}
 
     void run(unsigned int threadCount) {
-        // Pre-create directories in one thread, before workers start. This also
-        // detects invalid output paths without racing to create directories.
         std::queue<Task> pending = tasks_;
         while (!pending.empty()) {
             fs::create_directories(pending.front().output.parent_path());
@@ -205,13 +201,11 @@ private:
         while (true) {
             Task task;
             {
-                // Keep the critical section short: only pop from the shared queue.
                 std::lock_guard<std::mutex> lock(queueMutex_);
                 if (tasks_.empty()) return;
                 task = std::move(tasks_.front());
                 tasks_.pop();
             }
-            // Each worker uses a separate Image; no mutex needed for pixels.
             try {
                 Image image;
                 if (!image.load(task.input.string())) {
@@ -243,9 +237,9 @@ private:
     std::queue<Task> tasks_;
     std::string filter_;
     bool verbose_;
-    std::mutex queueMutex_;   // protects tasks_ (shared queue)
-    std::mutex logMutex_;     // prevents threads from mixing console messages
-    std::atomic<std::size_t> succeeded_{0}; // thread-safe counters
+    std::mutex queueMutex_;   
+    std::mutex logMutex_;    
+    std::atomic<std::size_t> succeeded_{0};
     std::atomic<std::size_t> failed_{0};
 };
 
@@ -262,7 +256,7 @@ int main(int argc, char* argv[]) {
         if (inputDir == outputDir) {
             throw std::invalid_argument("Input and output directories must be different");
         }
-        // Avoid reading files already written by an earlier run.
+
         std::queue<Task> tasks = collectTasks(inputDir, outputDir, options.filter);
         const std::size_t taskCount = tasks.size();
         if (taskCount == 0) {

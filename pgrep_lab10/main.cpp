@@ -76,7 +76,6 @@ bool parse_jobs(const std::string& value, std::size_t& jobs) {
     }
 }
 
-// An option group such as -rni is accepted, as are -j 4 and -j4.
 bool parse_arguments(int argc, char* argv[], Options& opts) {
     bool end_of_options = false;
     bool pattern_seen = false;
@@ -133,7 +132,6 @@ bool parse_arguments(int argc, char* argv[], Options& opts) {
     return true;
 }
 
-// Case folding is limited to ASCII, as required by the assignment.
 char ascii_lower(char c) {
     return (c >= 'A' && c <= 'Z') ? static_cast<char>(c - 'A' + 'a') : c;
 }
@@ -148,7 +146,6 @@ bool is_word_char(char c) {
            (c >= '0' && c <= '9') || c == '_';
 }
 
-// Checks a fixed substring, possibly with ASCII case folding and word boundaries.
 bool matches_line(const std::string& original, const std::string& normalized_pattern,
                   const Options& opts) {
     const std::string folded = opts.ignore_case ? ascii_lower_copy(original) : original;
@@ -178,8 +175,6 @@ void report_error(const fs::path& path, const std::string& message, const Option
     }
 }
 
-// File discovery is exclusively the main thread's responsibility.
-// Files, not fragments of files, become units of work.
 std::vector<fs::path> discover_files(const Options& opts, Statistics& stats) {
     std::vector<fs::path> files;
     for (const fs::path& input : opts.inputs) {
@@ -227,20 +222,18 @@ std::vector<fs::path> discover_files(const Options& opts, Statistics& stats) {
             } else if (fs::is_regular_file(entry_status)) {
                 files.push_back(path);
             }
-            // By default recursive_directory_iterator never descends into symlinks.
+
             it.increment(ec);
             if (ec) {
                 report_error(input, "directory traversal failed: " + ec.message(), opts);
                 ++stats.errors;
-                break; // Continue with the next separately specified input path.
+                break; 
             }
         }
     }
     return files;
 }
 
-// One invocation handles exactly one file, regardless of the number of workers.
-// Buffer per-file output so a failed or binary file doesn't produce partial results.
 void process_file(const fs::path& path, const Options& opts,
                   const std::string& normalized_pattern, bool show_filename,
                   Statistics& stats) {
@@ -288,14 +281,12 @@ void process_file(const fs::path& path, const Options& opts,
     if (opts.filenames_only) {
         if (selected_count > 0) buffered_output << filename << '\n';
     } else if (opts.count_only) {
-        // The lab's -c examples explicitly show 'filename:number', even for one file.
         if (!opts.hide_filename || opts.force_filename) buffered_output << filename << ':';
         buffered_output << selected_count << '\n';
     }
 
     const std::string result = buffered_output.str();
     if (!result.empty()) {
-        // A single lock also keeps the lines of each file adjacent in output.
         std::lock_guard<std::mutex> lock(output_mutex);
         std::cout << result;
     }
@@ -317,7 +308,6 @@ int main(int argc, char* argv[]) {
     const bool show_filename = opts.force_filename ||
         (!opts.hide_filename && (opts.recursive || opts.inputs.size() > 1));
 
-    // -j 1 must be genuinely sequential: no std::thread is constructed.
     if (opts.jobs == 1 || files.size() <= 1) {
         for (const fs::path& file : files) {
             process_file(file, opts, normalized_pattern, show_filename, stats);
@@ -347,7 +337,6 @@ int main(int argc, char* argv[]) {
                 workers.emplace_back(worker);
             }
         } catch (const std::system_error& error) {
-            // A partial pool is still safe: already-created workers finish every task.
             if (!opts.quiet) {
                 std::lock_guard<std::mutex> lock(error_mutex);
                 std::cerr << "pgrep: unable to create all threads: " << error.what() << '\n';
@@ -364,9 +353,6 @@ int main(int argc, char* argv[]) {
                   << " matches, " << stats.errors.load() << " errors, "
                   << std::fixed << std::setprecision(3) << elapsed.count() << " s\n";
     }
-    // Invariant: successful files + errors equals the total attempt count.
-    // Grep-style exit codes: 0=selected lines, 1=none, 2=error.
-    // In quiet mode, a found match takes precedence over an unrelated error.
     if (opts.quiet && stats.matches.load() > 0) return 0;
     if (stats.errors.load() > 0) return 2;
     return stats.matches.load() > 0 ? 0 : 1;

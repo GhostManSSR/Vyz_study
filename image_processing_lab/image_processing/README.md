@@ -47,7 +47,7 @@ bash run_demo.sh
 
 ```bash
 sudo apt update
-sudo apt install -y build-essential cmake python3 unzip
+sudo apt install -y build-essential cmake python3 unzip libgtest-dev
 cd image_processing
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j2
@@ -133,31 +133,45 @@ cmake --build build -j2
 
 ## Тестирование
 
-Тесты выполняются через `CTest`, используется только стандартная библиотека
-Python 3 для генерации входных PNG и проверки результата. Python не нужен для
-самой программы, только для тестов и генератора демонстрационных изображений.
+Тесты выполняются через `CTest`: GoogleTest проверяет загрузку и преобразование
+пикселей класса `Image`, а интеграционный тест на Python проверяет приложение
+целиком. Для тестов и генератора нужен Python 3; для сборки тестов также нужен
+GoogleTest (`libgtest-dev` в Ubuntu/WSL).
 
 ```bash
 ctest --test-dir build --output-on-failure
 ```
 
-Тесты проверяют правильные RGB и alpha-пиксели, работу с 1 и 4 потоками,
-вложенные папки, режимы `invert` и `both`, невалидные аргументы, повреждённые
-файлы и защиту от повторной обработки собственных результатов.
+GoogleTest проверяет размеры изображения, значения RGB/alpha после фильтров
+`grayscale` и `invert`, а также обработку отсутствующего файла. Интеграционный
+тест проверяет работу с 1 и 4 потоками, вложенные папки, режимы `invert` и
+`both`, невалидные аргументы, повреждённые файлы и защиту от повторной обработки
+собственных результатов.
 
-## Сравнение времени: 1 поток и 4 потока
+## Эксперименты и отчёт
 
-Для достоверного эксперимента генерируем достаточно большие изображения:
+Генератор по умолчанию создаёт 60 PNG маленького (320×240), среднего (800×600)
+и крупного (1280×720) размеров. Для эксперимента запустите из папки проекта:
 
 ```bash
-python3 scripts/generate_samples.py --output examples/benchmark_input --count 24 --width 1500 --height 1000
-./build/image_processor --input examples/benchmark_input --output examples/benchmark_1 --filter grayscale --threads 1 --quiet
-./build/image_processor --input examples/benchmark_input --output examples/benchmark_4 --filter grayscale --threads 4 --quiet
+python3 scripts/run_benchmark.py --program build/image_processor
 ```
 
-Сравни строки `Finished: ... elapsed: ... ms`. Ускорение можно оценить как
-`T(1 поток) / T(4 потока)`; оно **не гарантировано**, поскольку на результат
-влияют скорость диска, размер изображений, количество ядер и накладные расходы.
+Таблица результатов выводится в терминал, а подробный отчёт сохраняется в
+`experiments/REPORT.md`. Запустить те же замеры как CTest-тест и увидеть таблицу
+в выводе можно так:
+
+```bash
+ctest --test-dir build -R image_processor_benchmark -V
+```
+
+Скрипт трижды запускает приложение для каждого из режимов 1, 2, 4 и 8 потоков,
+перед каждым запуском очищает `examples/benchmark_output`, затем вычисляет
+среднее время и ускорение `T(1)/T(p)`. Сгенерированные изображения остаются в
+`examples/benchmark_input`, последний результат — в `examples/benchmark_output`.
+Входная папка набора пересоздаётся при каждом запуске. Отчёт с условиями,
+итоговой таблицей и временем каждого повтора записывается в
+`experiments/REPORT.md`.
 
 ## Что показывать на защите
 

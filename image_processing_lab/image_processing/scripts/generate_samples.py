@@ -41,20 +41,32 @@ def create_png(destination, width, height, style, index):
 def main():
     parser = argparse.ArgumentParser(description='Create reproducible PNG samples for image_processor')
     parser.add_argument('--output', type=pathlib.Path, default=pathlib.Path('examples/input'))
-    parser.add_argument('--count', type=int, default=3)
-    parser.add_argument('--width', type=int, default=160)
-    parser.add_argument('--height', type=int, default=120)
+    parser.add_argument('--count', type=int, default=60)
+    parser.add_argument('--width', type=int, help='Use a fixed width instead of mixed image sizes')
+    parser.add_argument('--height', type=int, help='Use a fixed height instead of mixed image sizes')
     args = parser.parse_args()
-    if not (1 <= args.count <= 1000) or not (1 <= args.width <= 8192) or not (1 <= args.height <= 8192):
-        parser.error('count must be 1..1000, width and height must be 1..8192')
-    if args.count * args.width * args.height > 125_000_000:
+    if not (1 <= args.count <= 1000):
+        parser.error('count must be 1..1000')
+    if (args.width is None) != (args.height is None):
+        parser.error('--width and --height must be specified together')
+    if args.width is not None and (
+            not (1 <= args.width <= 8192) or not (1 <= args.height <= 8192)):
+        parser.error('width and height must be 1..8192')
+
+    sizes = ((320, 240), (800, 600), (1280, 720))
+    dimensions = [
+        (args.width, args.height) if args.width is not None else sizes[i % len(sizes)]
+        for i in range(args.count)
+    ]
+    if sum(width * height for width, height in dimensions) > 125_000_000:
         parser.error('too many total pixels; reduce image count or size')
-    for i in range(args.count):
+    for i, (width, height) in enumerate(dimensions):
         relative = pathlib.Path('nested') / f'example_{i + 1:03d}.png' if i % 3 == 2 else pathlib.Path(f'example_{i + 1:03d}.png')
         path = args.output / relative
         style = ('gradient', 'checker', 'noise')[i % 3]
-        create_png(path, args.width, args.height, style, i)
-    print(f'Generated {args.count} images in {args.output}')
+        create_png(path, width, height, style, i)
+    size_description = 'mixed sizes' if args.width is None else f'{args.width}x{args.height}'
+    print(f'Generated {args.count} images ({size_description}) in {args.output}')
 
 
 if __name__ == '__main__':
